@@ -1,4 +1,4 @@
-/* Burger-Menü (Slide-in Navigation - final optimiert) */
+/* Burger-Menü (Slide-in Navigation – zuverlässig) */
 .slide-menu {
   position: fixed;
   top: 0;
@@ -9,9 +9,10 @@
   color: white;
   padding: 2rem 1rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
-  transform: translateX(-250px);
+  transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 1000;
+  will-change: transform;
 }
 
 .slide-menu.open {
