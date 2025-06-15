@@ -88,7 +88,7 @@
 }
 
 .login-block h3 {
-  display: none; /* Login-Titel ausblenden */
+  display: none;
 }
 
 .login-block input {
@@ -120,4 +120,27 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Sprachumschalter */
+.flags {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.flags img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.flags img:hover {
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
