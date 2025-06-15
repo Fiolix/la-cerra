@@ -34,9 +34,9 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 
     <div class="flags">
-      <img src="flag-en.png" alt="EN" title="English" />
-      <img src="flag-it.png" alt="IT" title="Italiano" />
-      <img src="flag-de.png" alt="DE" title="Deutsch" />
+      <img src="img/flag_en.png" alt="EN" title="English" />
+      <img src="img/flag_it.png" alt="IT" title="Italiano" />
+      <img src="img/flag_de.png" alt="DE" title="Deutsch" />
     </div>
   `;
 
