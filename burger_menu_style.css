@@ -88,12 +88,14 @@
 .slide-menu ul ul {
   max-height: 0;
   overflow: hidden;
-  margin-left: 1rem;
+  margin-left: 0;
   transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
   opacity: 0;
-  background-color: #2f3f3e; /* erste Ebene dunkler */
+  background-color: #2f3f3e;
   padding: 0.5rem 1rem;
-  border-radius: 0.3rem;
+  border-radius: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .slide-menu li.open > ul {
@@ -102,8 +104,7 @@
 }
 
 .slide-menu ul ul ul {
-  background-color: #263332; /* zweite Ebene noch dunkler */
-  margin-left: 1rem;
+  background-color: #263332;
 }
 
 /* Pfeile vollständig entfernen */
@@ -128,4 +129,8 @@
   color: white;
   text-decoration: none;
   font-size: 1.1rem;
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0;
+  box-sizing: border-box;
 }
