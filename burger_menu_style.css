@@ -83,3 +83,37 @@
   margin-right: 0.5rem;
   cursor: pointer;
 }
+
+/* Animiertes Aufklappen der Untermenüs */
+.slide-menu ul ul {
+  max-height: 0;
+  overflow: hidden;
+  margin-left: 1rem;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.slide-menu li.open > ul {
+  max-height: 500px; /* ausreichend groß für mehrere Einträge */
+  opacity: 1;
+}
+
+/* Nach wie vor: Grundlayout */
+.slide-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.slide-menu li {
+  margin: 1rem 0;
+}
+
+.slide-menu li.toggleable > a::after {
+  content: " ▶";
+  font-size: 0.9rem;
+}
+
+.slide-menu li.open > a::after {
+  content: " ▼";
+}
