@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
   `;
 
-  document.body.appendChild(navMenu);
+  document.body.insertBefore(navMenu, document.body.firstChild);
 
   navMenu.querySelectorAll("li.toggleable > a").forEach(link => {
     link.addEventListener("click", function (e) {
