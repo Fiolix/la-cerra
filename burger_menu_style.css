@@ -1,4 +1,4 @@
-/* Korrigierte Grundpositionierung */
+/* Burger-Menü mit voller Breite ohne Rand */
 .slide-menu {
   position: fixed;
   top: 0;
@@ -7,84 +7,19 @@
   height: 100vh;
   background: #384e4d;
   color: white;
-  padding: 2rem 1rem;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 1000;
   overflow-y: auto;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .slide-menu.open {
   transform: translateX(0);
 }
 
-.slide-menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.slide-menu ul ul {
-  display: none;
-  margin-left: 1rem;
-}
-
-.slide-menu li.open > ul {
-  display: block;
-}
-
-.slide-menu li.toggleable > a::after {
-  content: " ▶";
-  font-size: 0.9rem;
-}
-
-.slide-menu li.open > a::after {
-  content: " ▼";
-}
-
-.slide-menu li {
-  margin: 1rem 0;
-}
-
-.slide-menu a {
-  color: white;
-  text-decoration: none;
-  font-size: 1.1rem;
-}
-
-.login-block {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #aaa;
-}
-
-.login-block input {
-  display: block;
-  width: 100%;
-  margin: 0.5rem 0 1rem;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: none;
-  font-size: 1rem;
-}
-
-.login-block input::placeholder {
-  color: #999;
-}
-
-.flags {
-  margin-top: 2rem;
-}
-
-.flags img {
-  width: 24px;
-  height: auto;
-  margin-right: 0.5rem;
-  cursor: pointer;
-}
-
-/* Animiertes Aufklappen der Untermenüs mit voller Breite und gestaffeltem Hintergrund */
+/* Animiertes Aufklappen der Untermenüs mit voller Breite */
 .slide-menu ul ul {
   max-height: 0;
   overflow: hidden;
@@ -94,6 +29,7 @@
   padding: 0;
   width: 100%;
   background-color: #2f3f3e;
+  box-sizing: border-box;
 }
 
 .slide-menu li.open > ul {
@@ -128,7 +64,7 @@
 }
 
 .slide-menu li {
-  margin: 1rem 0;
+  margin: 0;
 }
 
 .slide-menu a {
