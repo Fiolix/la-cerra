@@ -5,31 +5,32 @@ document.addEventListener("DOMContentLoaded", function () {
   navMenu.classList.add("slide-menu");
   navMenu.innerHTML = `
     <div style="margin-bottom: 2rem; font-size: 1.5rem;">
-      <a href="#" data-page="home" title="Home"><img src="img/home_icon.png" alt="Home" style="width: 24px; height: 24px;" /></a>
+      <a href="#home" title="Home"><img src="home-icon.png" alt="Home" style="width: 24px; height: 24px;" /></a>
     </div>
     <ul>
-      <li><a href="#" data-page="news">News</a></li>
-      <li><a href="#" data-page="agriturismo">Agriturismo La Cerra</a></li>
-      <li><a href="#" data-page="sardinia">Sardinia</a></li>
+      <li><a href="#news">News</a></li>
+      <li><a href="#agriturismo">Agriturismo La Cerra</a></li>
+      <li><a href="#sardinia">Sardinia</a></li>
       <li class="toggleable">
-        <a href="#" data-page="bouldering">Bouldering</a>
+        <a href="#bouldering">Bouldering</a>
         <ul>
           <li class="toggleable">
-            <a href="#" data-page="la-cerra">La Cerra</a>
+            <a href="#lacerra">La Cerra</a>
             <ul>
-              <li><a href="#" data-page="beispielsektor">Beispielsektor</a></li>
+              <li><a href="#beispielsektor">Beispielsektor</a></li>
             </ul>
           </li>
-          <li><a href="#" data-page="gallura">Gallura</a></li>
+          <li><a href="#gallura">Gallura</a></li>
         </ul>
       </li>
-      <li><a href="#" data-page="faq">FAQ</a></li>
+      <li><a href="#faq">FAQ</a></li>
     </ul>
 
     <div class="login-block">
+      <h3>Login</h3>
       <input type="text" id="user" name="user" placeholder="User" />
       <input type="password" id="password" name="password" placeholder="Password" />
-      <button type="button">Login</button>
+      <button type="button">Log In</button>
     </div>
 
     <div class="language-switcher">
@@ -62,4 +63,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
+  // Hier kann später echte Sprachlogik ergänzt werden
 }

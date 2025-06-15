@@ -1,29 +1,55 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>La Cerra SPA</title>
+  <title>Bouldering La Cerra</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/burger_menu_style.css" />
   <script defer src="js/burger_menu.js"></script>
-  <script defer src="js/content_loader.js"></script>
 </head>
 <body>
   <header class="hero">
     <div class="menu-icon">☰</div>
     <img src="img/header_index.jpg" alt="La Cerra" class="header-image" />
-    <h1>BOULDERING<br />LA CERRA</h1>
+    <h1 style="text-shadow: 1px 1px 4px rgba(0,0,0,0.6);">BOULDERING<br />LA CERRA</h1>
   </header>
 
-  <main id="content">
-    <!-- Hier wird der Seiteninhalt geladen -->
-  </main>
+  <main>
+    <section class="welcome">
+      <h2>Welcome</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet sem euismod, tempor magna non, dignissim libero.</p>
+      <p>Integer laoreet turpis non erat laoreet, in facilisis tellus finibus.</p>
+    </section>
 
-  <aside class="did-you-know">
-    <h3>Did you know?</h3>
-    <p>Spannender Fakt, Tipp oder Hinweis erscheint hier.</p>
-  </aside>
+    <section class="news">
+      <h2>News</h2>
+      <div class="news-item">
+        <h3>Erste Beispiel-News</h3>
+        <img src="https://via.placeholder.com/600x200" alt="Platzhalterbild" style="width:100%; height:auto; border-radius: 0.3rem; margin: 0.5rem 0;" />
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut purus eu libero dictum.</p>
+        <a href="#">Read more</a>
+      </div>
+      <div class="news-item">
+        <h3>Zweite Beispiel-News</h3>
+        <img src="https://via.placeholder.com/600x200" alt="Platzhalterbild" style="width:100%; height:auto; border-radius: 0.3rem; margin: 0.5rem 0;" />
+        <p>Morbi faucibus, odio in aliquam blandit, sapien urna rutrum velit, nec lacinia metus arcu eget.</p>
+        <a href="#">Read more</a>
+      </div>
+    </section>
+
+    <section class="login">
+      <h2>Login</h2>
+      <button>Login</button>
+      <button>Register</button>
+    </section>
+
+    <aside class="did-you-know">
+      <h3>Did you know?</h3>
+      <p>Interesting fact, tip, or reminder.</p>
+    </aside>
+  </main>
 
   <footer>
     <p><a href="#">Imprint</a> | <a href="#">Contact</a> | <a href="#">Admin Login</a></p>
