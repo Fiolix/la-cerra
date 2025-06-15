@@ -1,9 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   function loadPage(page) {
     fetch(`content/${page}.html`)
-      .then(res => res.text())
+      .then(res => {
+        if (!res.ok) throw new Error("Seite nicht gefunden");
+        return res.text();
+      })
       .then(html => {
         document.getElementById("content").innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById("content").innerHTML = "<p>Inhalt nicht gefunden.</p>";
       });
   }
 
@@ -11,10 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       const page = e.target.getAttribute("data-page");
-      loadPage(page);
+      if (page && page !== "#") {
+        loadPage(page);
+      }
     });
   });
 
-  // Startseite laden
+  // Standardseite beim Laden
   loadPage("bouldering");
 });
