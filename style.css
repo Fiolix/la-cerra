@@ -88,23 +88,9 @@ footer a {
   }
 }
 
-/* Hintergrundbild für Header */
-.header-background {
-  background-image: url("https://idese.cultura.gov.it/wp-content/uploads/2021/09/Pulchiana2.jpg") !important;
-  background-size: 100% auto;
-  background-position: top center;
-  background-repeat: no-repeat;
-  color: white;
-  padding: 4rem 1rem;
-  text-align: center;
-  position: relative;
-  z-index: 0;
-}
-
 /* Header-Bild stufenlos skalieren */
 .header-image {
   width: 100%;
   height: auto;
   display: block;
 }
-
