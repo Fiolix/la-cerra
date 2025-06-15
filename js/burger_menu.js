@@ -5,25 +5,25 @@ document.addEventListener("DOMContentLoaded", function () {
   navMenu.classList.add("slide-menu");
   navMenu.innerHTML = `
     <div style="margin-bottom: 2rem; font-size: 1.5rem;">
-      <a href="index.html" title="Home"><img src="img/home_icon.png" alt="Home" style="width: 24px; height: 24px;" /></a>
+      <a href="#" data-page="home" title="Home"><img src="img/home_icon.png" alt="Home" style="width: 24px; height: 24px;" /></a>
     </div>
     <ul>
-      <li><a href="news.html" class="depth-1">News</a></li>
-      <li><a href="agriturismo.html" class="depth-1">Agriturismo La Cerra</a></li>
-      <li><a href="sardinia.html" class="depth-1">Sardinia</a></li>
+      <li><a href="#" data-page="news">News</a></li>
+      <li><a href="#" data-page="agriturismo">Agriturismo La Cerra</a></li>
+      <li><a href="#" data-page="sardinia">Sardinia</a></li>
       <li class="toggleable">
-        <a href="bouldering.html" class="depth-1">Bouldering</a>
+        <a href="#" data-page="bouldering">Bouldering</a>
         <ul>
           <li class="toggleable">
-            <a href="la-cerra.html" class="depth-2">La Cerra</a>
+            <a href="#" data-page="la-cerra">La Cerra</a>
             <ul>
-              <li><a href="beispielsektor.html" class="depth-3">Beispielsektor</a></li>
+              <li><a href="#" data-page="beispielsektor">Beispielsektor</a></li>
             </ul>
           </li>
-          <li><a href="gallura.html" class="depth-2">Gallura</a></li>
+          <li><a href="#" data-page="gallura">Gallura</a></li>
         </ul>
       </li>
-      <li><a href="faq.html" class="depth-1">FAQ</a></li>
+      <li><a href="#" data-page="faq">FAQ</a></li>
     </ul>
 
     <div class="login-block">
@@ -46,9 +46,6 @@ document.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
       const parentLi = this.parentElement;
       parentLi.classList.toggle("open");
-      if (this.href) {
-        window.location.href = this.href;
-      }
     });
   });
 
@@ -61,17 +58,8 @@ document.addEventListener("DOMContentLoaded", function () {
       navMenu.classList.remove("open");
     }
   });
-
-  navMenu.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", function (e) {
-      if (this.classList.contains("depth-3")) {
-        navMenu.classList.remove("open");
-      }
-    });
-  });
 });
 
 function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
-  // Hier kann später echte Sprachlogik ergänzt werden
 }
