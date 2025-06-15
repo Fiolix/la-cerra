@@ -13,6 +13,7 @@ header.hero {
   text-align: center;
   padding: 2rem 1rem;
   position: relative;
+  z-index: 0;
 }
 
 .menu-icon {
@@ -21,6 +22,7 @@ header.hero {
   left: 1rem;
   font-size: 1.5rem;
   cursor: pointer;
+  z-index: 1;
 }
 
 main {
@@ -95,4 +97,6 @@ footer a {
   color: white;
   padding: 4rem 1rem;
   text-align: center;
+  position: relative;
+  z-index: 0;
 }
