@@ -33,19 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
       <button type="button">Log In</button>
     </div>
 
-    <div class="language-switcher" style="display: flex; justify-content: center; gap: 0.5rem; padding: 1rem 0;">
+    <div class="language-switcher">
       <img src="img/flag_en.png" alt="EN" title="English" />
       <img src="img/flag_it.png" alt="IT" title="Italiano" />
       <img src="img/flag_de.png" alt="DE" title="Deutsch" />
     </div>
   `;
 
-<script>
-  function setLanguage(lang) {
-    alert('Sprache wechseln zu: ' + lang);
-    // Hier kannst du später Logik zum tatsächlichen Sprachwechsel ergänzen
-  }
-</script>
 
   // Menü ganz oben einfügen
   document.body.insertBefore(navMenu, document.body.firstChild);
