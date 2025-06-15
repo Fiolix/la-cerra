@@ -84,21 +84,36 @@
   cursor: pointer;
 }
 
-/* Animiertes Aufklappen der Untermenüs */
+/* Animiertes Aufklappen der Untermenüs mit Farbverlauf je Tiefe */
 .slide-menu ul ul {
   max-height: 0;
   overflow: hidden;
   margin-left: 1rem;
   transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
   opacity: 0;
+  background-color: #2f3f3e; /* erste Ebene dunkler */
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
 }
 
 .slide-menu li.open > ul {
-  max-height: 500px; /* ausreichend groß für mehrere Einträge */
+  max-height: 500px;
   opacity: 1;
 }
 
-/* Nach wie vor: Grundlayout */
+.slide-menu ul ul ul {
+  background-color: #263332; /* zweite Ebene noch dunkler */
+  margin-left: 1rem;
+}
+
+/* Pfeile vollständig entfernen */
+.slide-menu li.toggleable > a::after,
+.slide-menu li.open > a::after {
+  content: "";
+  display: none;
+}
+
+/* Standard-Layout */
 .slide-menu ul {
   list-style: none;
   padding: 0;
@@ -109,11 +124,8 @@
   margin: 1rem 0;
 }
 
-.slide-menu li.toggleable > a::after {
-  content: " ▶";
-  font-size: 0.9rem;
-}
-
-.slide-menu li.open > a::after {
-  content: " ▼";
+.slide-menu a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
 }
