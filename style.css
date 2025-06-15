@@ -8,7 +8,7 @@ body {
 }
 
 header.hero {
-  background: #384e4d;
+  background: transparent;
   color: white;
   text-align: center;
   padding: 2rem 1rem;
