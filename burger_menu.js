@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <button type="button">Log In</button>
     </div>
 
-    <div class="flags">
+    <div class="language-switcher">
       <img src="img/flag_en.png" alt="EN" title="English" />
       <img src="img/flag_it.png" alt="IT" title="Italiano" />
       <img src="img/flag_de.png" alt="DE" title="Deutsch" />
