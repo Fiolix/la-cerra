@@ -34,17 +34,14 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 
     <div class="language-switcher">
-      <img src="img/flag_en.png" alt="EN" title="English" />
-      <img src="img/flag_it.png" alt="IT" title="Italiano" />
-      <img src="img/flag_de.png" alt="DE" title="Deutsch" />
+      <img src="img/flag_en.png" alt="EN" title="English" onclick="setLanguage('en')" />
+      <img src="img/flag_it.png" alt="IT" title="Italiano" onclick="setLanguage('it')" />
+      <img src="img/flag_de.png" alt="DE" title="Deutsch" onclick="setLanguage('de')" />
     </div>
   `;
 
-
-  // Menü ganz oben einfügen
   document.body.insertBefore(navMenu, document.body.firstChild);
 
-  // Dropdown-Menüs ein-/ausklappen
   navMenu.querySelectorAll("li.toggleable > a").forEach(link => {
     link.addEventListener("click", function (e) {
       e.preventDefault();
@@ -53,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Burger-Menü anzeigen/verstecken
   menuIcon.addEventListener("click", function () {
     navMenu.classList.toggle("open");
   });
@@ -64,3 +60,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+function setLanguage(lang) {
+  alert('Sprache wechseln zu: ' + lang);
+  // Hier kann später echte Sprachlogik ergänzt werden
+}
