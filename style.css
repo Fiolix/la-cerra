@@ -85,3 +85,15 @@ footer a {
     font-size: 2rem;
   }
 }
+
+/* Hintergrundbild für Header */
+.header-background {
+  background-image: url("header_index.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
