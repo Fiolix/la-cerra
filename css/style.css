@@ -96,3 +96,12 @@ footer a {
     font-size: 2rem;
   }
 }
+
+/* Bild-Responsiveness sicherstellen */
+img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0.3rem;
+  margin: 0.5rem 0;
+}
