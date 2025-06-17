@@ -105,3 +105,42 @@ img {
   border-radius: 0.3rem;
   margin: 0.5rem 0;
 }
+
+/* Diagramm-Layout */
+.routen-diagram {
+  width: 80%;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 200px;
+  gap: 10px;
+}
+
+.bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.bar-value {
+  background-color: #384e4d;
+  width: 100%;
+  color: white;
+  font-size: 0.8rem;
+  padding-top: 0.3rem;
+  margin-bottom: 0.2rem;
+  border-radius: 4px 4px 0 0;
+  text-align: center;
+}
+
+.bar-label {
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+}
