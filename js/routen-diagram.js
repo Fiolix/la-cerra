@@ -47,4 +47,4 @@ const renderDiagram = () => {
   mapSection.before(container);
 };
 
-document.addEventListener("DOMContentLoaded", renderDiagram);
+document.addEventListener("loadPage", renderDiagram);
