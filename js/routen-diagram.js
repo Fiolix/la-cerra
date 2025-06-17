@@ -11,34 +11,40 @@ const routeCounts = {
 
 const totalRoutes = Object.values(routeCounts).reduce((a, b) => a + b, 0);
 
-const container = document.createElement("section");
-container.className = "routen-diagram";
+const renderDiagram = () => {
+  const mapSection = document.querySelector(".map");
+  if (!mapSection) return;
 
-const title = document.createElement("h3");
-title.textContent = `${totalRoutes} Problems`;
-container.appendChild(title);
+  const container = document.createElement("section");
+  container.className = "routen-diagram";
 
-const chart = document.createElement("div");
-chart.className = "chart";
+  const title = document.createElement("h3");
+  title.textContent = `${totalRoutes} Problems`;
+  container.appendChild(title);
 
-Object.entries(routeCounts).forEach(([grade, count]) => {
-  const bar = document.createElement("div");
-  bar.className = "bar";
+  const chart = document.createElement("div");
+  chart.className = "chart";
 
-  const label = document.createElement("div");
-  label.className = "bar-label";
-  label.textContent = grade;
+  Object.entries(routeCounts).forEach(([grade, count]) => {
+    const bar = document.createElement("div");
+    bar.className = "bar";
 
-  const value = document.createElement("div");
-  value.className = "bar-value";
-  value.style.height = `${count * 10 + 20}px`;
-  value.textContent = count;
+    const label = document.createElement("div");
+    label.className = "bar-label";
+    label.textContent = grade;
 
-  bar.appendChild(value);
-  bar.appendChild(label);
-  chart.appendChild(bar);
-});
+    const value = document.createElement("div");
+    value.className = "bar-value";
+    value.style.height = `${count * 10 + 20}px`;
+    value.textContent = count;
 
-container.appendChild(chart);
+    bar.appendChild(value);
+    bar.appendChild(label);
+    chart.appendChild(bar);
+  });
 
-document.querySelector(".map").before(container);
+  container.appendChild(chart);
+  mapSection.before(container);
+};
+
+document.addEventListener("DOMContentLoaded", renderDiagram);
