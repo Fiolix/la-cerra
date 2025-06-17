@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <li class="toggleable">
             <a href="#" data-page="la-cerra">La Cerra</a>
             <ul>
-              <li><a href="#" data-page="beispielsektor">Beispielsektor</a></li>
+              <li><a href="#" data-page="somewhere">Somewhere</a></li>
             </ul>
           </li>
           <li><a href="#" data-page="gallura">Gallura</a></li>
