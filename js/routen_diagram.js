@@ -12,7 +12,7 @@ const routeCounts = {
 const totalRoutes = Object.values(routeCounts).reduce((a, b) => a + b, 0);
 
 const container = document.createElement("section");
-container.className = "routen_diagram";
+container.className = "routen-diagram";
 
 const title = document.createElement("h3");
 title.textContent = `${totalRoutes} Problems`;
