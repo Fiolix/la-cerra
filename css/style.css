@@ -1,50 +1,108 @@
-/* Allgemeines Reset */
-* {
-  box-sizing: border-box;
+/* Grundlegendes Layout */
+body {
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background: #f4f4f4;
+  color: #333;
 }
 
-body {
-  font-family: sans-serif;
-  line-height: 1.5;
-  padding: 1rem;
-  background-color: #fff;
-  color: #222;
+header.hero {
+  height: 300px;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
 }
 
-section {
-  width: 100%;
-  max-width: 100%;
-  margin-bottom: 2rem;
-}
-
-img {
+.header-image {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
   width: 100%;
   height: auto;
+  z-index: -1;
   display: block;
 }
 
-.route-table {
+header.hero h1 {
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+  padding: 2rem 1rem;
+  margin: 0;
+}
+
+.menu-icon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 2;
+  color: white;
+}
+
+main {
+  padding: 1rem;
+  display: grid;
+  gap: 2rem;
+}
+
+section, aside {
+  background: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.news-item {
+  background: #eaeaea;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 0.3rem;
+}
+
+button {
+  display: block;
   width: 100%;
-  border-collapse: collapse;
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: #384e4d;
+  color: white;
+  border: none;
+  border-radius: 0.3rem;
+  cursor: pointer;
 }
 
-.route-table th,
-.route-table td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  text-align: left;
+footer {
+  background: #ddd;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
 }
 
-.route-table th {
-  background-color: #f4f4f4;
+footer a {
+  color: #333;
+  text-decoration: none;
+  margin: 0 0.5rem;
 }
 
-@media (min-width: 768px) {
-  section {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 800px;
+/* Responsive Design */
+@media (min-width: 600px) {
+  main {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .login, .did-you-know {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 599px) {
+  .menu-icon {
+    font-size: 2rem;
   }
 }
