@@ -34,32 +34,32 @@ async function loadBlocks() {
     const blockRoutes = routes.filter(r => r.block_id === block.id);
     const blockDiv = document.createElement('section');
     blockDiv.className = 'boulder-block';
-    blockDiv.id = `block-${block.nummer}`;
+    blockDiv.id = `block-${blocks.nummer}`;
     blockDiv.style.marginTop = '2rem';
 
     blockDiv.innerHTML = `
       <div class="block-header">
-        <span class="block-id">${block.nummer}</span>
-        <span class="block-name">${block.name}</span>
-        <span class="block-height">Height: ${block.hoehe ?? ''}</span>
+        <span class="block-id">${blocks.nummer}</span>
+        <span class="block-name">${blocks.name}</span>
+        <span class="block-height">Height: ${blocks.hoehe ?? ''}</span>
       </div>
-      <img src="/img/bouldering/${block.sektor}/${block.bild}" alt="Blockbild" />
+      <img src="/img/bouldering/${blocks.sektor}/${blocks.bild}" alt="Blockbild" />
       ${blockRoutes.map(route => `
         <div class="route">
           <p>
-            <span>${route.buchstabe}</span>
-            <span class="route-name">${route.name ?? ''}</span>
-            <span>${route.grad}</span>
+            <span>${routes.buchstabe}</span>
+            <span class="route-name">${routes.name ?? ''}</span>
+            <span>${routes.grad}</span>
           </p>
-          ${route.beschreibung ? `<p><em>${route.beschreibung}</em></p>` : ''}
+          ${routes.beschreibung ? `<p><em>${routes.beschreibung}</em></p>` : ''}
         </div>`).join('')}
     `;
 
     container.appendChild(blockDiv);
 
     const option = document.createElement('option');
-    option.value = `#block-${block.nummer}`;
-    option.textContent = `${block.nummer} ${block.name}`;
+    option.value = `#block-${blocks.nummer}`;
+    option.textContent = `${blocks.nummer} ${blocks.name}`;
     dropdown.appendChild(option);
   });
 
