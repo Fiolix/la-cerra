@@ -13,7 +13,7 @@ async function loadBlocks() {
     return;
   }
 
-  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', 'somewhere').order('nummer');
+  const { data: allBlocks, error: blockError } = await supabase.from('blocks').select('*');
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
   if (blockError) {
@@ -25,7 +25,8 @@ async function loadBlocks() {
     return;
   }
 
-  console.log(`ℹ️ ${blocks.length} Blöcke geladen`);
+  const blocks = allBlocks.filter(b => b.sektor?.trim().toLowerCase() === 'somewhere');
+  console.log(`ℹ️ ${blocks.length} Blöcke mit sektor=somewhere gefunden`);
 
   container.innerHTML = '';
   dropdown.innerHTML = '<option value="#">-- Select a block --</option>';
