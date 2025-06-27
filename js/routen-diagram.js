@@ -26,6 +26,7 @@ const renderDiagram = () => {
   chart.className = "chart";
 
   const maxCount = Math.max(...Object.values(routeCounts));
+  const maxHeight = 120;
   const pixelScale = 20; // Jeder Zählerpunkt = 20px
 
   Object.entries(routeCounts).forEach(([grade, count]) => {
