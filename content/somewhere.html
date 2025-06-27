@@ -9,7 +9,7 @@
 <!-- Karte -->
 <section class="map">
   <h3>Map</h3>
-  <img src="/la-cerra/img/bouldering/la-cerra/somewhere/somewhere_map.png" alt="Karte des Sektors Somewhere" style="max-width: 100%; height: auto; margin-bottom: 2rem;" />
+  <img src="/img/bouldering/la-cerra/somewhere/somewhere_map.png" alt="Karte des Sektors Somewhere" style="max-width: 100%; height: auto; margin-bottom: 2rem;" />
 </section>
 
 <!-- Dropdown zur Blocknavigation -->
@@ -31,8 +31,17 @@
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   async function loadBlocks() {
-    const { data: blocks } = await supabase.from('blocks').select('*').eq('sektor', 'somewhere').order('nummer');
-    const { data: routes } = await supabase.from('routes').select('*');
+    const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', 'somewhere').order('nummer');
+    const { data: routes, error: routeError } = await supabase.from('routes').select('*');
+
+    if (blockError) {
+      console.error('Fehler beim Laden der Blöcke:', blockError);
+      return;
+    }
+    if (routeError) {
+      console.error('Fehler beim Laden der Routen:', routeError);
+      return;
+    }
 
     const container = document.getElementById('boulder-blocks');
     const dropdown = document.getElementById('block-select');
@@ -51,7 +60,7 @@
           <span class="block-name">${block.name}</span>
           <span class="block-height" style="font-weight: normal; font-size: 0.9rem;">Height: ${block.hoehe ?? ''}</span>
         </div>
-        <img src="/la-cerra/img/bouldering/${block.sektor}/${block.bild}" alt="Blockbild" style="margin: 1rem 0; max-width: 100%; height: auto;" />
+        <img src="/img/bouldering/${block.sektor}/${block.bild}" alt="Blockbild" style="margin: 1rem 0; max-width: 100%; height: auto;" />
         ${blockRoutes.map(route => `
           <div class="route" style="margin-bottom: 1rem;">
             <p style="display: flex; justify-content: space-between; font-weight: bold;">
