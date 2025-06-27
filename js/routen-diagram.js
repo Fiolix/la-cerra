@@ -26,6 +26,7 @@ const renderDiagram = () => {
   chart.className = "chart";
 
   const maxCount = Math.max(...Object.values(routeCounts));
+  const pixelScale = 20; // Jeder Zählerpunkt = 20px
 
   Object.entries(routeCounts).forEach(([grade, count]) => {
     const bar = document.createElement("div");
@@ -37,7 +38,7 @@ const renderDiagram = () => {
 
     const value = document.createElement("div");
     value.className = "bar-value";
-    value.style.height = `${(count / maxCount) * 100}%`;
+    value.style.height = `${count * pixelScale}px`;
     value.textContent = count;
 
     bar.appendChild(value);
