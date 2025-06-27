@@ -4,6 +4,8 @@ const supabaseUrl = 'https://ymeumqnmcumgqlffwwjb.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+window.addEventListener('DOMContentLoaded', loadBlocks);
+
 async function loadBlocks() {
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
@@ -71,5 +73,3 @@ async function loadBlocks() {
     }
   });
 }
-
-loadBlocks();
