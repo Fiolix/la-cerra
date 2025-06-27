@@ -18,9 +18,6 @@ const renderDiagram = () => {
   const container = document.createElement("section");
   container.className = "routen-diagram";
 
-  const title = document.createElement("h3");
-  title.textContent = `${totalRoutes} Problems`;
-  container.appendChild(title);
 
   const chart = document.createElement("div");
   chart.className = "chart";
