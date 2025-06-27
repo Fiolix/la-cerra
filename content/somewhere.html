@@ -1,64 +1,85 @@
 <h2>Somewhere</h2>
 
-<!-- Diagramm wird dynamisch eingefügt -->
+<!-- Summary -->
+<section class="summary">
+  <h3>Summary</h3>
+  <p>Somewhere is the closest sector if you are staying at La Cerra. In fact, the boulders are located within 5 minutes walking distance from the campsite - perfect to work on some projects before breakfast or a late ascent after dinner. The boulders are mostly of low to moderate height and offer ideal drop zones. You will find rather easier problems up to Fb 6b but some harder projects on Big Piggy are still waiting to be checked off. In combination with the close proximity to the campsite, Somewhere represents an ideal sector for families with smaller children or beginners, and is perfect to get used to the rough granite on your first day at La Cerra. As an added advantage, the farm dogs will probably enjoy this sector along with you.</p>
+</section>
 
+<!-- Karte -->
 <section class="map">
-  <h3>Übersichtskarte</h3>
-  <img src="/la-cerra/img/bouldering/la-cerra/somewhere/somewhere_map.png" alt="Karte des Sektors Somewhere" />
+  <h3>Map</h3>
+  <img src="/la-cerra/img/bouldering/la-cerra/somewhere/somewhere_map.png" alt="Karte des Sektors Somewhere" style="max-width: 100%; height: auto; margin-bottom: 2rem;" />
 </section>
 
 <!-- Dropdown zur Blocknavigation -->
 <nav class="block-nav" style="margin: 1rem 0; text-align: center;">
   <label for="block-select">Jump to block:</label>
-  <select id="block-select" onchange="location.href = this.value;" style="margin-left: 0.5rem; padding: 0.3rem;">
-    <option value="#block-01">01 Annes Block</option>
+  <select id="block-select" style="margin-left: 0.5rem; padding: 0.3rem;">
+    <option value="#">-- Select a block --</option>
   </select>
 </nav>
 
-<section class="description">
-  <h3>Summary</h3>
-  <p>Somewhere is the closest sector if you are staying at La Cerra. In fact, the boulders are located within 5 minutes walking distance from the campsite - perfect to work on some projects before breakfast or a late ascent after dinner. The boulders are mostly of low to moderate height and offer ideal drop zones. You will find rather easier problems up to Fb 6b but some harder projects on Big Piggy are still waiting to be checked off. In combination with the close proximity to the campsite, Somewhere represents an ideal sector for families with smaller children or beginners, and is perfect to get used to the rough granite on your first day at La Cerra. As an added advantage, the farm dogs will probably enjoy this sector along with you.</p>
-</section>
+<!-- Dynamischer Boulderblock-Container -->
+<section id="boulder-blocks"></section>
 
-<section class="boulder-block" id="block-01" style="margin-top: 2rem;">
-  <div class="block-header" style="display: flex; justify-content: space-between; align-items: baseline; font-variant: small-caps; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;">
-    <span class="block-id">01</span>
-    <span class="block-name">Annes Block</span>
-    <span class="block-height" style="font-weight: normal; font-size: 0.9rem;">Height: 3m</span>
-  </div>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-  <img src="/la-cerra/img/bouldering/la-cerra/somewhere/somewhere_1.jpg" alt="Block 1" style="margin: 1rem 0;" />
+  const supabaseUrl = 'https://ymeumqnmcumgqlffwwjb.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-  <div class="route" style="margin-bottom: 1rem;">
-    <p style="display: flex; justify-content: space-between; font-weight: bold;">
-      <span style="min-width: 2rem;">A</span>
-      <span>NN</span>
-      <span>4a</span>
-    </p>
-    <p><em>slab, FA: Anne & Jan</em></p>
-  </div>
-  <div class="route" style="margin-bottom: 1rem;">
-    <p style="display: flex; justify-content: space-between; font-weight: bold;">
-      <span style="min-width: 2rem;">B</span>
-      <span>NN</span>
-      <span>2b</span>
-    </p>
-    <p><em>FA: Anne & Jan</em></p>
-  </div>
-  <div class="route" style="margin-bottom: 1rem;">
-    <p style="display: flex; justify-content: space-between; font-weight: bold;">
-      <span style="min-width: 2rem;">C</span>
-      <span>Tratschwelle</span>
-      <span>2b</span>
-    </p>
-    <p><em>FA: Anika</em></p>
-  </div>
-  <div class="route" style="margin-bottom: 1rem;">
-    <p style="display: flex; justify-content: space-between; font-weight: bold;">
-      <span style="min-width: 2rem;">D</span>
-      <span>Zyklon</span>
-      <span>2b</span>
-    </p>
-    <p><em>start with right hand on the hidden edge, FA: Mira</em></p>
-  </div>
-</section>
+  async function loadBlocks() {
+    const { data: blocks } = await supabase.from('blocks').select('*').eq('sektor', 'somewhere').order('nummer');
+    const { data: routes } = await supabase.from('routes').select('*');
+
+    const container = document.getElementById('boulder-blocks');
+    const dropdown = document.getElementById('block-select');
+    container.innerHTML = '';
+
+    blocks.forEach(block => {
+      const blockRoutes = routes.filter(r => r.block_id === block.id);
+      const blockDiv = document.createElement('section');
+      blockDiv.className = 'boulder-block';
+      blockDiv.id = `block-${block.nummer}`;
+      blockDiv.style.marginTop = '2rem';
+
+      blockDiv.innerHTML = `
+        <div class="block-header" style="display: flex; justify-content: space-between; align-items: baseline; font-variant: small-caps; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;">
+          <span class="block-id">${block.nummer}</span>
+          <span class="block-name">${block.name}</span>
+          <span class="block-height" style="font-weight: normal; font-size: 0.9rem;">Height: ${block.hoehe ?? ''}</span>
+        </div>
+        <img src="/la-cerra/img/bouldering/${block.sektor}/${block.bild}" alt="Blockbild" style="margin: 1rem 0; max-width: 100%; height: auto;" />
+        ${blockRoutes.map(route => `
+          <div class="route" style="margin-bottom: 1rem;">
+            <p style="display: flex; justify-content: space-between; font-weight: bold;">
+              <span style="min-width: 2rem;">${route.buchstabe}</span>
+              <span class="route-name">${route.name ?? ''}</span>
+              <span>${route.grad}</span>
+            </p>
+            ${route.beschreibung ? `<p><em>${route.beschreibung}</em></p>` : ''}
+          </div>`).join('')}
+      `;
+
+      container.appendChild(blockDiv);
+
+      // Dropdown-Eintrag erzeugen
+      const option = document.createElement('option');
+      option.value = `#block-${block.nummer}`;
+      option.textContent = `${block.nummer} ${block.name}`;
+      dropdown.appendChild(option);
+    });
+
+    // Sprung beim Wechsel im Dropdown
+    dropdown.addEventListener('change', (e) => {
+      const target = e.target.value;
+      if (target !== '#') {
+        document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  loadBlocks();
+</script>
