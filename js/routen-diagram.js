@@ -25,17 +25,19 @@ const renderDiagram = () => {
   const chart = document.createElement("div");
   chart.className = "chart";
 
+  const maxCount = Math.max(...Object.values(routeCounts));
+
   Object.entries(routeCounts).forEach(([grade, count]) => {
     const bar = document.createElement("div");
     bar.className = "bar";
 
     const label = document.createElement("div");
     label.className = "bar-label";
-    label.textContent = grade;
+    label.textContent = `Fb ${grade}`;
 
     const value = document.createElement("div");
     value.className = "bar-value";
-    value.style.height = `${count * 10 + 20}px`;
+    value.style.height = `${(count / maxCount) * 100}%`;
     value.textContent = count;
 
     bar.appendChild(value);
