@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Spezialfall: Zusatzskript laden, wenn "somewhere" aktiv ist
         if (page === "somewhere") {
-          import('/js/boulder_loader.js')
+          import('./js/boulder_loader.js')
             .then(module => module.loadBlocks())
             .catch(err => console.error('❌ Fehler beim Laden von boulder_loader.js:', err));
         }
