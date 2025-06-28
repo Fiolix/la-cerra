@@ -189,28 +189,22 @@ img {
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
   color: #333;
+  position: relative;
+}
+
+.sector-summary summary::after {
+  content: "▼";
+  float: right;
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.sector-summary[open] summary::after {
+  content: "▲";
 }
 
 .sector-summary p {
   margin-top: 0.8rem;
   line-height: 1.5;
   color: #444;
-  overflow: hidden;
-  max-height: 4.5em; /* etwa 3 Zeilen */
-  position: relative;
-}
-
-.sector-summary:not([open]) p::after {
-  content: '...';
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  padding-left: 0.5rem;
-  background: linear-gradient(to right, rgba(255,255,255,0), #f9f9f9 80%);
-}
-
-/* Pfeile entfernen */
-.sector-summary summary::after,
-.sector-summary[open] summary::after {
-  content: none;
 }
