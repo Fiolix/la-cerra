@@ -71,3 +71,5 @@ async function loadBlocks() {
     }
   });
 }
+
+export { loadBlocks };
