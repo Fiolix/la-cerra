@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ⬇️ Ereignis nach erfolgreichem Laden auslösen:
-        document.dispatchEvent(new CustomEvent("loadPage", { detail: page }));
+        document.dispatchEvent(new CustomEvent("loadPage"));
       })
       .catch(err => {
         document.getElementById("content").innerHTML = "<p>Inhalt nicht gefunden.</p>";
