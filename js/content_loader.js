@@ -14,9 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(module => module.loadBlocks())
             .catch(err => console.error('❌ Fehler beim Laden von boulder_loader.js:', err));
         }
-
-        // ⬇️ Ereignis nach erfolgreichem Laden auslösen:
-        document.dispatchEvent(new CustomEvent("loadPage", { detail: page }));
       })
       .catch(err => {
         document.getElementById("content").innerHTML = "<p>Inhalt nicht gefunden.</p>";
