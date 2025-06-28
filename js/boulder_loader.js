@@ -1,75 +1,43 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+document.addEventListener("DOMContentLoaded", () => {
+  function loadPage(page) {
+    fetch(`content/${page}.html`)
+      .then(res => {
+        if (!res.ok) throw new Error("Seite nicht gefunden");
+        return res.text();
+      })
+      .then(html => {
+        document.getElementById("content").innerHTML = html;
 
-const supabaseUrl = 'https://ymeumqnmcumgqlffwwjb.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs';
-const supabase = createClient(supabaseUrl, supabaseKey);
+        // Spezialfall: Zusatzskript laden, wenn "somewhere" aktiv ist
+        if (page === "somewhere") {
+          import('/js/boulder_loader.js')
+            .then(module => module.loadBlocks())
+            .catch(err => console.error('❌ Fehler beim Laden von boulder_loader.js:', err));
+        }
 
-async function loadBlocks() {
-  const container = document.getElementById('boulder-blocks');
-  const dropdown = document.getElementById('block-select');
-
-  if (!container || !dropdown) {
-    console.error('❌ container oder dropdown nicht im DOM gefunden');
-    return;
+        // ⬇️ Ereignis nach erfolgreichem Laden auslösen:
+        document.dispatchEvent(new CustomEvent("loadPage"));
+      })
+      .catch(err => {
+        document.getElementById("content").innerHTML = "<p>Inhalt nicht gefunden.</p>";
+      });
   }
 
-  const { data: allBlocks, error: blockError } = await supabase.from('blocks').select('*');
-  const { data: routes, error: routeError } = await supabase.from('routes').select('*');
-
-  if (blockError) {
-    console.error('❌ Fehler beim Laden der Blöcke:', blockError);
-    return;
-  }
-  if (routeError) {
-    console.error('❌ Fehler beim Laden der Routen:', routeError);
-    return;
-  }
-
-  const blocks = allBlocks.filter(b => b.sektor?.trim().toLowerCase() === 'somewhere');
-  console.log(`ℹ️ ${blocks.length} Blöcke mit sektor=somewhere gefunden`);
-
-  container.innerHTML = '';
-  dropdown.innerHTML = '<option value="#">-- Select a block --</option>';
-
-  blocks.forEach(block => {
-    const blockRoutes = routes.filter(r => r.block_id === block.id);
-    const blockDiv = document.createElement('section');
-    blockDiv.className = 'boulder-block';
-    blockDiv.id = `block-${block.nummer}`;
-    blockDiv.style.marginTop = '2rem';
-
-    blockDiv.innerHTML = `
-      <div class="block-header">
-        <span class="block-id">${block.nummer}</span>
-        <span class="block-name">${block.name}</span>
-        <span class="block-height">Height: ${block.hoehe ?? ''}</span>
-      </div>
-      <img src="/img/bouldering/${block.sektor}/${block.bild}" alt="Blockbild" />
-      ${blockRoutes.map(route => `
-        <div class="route">
-          <p>
-            <span>${route.buchstabe}</span>
-            <span class="route-name">${route.name ?? ''}</span>
-            <span>${route.grad}</span>
-          </p>
-          ${route.beschreibung ? `<p><em>${route.beschreibung}</em></p>` : ''}
-        </div>`).join('')}
-    `;
-
-    container.appendChild(blockDiv);
-
-    const option = document.createElement('option');
-    option.value = `#block-${block.nummer}`;
-    option.textContent = `${block.nummer} ${block.name}`;
-    dropdown.appendChild(option);
+  // EventListener für Menü-Links
+  document.querySelectorAll("[data-page]").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const page = link.getAttribute("data-page");
+      if (page) loadPage(page);
+    });
   });
 
-  dropdown.addEventListener('change', (e) => {
-    const target = e.target.value;
-    if (target !== '#') {
-      document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
-    }
+  // globaler EventListener von burger_menu.js
+  document.addEventListener("loadPage", (e) => {
+    const page = e.detail;
+    if (page) loadPage(page);
   });
-}
 
-export { loadBlocks };
+  // Startseite laden
+  loadPage("start");
+});
