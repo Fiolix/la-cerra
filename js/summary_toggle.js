@@ -4,18 +4,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!summaryBox || !fullText) return;
 
-  const shortText = fullText.substring(0, 100) + (fullText.length > 100 ? "…" : "");
   const textElement = summaryBox.querySelector("p");
-
-  if (!summaryBox.hasAttribute("open")) {
-    textElement.textContent = shortText;
-  }
+  const originalHTML = textElement.innerHTML;
 
   summaryBox.addEventListener("toggle", () => {
     if (summaryBox.open) {
-      textElement.textContent = fullText;
+      textElement.innerHTML = originalHTML;
     } else {
-      textElement.textContent = shortText;
+      const limitedText = fullText.length > 100 ? fullText.slice(0, 100) + "…" : fullText;
+      textElement.innerHTML = `<span class="text-preview">${limitedText}</span>`;
     }
   });
+
+  // initialer Zustand falls geschlossen
+  if (!summaryBox.hasAttribute("open")) {
+    const limitedText = fullText.length > 100 ? fullText.slice(0, 100) + "…" : fullText;
+    textElement.innerHTML = `<span class="text-preview">${limitedText}</span>`;
+  }
 });
