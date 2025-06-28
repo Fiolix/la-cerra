@@ -1,24 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
   const summaryBox = document.querySelector(".sector-summary");
-  const fullText = summaryBox?.querySelector("p")?.textContent || "";
+  const textElement = summaryBox?.querySelector(".summary-text");
 
-  if (!summaryBox || !fullText) return;
+  if (!summaryBox || !textElement) return;
 
-  const textElement = summaryBox.querySelector("p");
-  const originalHTML = textElement.innerHTML;
+  const fullText = textElement.textContent;
+  const shortText = fullText.length > 100 ? fullText.slice(0, 100) + "…" : fullText;
+
+  if (!summaryBox.hasAttribute("open")) {
+    textElement.innerHTML = `<span class="text-preview">${shortText}</span>`;
+  }
 
   summaryBox.addEventListener("toggle", () => {
     if (summaryBox.open) {
-      textElement.innerHTML = originalHTML;
+      textElement.textContent = fullText;
     } else {
-      const limitedText = fullText.length > 100 ? fullText.slice(0, 100) + "…" : fullText;
-      textElement.innerHTML = `<span class="text-preview">${limitedText}</span>`;
+      textElement.innerHTML = `<span class="text-preview">${shortText}</span>`;
     }
   });
-
-  // initialer Zustand falls geschlossen
-  if (!summaryBox.hasAttribute("open")) {
-    const limitedText = fullText.length > 100 ? fullText.slice(0, 100) + "…" : fullText;
-    textElement.innerHTML = `<span class="text-preview">${limitedText}</span>`;
-  }
 });
