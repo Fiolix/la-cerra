@@ -8,8 +8,15 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(html => {
         document.getElementById("content").innerHTML = html;
 
-        // ⬇️ HIER wird das Ereignis nach erfolgreichem Laden ausgelöst:
-        document.dispatchEvent(new CustomEvent("loadPage"));
+        // Spezialfall: Zusatzskript laden, wenn "somewhere" aktiv ist
+        if (page === "somewhere") {
+          import('./boulder_loader.js')
+            .then(module => module.loadBlocks())
+            .catch(err => console.error('❌ Fehler beim Laden von boulder_loader.js:', err));
+        }
+
+        // ⬇️ Ereignis nach erfolgreichem Laden auslösen:
+        document.dispatchEvent(new CustomEvent("loadPage", { detail: page }));
       })
       .catch(err => {
         document.getElementById("content").innerHTML = "<p>Inhalt nicht gefunden.</p>";
