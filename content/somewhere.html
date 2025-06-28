@@ -23,6 +23,8 @@
 <section id="boulder-blocks"></section>
 
 <script type="module">
-  import { loadBlocks } from '/js/boulder_loader.js';
-  loadBlocks();
+  import('/js/boulder_loader.js')
+    .then(module => module.loadBlocks())
+    .catch(err => console.error('❌ Fehler beim Laden von boulder_loader.js:', err));
 </script>
+
