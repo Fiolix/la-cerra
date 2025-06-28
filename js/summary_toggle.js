@@ -7,15 +7,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const fullText = textElement.textContent;
   const shortText = fullText.length > 100 ? fullText.slice(0, 100) + "…" : fullText;
 
+  const span = document.createElement("span");
+  span.className = "text-preview";
+  span.textContent = shortText;
+
   if (!summaryBox.hasAttribute("open")) {
-    textElement.innerHTML = `<span class="text-preview">${shortText}</span>`;
+    textElement.innerHTML = "";
+    textElement.appendChild(span);
   }
 
   summaryBox.addEventListener("toggle", () => {
     if (summaryBox.open) {
       textElement.textContent = fullText;
     } else {
-      textElement.innerHTML = `<span class="text-preview">${shortText}</span>`;
+      textElement.innerHTML = "";
+      textElement.appendChild(span);
     }
   });
 });
