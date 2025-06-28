@@ -44,7 +44,7 @@ export async function loadBlocks() {
         <span class="block-name">${block.name}</span>
         <span class="block-height">Height: ${block.hoehe ?? ''}</span>
       </div>
-      <img src="/img/bouldering/${block.sektor}/${block.bild}" alt="Blockbild" />
+      <img src="/img/bouldering/la-cerra/somewhere/${block.sektor}/${block.bild}" alt="Blockbild" />
       ${blockRoutes.map(route => `
         <div class="route">
           <p>
