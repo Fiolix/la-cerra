@@ -4,17 +4,18 @@ const supabaseUrl = 'https://ymeumqnmcumgqlffwwjb.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+window.addEventListener('DOMContentLoaded', loadBlocks);
+
 async function loadBlocks() {
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
 
   if (!container || !dropdown) {
-    console.warn('⏳ container oder dropdown nicht vorhanden – retry in 200ms');
-    setTimeout(loadBlocks, 200);
+    console.error('❌ container oder dropdown nicht im DOM gefunden');
     return;
   }
 
-  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', 'somewhere').order('nummer');
+  const { data: allBlocks, error: blockError } = await supabase.from('blocks').select('*');
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
   if (blockError) {
@@ -26,7 +27,8 @@ async function loadBlocks() {
     return;
   }
 
-  console.log(`ℹ️ ${blocks.length} Blöcke geladen`);
+  const blocks = allBlocks.filter(b => b.sektor?.trim().toLowerCase() === 'somewhere');
+  console.log(`ℹ️ ${blocks.length} Blöcke mit sektor=somewhere gefunden`);
 
   container.innerHTML = '';
   dropdown.innerHTML = '<option value="#">-- Select a block --</option>';
@@ -71,5 +73,3 @@ async function loadBlocks() {
     }
   });
 }
-
-loadBlocks();
