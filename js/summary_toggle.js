@@ -1,7 +1,7 @@
 export async function setupSummaryToggle() {
   console.log("✅ summary_toggle.js geladen (als Modul)");
 
-  const waitForElement = (selector, timeout = 2000) => {
+  const waitForElement = (selector, timeout = 5000) => {
     return new Promise((resolve, reject) => {
       const start = Date.now();
       const check = () => {
@@ -32,18 +32,19 @@ export async function setupSummaryToggle() {
 
     if (!summaryBox.hasAttribute("open")) {
       textElement.replaceChildren(span);
+      console.log("🔽 Vorschau gesetzt:", shortText);
     }
 
     summaryBox.addEventListener("toggle", () => {
       if (summaryBox.open) {
+        console.log("🔼 summary aufgeklappt, voller Text wird angezeigt");
         textElement.textContent = fullText;
       } else {
+        console.log("🔽 summary zugeklappt, Vorschau wird angezeigt");
         textElement.replaceChildren(span);
       }
     });
   } catch (err) {
-    console.log(err);
+    console.log("❌ Fehler im setupSummaryToggle:", err);
   }
 }
-
-// wird NICHT automatisch aufgerufen
