@@ -52,3 +52,10 @@ document.addEventListener("loadPage", (e) => {
   console.log("📨 Event loadPage empfangen mit:", e.detail);
   loadPage(e.detail);
 });
+
+// 💡 Startseite automatisch laden (z. B. start.html)
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("🌐 DOM fertig, lade Startseite...");
+  loadPage("start.html");
+});
+
