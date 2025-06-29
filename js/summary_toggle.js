@@ -12,16 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
   span.textContent = shortText;
 
   if (!summaryBox.hasAttribute("open")) {
-    textElement.innerHTML = "";
-    textElement.appendChild(span);
+    textElement.replaceChildren(span);
   }
 
   summaryBox.addEventListener("toggle", () => {
     if (summaryBox.open) {
       textElement.textContent = fullText;
     } else {
-      textElement.innerHTML = "";
-      textElement.appendChild(span);
+      textElement.replaceChildren(span);
     }
   });
 });

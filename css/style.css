@@ -212,12 +212,10 @@ img {
 
 /* Neue Klasse für Vorschautext */
 .text-preview {
-  display: block;
-  overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 4.5em; /* Optional: auf 3 Zeilen begrenzen */
   white-space: normal;
 }
