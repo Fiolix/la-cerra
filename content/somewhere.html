@@ -21,17 +21,3 @@
 
 <!-- Dynamischer Boulderblock-Container -->
 <section id="boulder-blocks"></section>
-
-<!-- Wichtig: Nach dynamischem Content-Laden -->
-<script type="module">
-  window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      import('/la-cerra/js/summary_toggle.js')
-        .then(module => {
-          console.log("🔁 Modul geladen, setup wird ausgeführt");
-          module.setupSummaryToggle();
-        })
-        .catch(err => console.error("❌ Fehler beim Laden von summary_toggle.js:", err));
-    }, 300);
-  });
-</script>
