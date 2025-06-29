@@ -8,7 +8,7 @@ links.forEach(link => {
     e.preventDefault();
 
     const page = link.getAttribute("data-page");
-    const url = `content/${page}`; // 🔄 Lokaler Pfad relativ zu GitHub Pages
+    const url = `/la-cerra/content/${page}`; // 🔄 Lokaler Pfad relativ zu GitHub Pages
 
     try {
       const response = await fetch(url);
