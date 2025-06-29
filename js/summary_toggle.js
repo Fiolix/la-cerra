@@ -1,50 +1,28 @@
-export async function setupSummaryToggle() {
-  console.log("✅ summary_toggle.js geladen (als Modul)");
+// summary_toggle.js (aktuell als reguläres Skript, kein Modul)
 
-  const waitForElement = (selector, timeout = 5000) => {
-    return new Promise((resolve, reject) => {
-      const start = Date.now();
-      const check = () => {
-        const element = document.querySelector(selector);
-        if (element) return resolve(element);
-        if (Date.now() - start > timeout) return reject("⏱️ Element nicht gefunden: " + selector);
-        requestAnimationFrame(check);
-      };
-      check();
-    });
-  };
+function setupSummaryToggle() {
+  console.log("✅ summary_toggle.js wurde geladen");
 
-  try {
-    const summaryBox = await waitForElement(".sector-summary");
-    const textElement = summaryBox.querySelector(".summary-text");
+  const summaryBox = document.querySelector(".sector-summary");
+  const textElement = document.querySelector(".text-preview");
+  const toggleButton = document.querySelector(".toggle-summary");
 
-    if (!textElement) {
-      console.log("❌ .summary-text nicht gefunden");
-      return;
-    }
-
-    console.log("✅ summaryBox und summary-text gefunden");
-    const fullText = textElement.textContent;
-    const shortText = fullText.length > 100 ? fullText.slice(0, 100) + "…" : fullText;
-    const span = document.createElement("span");
-    span.className = "text-preview";
-    span.textContent = shortText;
-
-    if (!summaryBox.hasAttribute("open")) {
-      textElement.replaceChildren(span);
-      console.log("🔽 Vorschau gesetzt:", shortText);
-    }
-
-    summaryBox.addEventListener("toggle", () => {
-      if (summaryBox.open) {
-        console.log("🔼 summary aufgeklappt, voller Text wird angezeigt");
-        textElement.textContent = fullText;
-      } else {
-        console.log("🔽 summary zugeklappt, Vorschau wird angezeigt");
-        textElement.replaceChildren(span);
-      }
-    });
-  } catch (err) {
-    console.log("❌ Fehler im setupSummaryToggle:", err);
+  if (!summaryBox || !textElement) {
+    console.warn("❌ summaryBox oder textElement nicht gefunden");
+    return;
   }
+
+  toggleButton?.addEventListener("click", () => {
+    summaryBox.classList.toggle("expanded");
+    if (summaryBox.classList.contains("expanded")) {
+      textElement.classList.remove("text-preview");
+      toggleButton.textContent = "Weniger anzeigen";
+    } else {
+      textElement.classList.add("text-preview");
+      toggleButton.textContent = "Mehr anzeigen";
+    }
+  });
 }
+
+// Automatisch ausführen, wenn als klassisches Skript eingebunden
+setupSummaryToggle();
