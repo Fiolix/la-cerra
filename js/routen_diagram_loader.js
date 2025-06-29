@@ -1,5 +1,7 @@
 // routen_diagram_loader.js
-import { createChart } from "https://cdn.jsdelivr.net/npm/chart.js";
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 
 export async function loadRoutenDiagramm(sektorName) {
   const diagramContainer = document.getElementById("routen-diagramm");
@@ -7,7 +9,6 @@ export async function loadRoutenDiagramm(sektorName) {
 
   console.log("📊 Lade Routen-Diagramm für:", sektorName);
 
-  const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm");
   const supabase = createClient(
     "https://ymeumqnmcumgqlffwwjb.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs"
@@ -15,11 +16,16 @@ export async function loadRoutenDiagramm(sektorName) {
 
   const { data: routes, error } = await supabase
     .from("routes")
-    .select("schwierigkeit, block_id, blocks(name)")
+    .select("schwierigkeit, blocks(name)")
     .eq("blocks.name", sektorName);
 
   if (error) {
     console.error("❌ Fehler beim Abrufen der Routen:", error);
+    return;
+  }
+
+  if (!routes || routes.length === 0) {
+    console.warn("⚠️ Keine Routen gefunden für", sektorName);
     return;
   }
 
