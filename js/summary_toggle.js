@@ -1,3 +1,5 @@
+console.log("✅ summary_toggle.js wurde geladen");
+
 document.addEventListener("DOMContentLoaded", () => {
   const summaryBox = document.querySelector(".sector-summary");
   const textElement = summaryBox?.querySelector(".summary-text");
