@@ -14,17 +14,27 @@ export async function loadRoutenDiagramm(sektorName) {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs"
   );
 
-  const { data: routes, error } = await supabase
-    .from("routes")
-    .select("schwierigkeit, blocks(name)")
-    .eq("blocks.name", sektorName);
+  // Block-ID anhand des Sektornamens ermitteln
+  const { data: blocks, error: blockError } = await supabase
+    .from("blocks")
+    .select("id")
+    .eq("name", sektorName)
+    .limit(1);
 
-  if (error) {
-    console.error("❌ Fehler beim Abrufen der Routen:", error);
+  if (blockError || !blocks || blocks.length === 0) {
+    console.error("❌ Fehler beim Laden des Blocks:", blockError);
     return;
   }
 
-  if (!routes || routes.length === 0) {
+  const blockId = blocks[0].id;
+
+  // Routen für den Block laden
+  const { data: routes, error: routeError } = await supabase
+    .from("routes")
+    .select("schwierigkeit")
+    .eq("block_id", blockId);
+
+  if (routeError || !routes || routes.length === 0) {
     console.warn("⚠️ Keine Routen gefunden für", sektorName);
     return;
   }
