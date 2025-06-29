@@ -45,8 +45,10 @@ export async function loadRoutenDiagramm(sektorName) {
 
   const schwierigkeiten = ["2", "3", "4", "5", "6", "7", "8"];
   const anzahl = schwierigkeiten.map(schw =>
-    routes.filter(r => r.schwierigkeit.startsWith(schw)).length
+    routes.filter(r => r.grad?.startsWith(schw)).length
   );
+
+  console.log("📊 Schwierigkeit Zählung:", anzahl);
 
   const canvas = document.createElement("canvas");
   diagramContainer.innerHTML = "";
