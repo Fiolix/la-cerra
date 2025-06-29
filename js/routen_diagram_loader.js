@@ -21,6 +21,8 @@ export async function loadRoutenDiagramm(sektorName) {
     .eq("name", sektorName)
     .limit(1);
 
+  console.log("📦 Block-Daten:", blocks);
+
   if (blockError || !blocks || blocks.length === 0) {
     console.error("❌ Fehler beim Laden des Blocks:", blockError);
     return;
@@ -33,6 +35,8 @@ export async function loadRoutenDiagramm(sektorName) {
     .from("routes")
     .select("schwierigkeit")
     .eq("block_id", blockId);
+
+  console.log("📦 Routen-Daten:", routes);
 
   if (routeError || !routes || routes.length === 0) {
     console.warn("⚠️ Keine Routen gefunden für", sektorName);
