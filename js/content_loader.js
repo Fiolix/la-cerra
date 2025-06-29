@@ -8,11 +8,13 @@ links.forEach(link => {
     e.preventDefault();
 
     const page = link.getAttribute("data-page");
-    const url = `/la-cerra/content/${page}`;
+    const url = `content/${page}`; // 🔄 Lokaler Pfad relativ zu GitHub Pages
 
     try {
       const response = await fetch(url);
+      if (!response.ok) throw new Error("Seite konnte nicht geladen werden");
       const html = await response.text();
+
       contentElement.innerHTML = html;
 
       // Boulder-Daten laden (nur für somewhere.html)
@@ -22,7 +24,7 @@ links.forEach(link => {
           .catch(err => console.error("❌ Fehler beim Laden von boulder_loader.js:", err));
       }
 
-      // Prüfen, ob ein Summary enthalten ist (generisch)
+      // Generisch: Summary-Toggle überprüfen
       if (html.includes("sector-summary")) {
         import("/la-cerra/js/summary_toggle.js")
           .then(module => {
@@ -34,6 +36,7 @@ links.forEach(link => {
 
     } catch (err) {
       console.error("❌ Fehler beim Laden der Seite:", err);
+      contentElement.innerHTML = `<p>Fehler beim Laden der Seite: ${page}</p>`;
     }
   });
 });
