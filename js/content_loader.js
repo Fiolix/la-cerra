@@ -40,3 +40,10 @@ links.forEach(link => {
     }
   });
 });
+
+// Externe Event-Behandlung (z. B. von burger_menu.js)
+document.addEventListener("loadPage", (e) => {
+  const fakeLink = document.createElement("a");
+  fakeLink.setAttribute("data-page", e.detail);
+  fakeLink.click();
+});
