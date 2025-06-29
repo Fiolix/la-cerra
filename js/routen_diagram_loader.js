@@ -33,7 +33,7 @@ export async function loadRoutenDiagramm(sektorName) {
   // Routen für den Block laden
   const { data: routes, error: routeError } = await supabase
     .from("routes")
-    .select("schwierigkeit")
+    .select("grad")
     .eq("block_id", blockId);
 
   console.log("📦 Routen-Daten:", routes);
