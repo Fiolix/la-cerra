@@ -19,6 +19,7 @@ links.forEach(link => {
       const html = await response.text();
       contentElement.innerHTML = html;
       console.log("✅ Inhalt erfolgreich geladen:", page);
+      console.log("📄 HTML-Inhalt erhalten:", html);
 
       // Dynamisch benötigte Module nachladen
       if (html.includes('id="boulder-blocks"')) {
