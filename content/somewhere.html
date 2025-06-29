@@ -23,7 +23,12 @@
 <section id="boulder-blocks"></section>
 
 <script type="module">
-  import { setupSummaryToggle } from '/la-cerra/js/summary_toggle.js';
-  setupSummaryToggle();
+  import('/la-cerra/js/summary_toggle.js')
+    .then(module => {
+      console.log("🔁 Modul geladen, setup wird ausgeführt");
+      module.setupSummaryToggle();
+    })
+    .catch(err => console.error("❌ Fehler beim Laden von summary_toggle.js:", err));
 </script>
+
 
