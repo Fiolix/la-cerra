@@ -1,7 +1,7 @@
-// summary_toggle.js (aktuell als reguläres Skript, kein Modul)
+// summary_toggle.js als JavaScript-Modul
 
-function setupSummaryToggle() {
-  console.log("✅ summary_toggle.js wurde geladen");
+export function setupSummaryToggle() {
+  console.log("✅ summary_toggle.js wurde als Modul geladen");
 
   const summaryBox = document.querySelector(".sector-summary");
   const textElement = document.querySelector(".text-preview");
@@ -23,6 +23,3 @@ function setupSummaryToggle() {
     }
   });
 }
-
-// Automatisch ausführen, wenn als klassisches Skript eingebunden
-setupSummaryToggle();
