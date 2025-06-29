@@ -1,4 +1,4 @@
-// content_loader.js (DEBUG-VERSION)
+// content_loader.js (DEBUG-VERSION mit Modul-Erkennung für summary_toggle und boulder_loader)
 
 const contentElement = document.getElementById("content");
 const links = document.querySelectorAll("[data-page]");
@@ -20,14 +20,13 @@ links.forEach(link => {
       contentElement.innerHTML = html;
       console.log("✅ Inhalt erfolgreich geladen:", page);
 
-      // Generisch: Boulder-Daten laden, wenn ID vorhanden
+      // Dynamisch benötigte Module nachladen
       if (html.includes('id="boulder-blocks"')) {
         import("/la-cerra/js/boulder_loader.js")
           .then(module => module.loadBlocks())
           .catch(err => console.error("❌ Fehler beim Laden von boulder_loader.js:", err));
       }
 
-      // Optional: Summary-Toggle
       if (html.includes("sector-summary")) {
         import("/la-cerra/js/summary_toggle.js")
           .then(module => module.setupSummaryToggle())
@@ -36,7 +35,7 @@ links.forEach(link => {
 
     } catch (err) {
       console.error("❌ Fehler beim Laden der Seite:", err);
-      contentElement.innerHTML = `<p style="color:red">Fehler beim Laden: ${page}</p>`;
+      contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${page}</p>`;
     }
   });
 });
