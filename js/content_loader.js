@@ -30,6 +30,12 @@ async function loadPage(page) {
         .then(module => module.setupSummaryToggle())
         .catch(err => console.error("❌ Fehler beim Laden von summary_toggle.js:", err));
     }
+    if (html.includes('id="routen-diagramm"')) {
+  const sektorName = page.replace(".html", ""); // z.B. „somewhere“
+  import("/la-cerra/js/routen_diagram_loader.js")
+    .then(module => module.loadRoutenDiagramm(sektorName))
+    .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
+}
 
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
@@ -59,10 +65,5 @@ window.addEventListener("DOMContentLoaded", () => {
   loadPage("start.html");
 });
 
-if (html.includes('id="routen-diagramm"')) {
-  const sektorName = page.replace(".html", ""); // z.B. „somewhere“
-  import("/la-cerra/js/routen_diagram_loader.js")
-    .then(module => module.loadRoutenDiagramm(sektorName))
-    .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
-}
+
 
