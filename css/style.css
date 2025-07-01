@@ -220,24 +220,4 @@ img {
    max-height: 4.5em;
 }
 
-/* style.css - Anpassung zur Unterstützung von Chart.js-Labels */
-
-/* Bestehende Regel (leicht modifiziert) */
-.diagramm-container canvas {
-  width: 100% !important;
-  height: auto !important;
-  display: block;
-  position: relative;
-  z-index: 0;
-}
-
-/* Sicherstellen, dass Eltern-Container nicht clippen */
-.diagramm-container {
-  overflow: visible !important;
-}
-
-/* Optional: Canvas selbst darf nichts abschneiden */
-canvas {
-  overflow: visible !important;
-}
 
