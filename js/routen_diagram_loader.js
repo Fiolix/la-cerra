@@ -18,7 +18,7 @@ export async function loadRoutenDiagramm(sektorName) {
   const { data: blocks, error: blockError } = await supabase
     .from("blocks")
     .select("id")
-    .eq("name", sektorName)
+    .ilike("name", sektorName)
     .limit(1);
 
   console.log("📦 Block-Daten:", blocks);
