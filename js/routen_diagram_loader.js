@@ -47,7 +47,7 @@ export async function loadRoutenDiagramm(sektorName) {
 
   const canvas = document.createElement("canvas");
   canvas.style.width = "100%";
-  canvas.style.height = "200px";
+  canvas.style.height = "100px";
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
 
