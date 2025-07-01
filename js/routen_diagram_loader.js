@@ -47,9 +47,11 @@ export async function loadRoutenDiagramm(sektorName) {
 
   const canvas = document.createElement("canvas");
   canvas.style.height = "100%";
+  canvas.style.maxHeight = "100px";
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
-  canvas.parentElement.style.minHeight = "100px";
+  diagramContainer.style.height = "100px";
+  diagramContainer.style.padding = "0";
 
   setTimeout(() => {
     const chart = new Chart(canvas, {
@@ -66,7 +68,7 @@ export async function loadRoutenDiagramm(sektorName) {
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-          padding: { top: 4 }
+          padding: 0
         },
         plugins: {
           legend: { display: false },
