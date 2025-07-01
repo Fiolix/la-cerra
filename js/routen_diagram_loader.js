@@ -46,10 +46,10 @@ export async function loadRoutenDiagramm(sektorName) {
   );
 
   const canvas = document.createElement("canvas");
-  canvas.style.width = "100%";
-  canvas.style.height = "100px";
+  canvas.style.height = "100%";
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
+  canvas.parentElement.style.minHeight = "100px";
 
   setTimeout(() => {
     const chart = new Chart(canvas, {
@@ -57,7 +57,7 @@ export async function loadRoutenDiagramm(sektorName) {
       data: {
         labels: schwierigkeiten.map(s => `Fb ${s}`),
         datasets: [{
-          label: "Routenanzahl",
+          label: "Routes",
           data: anzahl,
           backgroundColor: "#384e4d"
         }]
@@ -66,18 +66,18 @@ export async function loadRoutenDiagramm(sektorName) {
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-          padding: { top: 4, bottom: 4 }
+          padding: { top: 30 }
         },
         plugins: {
           legend: { display: false },
           tooltip: { enabled: true },
           datalabels: {
             display: true,
-            align: 'start',
-            anchor: 'end',
+            align: 'end',
+            anchor: 'start',
             offset: -26,
-            color: 'black',
-            font: { weight: 'bold', size: 12 },
+            color: 'white',
+            font: { weight: 'bold', size: 14 },
             clamp: false,
             clip: false,
             formatter: value => value > 0 ? value : ''
@@ -92,7 +92,7 @@ export async function loadRoutenDiagramm(sektorName) {
           },
           x: {
             grid: { display: false },
-            ticks: { font: { size: 12 } }
+            ticks: { font: { size: 14 } }
           }
         }
       },
