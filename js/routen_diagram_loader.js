@@ -49,7 +49,7 @@ export async function loadRoutenDiagramm(sektorName) {
   canvas.style.height = "100%";
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
-  canvas.parentElement.style.minHeight = "300px";
+  canvas.parentElement.style.minHeight = "100px";
 
   setTimeout(() => {
     const chart = new Chart(canvas, {
@@ -57,7 +57,7 @@ export async function loadRoutenDiagramm(sektorName) {
       data: {
         labels: schwierigkeiten.map(s => `Fb ${s}`),
         datasets: [{
-          label: "Routenanzahl",
+          label: "Routes",
           data: anzahl,
           backgroundColor: "#384e4d"
         }]
