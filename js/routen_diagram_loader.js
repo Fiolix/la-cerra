@@ -55,6 +55,9 @@ export async function loadRoutenDiagramm(sektorName) {
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
 
+  // Platz für Diagramm garantieren
+  canvas.parentElement.style.minHeight = "300px";
+
   new Chart(canvas, {
     type: "bar",
     data: {
@@ -66,6 +69,13 @@ export async function loadRoutenDiagramm(sektorName) {
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 20
+        }
+      },
       plugins: {
         legend: { display: false },
         tooltip: { enabled: true },
@@ -86,7 +96,8 @@ export async function loadRoutenDiagramm(sektorName) {
       scales: {
         y: {
           display: false,
-          grid: { display: false }
+          grid: { display: false },
+          suggestedMax: Math.max(...anzahl) + 2
         },
         x: {
           grid: { display: false },
