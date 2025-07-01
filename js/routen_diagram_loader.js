@@ -15,28 +15,26 @@ export async function loadRoutenDiagramm(sektorName) {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs"
   );
 
-  // 1. Block-ID zum Sektorname finden
-  const { data: blocks, error: blockError } = await supabase
+  // 1. Sektor-ID ermitteln
+  const { data: sektorBlocks, error: blockError } = await supabase
     .from("blocks")
     .select("id")
-    .ilike("name", sektorName)
-    .limit(1);
+    .eq("sektor", sektorName);
 
-  console.log("📦 Block-Daten:", blocks);
+  console.log("📦 Block-Daten:", sektorBlocks);
 
-  if (blockError || !blocks || blocks.length === 0) {
+  if (blockError || !sektorBlocks || sektorBlocks.length === 0) {
     console.error("❌ Fehler beim Laden des Blocks:", blockError);
     return;
   }
 
-  const blockId = blocks[0].id;
-  console.log("🔗 Gefundene Block-ID:", blockId);
+  const blockIds = sektorBlocks.map(b => b.id);
 
-  // 2. Routen für diesen Block laden
+  // 2. Routen für alle Blöcke dieses Sektors laden
   const { data: routes, error: routeError } = await supabase
     .from("routes")
     .select("grad")
-    .eq("block_id", blockId);
+    .in("block_id", blockIds);
 
   console.log("📦 Routen-Daten:", routes);
 
