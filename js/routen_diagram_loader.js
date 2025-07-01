@@ -62,7 +62,18 @@ export async function loadRoutenDiagramm(sektorName) {
       datasets: [{
         label: "Routenanzahl",
         data: anzahl,
-        backgroundColor: "#384e4d"
+        backgroundColor: "#384e4d",
+        datalabels: {
+          anchor: 'end',
+          align: 'start',
+          color: 'white',
+          font: {
+            weight: 'bold',
+            size: 14
+          },
+          offset: -6,
+          formatter: value => value > 0 ? value : ''
+        }
       }]
     },
     options: {
@@ -70,15 +81,7 @@ export async function loadRoutenDiagramm(sektorName) {
         legend: { display: false },
         tooltip: { enabled: true },
         datalabels: {
-          anchor: 'end',
-          align: 'end',
-          color: 'white',
-          font: {
-            weight: 'bold',
-            size: 14
-          },
-          offset: -4,
-          formatter: value => value > 0 ? value : ''
+          display: true
         }
       },
       scales: {
