@@ -2,6 +2,8 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 
+Chart.register(ChartDataLabels); // 🔧 WICHTIG: Plugin aktivieren
+
 export async function loadRoutenDiagramm(sektorName) {
   const diagramContainer = document.getElementById("routen-diagramm");
   if (!diagramContainer) {
