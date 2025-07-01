@@ -31,11 +31,11 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Laden von summary_toggle.js:", err));
     }
     if (html.includes('id="routen-diagramm"')) {
-  const sektorName = page.replace(".html", ""); // z.B. „somewhere“
-  console.log("📊 Importiere Diagramm-Loader für:", sektorName);
-  import("/la-cerra/js/routen_diagram_loader.js")
-    .then(module => module.loadRoutenDiagramm(sektorName))
-    .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
+      const sektorName = page.replace(".html", "");
+      console.log("📊 Importiere Diagramm-Loader für:", sektorName);
+      import("/la-cerra/js/routen_diagram_loader.js")
+        .then(module => module.loadRoutenDiagramm(sektorName))
+        .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
 }
 
   } catch (err) {
