@@ -107,14 +107,6 @@ img {
 }
 
 
-/* Erweiterung für dynamische Inhalte */
-.boulder-blocks {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
-}
-
 .block-header {
   display: flex;
   justify-content: space-between;
