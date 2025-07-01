@@ -48,63 +48,56 @@ export async function loadRoutenDiagramm(sektorName) {
   const canvas = document.createElement("canvas");
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
-
   canvas.parentElement.style.minHeight = "300px";
 
-  new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels: schwierigkeiten.map(s => `Fb ${s}`),
-      datasets: [{
-        label: "Routenanzahl",
-        data: anzahl,
-        backgroundColor: "#384e4d"
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          top: 30
-        }
+  setTimeout(() => {
+    const chart = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: schwierigkeiten.map(s => `Fb ${s}`),
+        datasets: [{
+          label: "Routenanzahl",
+          data: anzahl,
+          backgroundColor: "#384e4d"
+        }]
       },
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: true },
-        datalabels: {
-          display: true,
-          anchor: 'end',
-          align: 'start',
-          offset: 0, // Position unterhalb der Balkenoberkante
-          color: 'white',
-          font: {
-            weight: 'bold',
-            size: 14
-          },
-          clamp: false,
-          clip: false,
-          formatter: value => value > 0 ? value : ''
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          display: false,
-          grid: { display: false },
-          suggestedMax: Math.max(...anzahl) + 2
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: { top: 30 }
         },
-        x: {
-          grid: { display: false },
-          ticks: {
-            font: {
-              size: 14
-            }
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true },
+          datalabels: {
+            display: true,
+            anchor: 'end',
+            align: 'start',
+            offset: 0,
+            color: 'white',
+            font: { weight: 'bold', size: 14 },
+            clamp: false,
+            clip: false,
+            formatter: value => value > 0 ? value : ''
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            display: false,
+            grid: { display: false },
+            suggestedMax: Math.max(...anzahl) + 2
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 14 } }
           }
         }
-      }
-    },
-    plugins: [ChartDataLabels]
-  });
- console.log("Canvas-Höhe:", canvas.offsetHeight, canvas.clientHeight);
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    console.log("📐 Canvas-Höhe nach Initialisierung:", canvas.offsetHeight, canvas.clientHeight);
+  }, 50);
 }
