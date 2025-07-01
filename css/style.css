@@ -221,6 +221,24 @@ img {
 }
 
 /* Ergänzungen für funktionierende Darstellung von Chart.js-Datalabels */
+#routen-diagramm.diagramm-container {
+  height: 100px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+}
+
+#routen-diagramm.diagramm-container canvas {
+  height: 100% !important;
+  width: 100% !important;
+  display: block;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .diagramm-container {
   overflow: visible !important;
   position: relative;
