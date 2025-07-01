@@ -57,7 +57,7 @@ export async function loadRoutenDiagramm(sektorName) {
       data: {
         labels: schwierigkeiten.map(s => `Fb ${s}`),
         datasets: [{
-          label: "Routes",
+          label: "Routenanzahl",
           data: anzahl,
           backgroundColor: "#384e4d"
         }]
@@ -66,18 +66,18 @@ export async function loadRoutenDiagramm(sektorName) {
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-          padding: { top: 4 }
+          padding: { top: 4, bottom: 4 }
         },
         plugins: {
           legend: { display: false },
           tooltip: { enabled: true },
           datalabels: {
             display: true,
-            align: 'end',
-            anchor: 'start',
+            anchor: 'end',
+            align: 'start',
             offset: -26,
-            color: 'white',
-            font: { weight: 'bold', size: 14 },
+            color: 'black',
+            font: { weight: 'bold', size: 12 },
             clamp: false,
             clip: false,
             formatter: value => value > 0 ? value : ''
@@ -92,7 +92,7 @@ export async function loadRoutenDiagramm(sektorName) {
           },
           x: {
             grid: { display: false },
-            ticks: { font: { size: 14 } }
+            ticks: { font: { size: 12 } }
           }
         }
       },
