@@ -242,7 +242,7 @@ img {
 .diagramm-container {
   overflow: visible !important;
   position: relative;
-  min-height: 300px;
+  min-height: 0px;
 }
 
 .diagramm-container canvas {
