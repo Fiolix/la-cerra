@@ -1,11 +1,12 @@
-// routen_diagram_loader.js
-
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 
 export async function loadRoutenDiagramm(sektorName) {
   const diagramContainer = document.getElementById("routen-diagramm");
-  if (!diagramContainer) return;
+  if (!diagramContainer) {
+    console.warn("⚠️ Kein Diagramm-Container auf dieser Seite vorhanden.");
+    return;
+  }
 
   console.log("📊 Lade Routen-Diagramm für:", sektorName);
 
@@ -14,7 +15,7 @@ export async function loadRoutenDiagramm(sektorName) {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs"
   );
 
-  // Block-ID anhand des Sektornamens ermitteln
+  // 1. Block-ID zum Sektorname finden
   const { data: blocks, error: blockError } = await supabase
     .from("blocks")
     .select("id")
@@ -29,8 +30,9 @@ export async function loadRoutenDiagramm(sektorName) {
   }
 
   const blockId = blocks[0].id;
+  console.log("🔗 Gefundene Block-ID:", blockId);
 
-  // Routen für den Block laden
+  // 2. Routen für diesen Block laden
   const { data: routes, error: routeError } = await supabase
     .from("routes")
     .select("grad")
@@ -43,6 +45,7 @@ export async function loadRoutenDiagramm(sektorName) {
     return;
   }
 
+  // 3. Zähle Anzahl der Routen pro Schwierigkeit
   const schwierigkeiten = ["2", "3", "4", "5", "6", "7", "8"];
   const anzahl = schwierigkeiten.map(schw =>
     routes.filter(r => r.grad?.startsWith(schw)).length
@@ -50,6 +53,7 @@ export async function loadRoutenDiagramm(sektorName) {
 
   console.log("📊 Schwierigkeit Zählung:", anzahl);
 
+  // 4. Diagramm erzeugen
   const canvas = document.createElement("canvas");
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
@@ -70,7 +74,10 @@ export async function loadRoutenDiagramm(sektorName) {
         tooltip: { enabled: true }
       },
       scales: {
-        y: { beginAtZero: true, ticks: { precision: 0 } }
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        }
       }
     }
   });
