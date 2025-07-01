@@ -220,4 +220,24 @@ img {
    max-height: 4.5em;
 }
 
+/* Ergänzungen für funktionierende Darstellung von Chart.js-Datalabels */
+.diagramm-container {
+  overflow: visible !important;
+  position: relative;
+  min-height: 300px;
+}
 
+.diagramm-container canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}
+
+canvas {
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}
