@@ -73,8 +73,8 @@ export async function loadRoutenDiagramm(sektorName) {
           tooltip: { enabled: true },
           datalabels: {
             display: true,
-            anchor: 'end',
-            align: 'top',
+            align: 'end',
+            anchor: 'start',
             offset: -16,
             color: 'black',
             font: { weight: 'bold', size: 14 },
