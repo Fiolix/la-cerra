@@ -16,10 +16,10 @@ export function setupSummaryToggle() {
     summaryBox.classList.toggle("expanded");
     if (summaryBox.classList.contains("expanded")) {
       textElement.classList.remove("text-preview");
-      toggleButton.textContent = "Weniger anzeigen";
+      toggleButton.textContent = "Show less";
     } else {
       textElement.classList.add("text-preview");
-      toggleButton.textContent = "Mehr anzeigen";
+      toggleButton.textContent = "Show more";
     }
   });
 }
