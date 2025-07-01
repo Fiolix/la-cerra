@@ -23,8 +23,6 @@ export async function loadRoutenDiagramm(sektorName) {
     .select("id")
     .eq("sektor", sektorName);
 
-  console.log("📦 Block-Daten:", sektorBlocks);
-
   if (blockError || !sektorBlocks || sektorBlocks.length === 0) {
     console.error("❌ Fehler beim Laden des Blocks:", blockError);
     return;
@@ -37,8 +35,6 @@ export async function loadRoutenDiagramm(sektorName) {
     .select("grad")
     .in("block_id", blockIds);
 
-  console.log("📦 Routen-Daten:", routes);
-
   if (routeError || !routes || routes.length === 0) {
     console.warn("⚠️ Keine Routen gefunden für", sektorName);
     return;
@@ -49,13 +45,10 @@ export async function loadRoutenDiagramm(sektorName) {
     routes.filter(r => r.grad?.startsWith(schw)).length
   );
 
-  console.log("📊 Schwierigkeit Zählung:", anzahl);
-
   const canvas = document.createElement("canvas");
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
 
-  // Platz für Diagramm garantieren
   canvas.parentElement.style.minHeight = "300px";
 
   new Chart(canvas, {
@@ -73,28 +66,30 @@ export async function loadRoutenDiagramm(sektorName) {
       maintainAspectRatio: false,
       layout: {
         padding: {
-          top: 20
+          top: 30
         }
       },
       plugins: {
         legend: { display: false },
         tooltip: { enabled: true },
         datalabels: {
+          display: true,
           anchor: 'end',
           align: 'start',
+          offset: 0, // Position unterhalb der Balkenoberkante
           color: 'white',
           font: {
             weight: 'bold',
             size: 14
           },
-          offset: 4,
-          clamp: true,
+          clamp: false,
           clip: false,
           formatter: value => value > 0 ? value : ''
         }
       },
       scales: {
         y: {
+          beginAtZero: true,
           display: false,
           grid: { display: false },
           suggestedMax: Math.max(...anzahl) + 2
