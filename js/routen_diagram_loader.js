@@ -106,5 +106,5 @@ export async function loadRoutenDiagramm(sektorName) {
     },
     plugins: [ChartDataLabels]
   });
-console.log("Canvas-Höhe:", canvas.offsetHeight, canvas.clientHeight);
+ console.log("Canvas-Höhe:", canvas.offsetHeight, canvas.clientHeight);
 }
