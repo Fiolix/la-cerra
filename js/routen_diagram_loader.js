@@ -46,6 +46,7 @@ export async function loadRoutenDiagramm(sektorName) {
   );
 
   const canvas = document.createElement("canvas");
+  canvas.style.height = "100%";
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
   canvas.parentElement.style.minHeight = "300px";
@@ -73,8 +74,8 @@ export async function loadRoutenDiagramm(sektorName) {
           datalabels: {
             display: true,
             anchor: 'end',
-            align: 'start',
-            offset: 0,
+            align: 'center',
+            offset: -16,
             color: 'white',
             font: { weight: 'bold', size: 14 },
             clamp: false,
