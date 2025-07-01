@@ -49,7 +49,13 @@ main {
   display: block; /* von grid zu block geändert */
 }
 
-
+section, aside {
+  background: white;
+  padding: 0.5rem !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
 
 .news-item {
   background: #eaeaea;
@@ -216,10 +222,7 @@ canvas {
   z-index: 1;
 }
 
-section, aside {
-  background: white;
+body section,
+body aside {
   padding: 0.5rem !important;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
 }
