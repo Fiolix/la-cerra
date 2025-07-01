@@ -66,7 +66,7 @@ export async function loadRoutenDiagramm(sektorName) {
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-          padding: { top: 30 }
+          padding: { top: 4 }
         },
         plugins: {
           legend: { display: false },
