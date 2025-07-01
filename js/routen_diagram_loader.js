@@ -61,7 +61,7 @@ export async function loadRoutenDiagramm(sektorName) {
     data: {
       labels: schwierigkeiten.map(s => `Fb ${s}`),
       datasets: [{
-        label: "Routen nach Schwierigkeit",
+        label: "Routes",
         data: anzahl,
         backgroundColor: "#888"
       }]
