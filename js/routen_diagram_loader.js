@@ -46,10 +46,10 @@ export async function loadRoutenDiagramm(sektorName) {
   );
 
   const canvas = document.createElement("canvas");
-  canvas.style.height = "100%";
+  canvas.style.width = "100%";
+  canvas.style.height = "200px";
   diagramContainer.innerHTML = "";
   diagramContainer.appendChild(canvas);
-  canvas.parentElement.style.minHeight = "100px";
 
   setTimeout(() => {
     const chart = new Chart(canvas, {
