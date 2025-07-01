@@ -2,7 +2,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 
-Chart.register(ChartDataLabels); // 🔧 WICHTIG: Plugin aktivieren
+Chart.register(ChartDataLabels); // Plugin registrieren
 
 export async function loadRoutenDiagramm(sektorName) {
   const diagramContainer = document.getElementById("routen-diagramm");
@@ -74,9 +74,10 @@ export async function loadRoutenDiagramm(sektorName) {
           align: 'start',
           color: 'white',
           font: {
-            weight: 'bold'
+            weight: 'bold',
+            size: 12
           },
-          formatter: Math.round
+          formatter: value => value > 0 ? value : '' // Nur bei Wert > 0 anzeigen
         }
       },
       scales: {
@@ -85,10 +86,14 @@ export async function loadRoutenDiagramm(sektorName) {
           grid: { display: false }
         },
         x: {
-          grid: { display: false }
+          grid: { display: false },
+          ticks: {
+            font: {
+              size: 14
+            }
+          }
         }
       }
-    },
-    plugins: [ChartDataLabels]
+    }
   });
 }
