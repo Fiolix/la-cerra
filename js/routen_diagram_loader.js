@@ -70,13 +70,14 @@ export async function loadRoutenDiagramm(sektorName) {
         legend: { display: false },
         tooltip: { enabled: true },
         datalabels: {
-          anchor: 'center',
-          align: 'center',
+          anchor: 'end',
+          align: 'end',
           color: 'white',
           font: {
             weight: 'bold',
             size: 14
           },
+          offset: -4,
           formatter: value => value > 0 ? value : ''
         }
       },
