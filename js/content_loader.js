@@ -32,6 +32,7 @@ async function loadPage(page) {
     }
     if (html.includes('id="routen-diagramm"')) {
   const sektorName = page.replace(".html", ""); // z.B. „somewhere“
+  console.log("📊 Importiere Diagramm-Loader für:", sektorName);
   import("/la-cerra/js/routen_diagram_loader.js")
     .then(module => module.loadRoutenDiagramm(sektorName))
     .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
