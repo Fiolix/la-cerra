@@ -183,7 +183,7 @@ img {
 /* Ergänzungen für funktionierende Darstellung von Chart.js-Datalabels */
 #routen-diagramm.diagramm-container {
   height: 100px !important;
-  padding: 0 !important;
+  padding: 0;
   margin: 0;
   box-sizing: border-box;
   display: flex;
