@@ -220,19 +220,24 @@ img {
    max-height: 4.5em;
 }
 
-/* Optionales Layout für das Diagramm */
-.diagramm-container {
-  max-width: 90%;
-  margin: 2rem auto;
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  text-align: center;
-}
+/* style.css - Anpassung zur Unterstützung von Chart.js-Labels */
 
+/* Bestehende Regel (leicht modifiziert) */
 .diagramm-container canvas {
   width: 100% !important;
   height: auto !important;
+  display: block;
+  position: relative;
+  z-index: 0;
+}
+
+/* Sicherstellen, dass Eltern-Container nicht clippen */
+.diagramm-container {
+  overflow: visible !important;
+}
+
+/* Optional: Canvas selbst darf nichts abschneiden */
+canvas {
+  overflow: visible !important;
 }
 
