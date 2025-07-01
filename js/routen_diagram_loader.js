@@ -1,3 +1,4 @@
+import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 
@@ -57,26 +58,39 @@ export async function loadRoutenDiagramm(sektorName) {
   diagramContainer.appendChild(canvas);
 
   new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels: schwierigkeiten.map(s => `Fb ${s}`),
-      datasets: [{
-        label: "Routes",
-        data: anzahl,
-        backgroundColor: "#888"
-      }]
+  type: "bar",
+  data: {
+    labels: schwierigkeiten.map(s => `Fb ${s}`),
+    datasets: [{
+      label: "Routenanzahl",
+      data: anzahl,
+      backgroundColor: "#384e4d", // Grünton der Seite
+    }]
+  },
+  options: {
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+      datalabels: {
+        anchor: 'end',
+        align: 'start',
+        color: 'white',
+        font: {
+          weight: 'bold'
+        },
+        formatter: Math.round
+      }
     },
-    options: {
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: true }
+    scales: {
+      y: {
+        display: false,     // Y-Achse ausblenden
+        grid: { display: false }  // Gitternetz entfernen
       },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { precision: 0 }
-        }
+      x: {
+        grid: { display: false }  // X-Gitternetz auch entfernen
       }
     }
-  });
-}
+  },
+  plugins: [ChartDataLabels] // WICHTIG: Datalabels-Plugin einbinden
+});
+
