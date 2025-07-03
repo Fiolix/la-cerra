@@ -32,7 +32,9 @@ export async function loadBlocks() {
   dropdown.innerHTML = '<option value="#">-- Select a block --</option>';
 
   blocks.forEach(block => {
-    const blockRoutes = routes.filter(r => r.block_id === block.id);
+    const blockRoutes = routes
+      .filter(r => r.block_id === block.id)
+      .sort((a, b) => a.buchstabe.localeCompare(b.buchstabe));
     const blockDiv = document.createElement('section');
     blockDiv.className = 'boulder-block';
     blockDiv.id = `block-${block.nummer}`;
