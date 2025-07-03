@@ -44,14 +44,16 @@ async function loadPage(page) {
   }
 }
 
-// 2. Klick-Listener für alle Links mit [data-page]
-links.forEach(link => {
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    const page = link.getAttribute("data-page");
-    loadPage(page);
-  });
+// 2. Robuster Klick-Listener für ALLE [data-page]-Links – auch dynamisch eingefügte
+document.body.addEventListener("click", (e) => {
+  const link = e.target.closest("[data-page]");
+  if (!link) return;
+
+  e.preventDefault();
+  const page = link.getAttribute("data-page");
+  loadPage(page);
 });
+
 
 // 3. Für externe Aufrufe durch burger_menu.js
 
