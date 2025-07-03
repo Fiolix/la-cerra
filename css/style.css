@@ -268,3 +268,22 @@ canvas {
   z-index: 1;
 }
 
+/* Breadcrumb-Navigation */
+.breadcrumb {
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: inherit;
+  color: inherit;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
