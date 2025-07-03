@@ -46,6 +46,14 @@ export async function loadBlocks() {
           <span class="route-grade">${route.grad ?? '?'}</span>
         </div>
         ${route.beschreibung ? `<p class="route-description"><em>${route.beschreibung}</em></p>` : ''}
+        <div class="route-meta">
+          <div class="route-stars">
+            ★★★★★ <!-- Platzhalter für Bewertung -->
+          </div>
+          <div class="route-tick">
+            <input type="checkbox" title="Mark as climbed" />
+          </div>
+        </div>
       </div>
     `).join('');
 
@@ -57,6 +65,9 @@ export async function loadBlocks() {
       </div>
       <img src="/la-cerra/img/bouldering/la-cerra/${block.sektor}/${block.bild}" alt="Blockbild" />
       ${routesHtml}
+      <div class="ticklist-button">
+        <button type="button">Add to tick list</button>
+      </div>
     `;
 
     container.appendChild(blockDiv);
