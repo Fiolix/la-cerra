@@ -106,17 +106,31 @@ img {
   margin: 0.5rem 0;
 }
 
-
 .block-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   font-variant: small-caps;
   font-weight: bold;
   font-size: 1.1rem;
   border-bottom: 1px solid #ccc;
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.block-id {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.block-name {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.block-height {
+  text-align: right;
+  white-space: nowrap;
 }
 
 .route {
