@@ -270,11 +270,12 @@ canvas {
 
 /* Breadcrumb-Navigation */
 .breadcrumb {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: bold;
   font-family: inherit;
   color: inherit;
   margin-bottom: 1rem;
+  font-variant: small-caps;
 }
 
 .breadcrumb a {
