@@ -38,6 +38,17 @@ export async function loadBlocks() {
     blockDiv.id = `block-${block.nummer}`;
     blockDiv.style.marginTop = '2rem';
 
+    const routesHtml = blockRoutes.map(route => `
+      <div class="route">
+        <div class="route-title">
+          <span class="route-label">${route.buchstabe}</span>
+          <span class="route-name">${route.name ?? ''}</span>
+          <span class="route-grade">${route.grad ?? '?'}</span>
+        </div>
+        ${route.beschreibung ? `<p class="route-description"><em>${route.beschreibung}</em></p>` : ''}
+      </div>
+    `).join('');
+
     blockDiv.innerHTML = `
       <div class="block-header">
         <span class="block-id">${block.nummer}</span>
@@ -45,15 +56,7 @@ export async function loadBlocks() {
         <span class="block-height">Height: ${block.hoehe ?? ''}</span>
       </div>
       <img src="/la-cerra/img/bouldering/la-cerra/${block.sektor}/${block.bild}" alt="Blockbild" />
-      ${blockRoutes.map(route => `
-        <div class="route">
-          <p>
-            <span>${route.buchstabe}</span>
-            <span class="route-name">${route.name ?? ''}</span>
-            <span>${route.grad}</span>
-          </p>
-          ${route.beschreibung ? `<p><em>${route.beschreibung}</em></p>` : ''}
-        </div>`).join('')}
+      ${routesHtml}
     `;
 
     container.appendChild(blockDiv);
