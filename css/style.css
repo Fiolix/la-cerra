@@ -137,9 +137,30 @@ img {
   margin-bottom: 1rem;
 }
 
+.route-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.route-label {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
 .route-name {
+  flex-grow: 1;
+  text-align: left;
   margin-left: 0.5rem;
 }
+
+.route-grade {
+  text-align: right;
+  white-space: nowrap;
+}
+
 
 /* Bestehendes CSS für .sector-summary */
 .sector-summary {
