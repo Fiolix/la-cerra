@@ -191,6 +191,15 @@ img {
   display: inline-block;
 }
 
+.route-video a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.route-video a:hover {
+  text-decoration: underline;
+}
+
 .route-tick {
   flex-shrink: 0;
   text-align: right;
