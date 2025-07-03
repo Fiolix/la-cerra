@@ -52,7 +52,7 @@ export async function loadBlocks() {
           </div>
           <div class="route-video">
             ${route.video_url
-              ? `<a href="${route.video_url}" target="_blank" rel="noopener noreferrer">🎥 Beta video</a>`
+              ? `<a href="${route.video_url}" target="_blank" rel="noopener noreferrer">Beta video</a>`
               : 'not available'}
           </div>
           <div class="route-tick">
