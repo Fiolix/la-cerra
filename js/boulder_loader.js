@@ -50,6 +50,7 @@ export async function loadBlocks() {
           <div class="route-stars">
             ★★★★★ <!-- Platzhalter für Bewertung -->
           </div>
+          <div class="route-video">not available</div>
           <div class="route-tick">
             <input type="checkbox" title="Mark as climbed" />
           </div>
