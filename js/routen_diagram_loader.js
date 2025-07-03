@@ -77,7 +77,7 @@ export async function loadRoutenDiagramm(sektorName) {
             display: true,
             align: 'end',
             anchor: 'start',
-            offset: 6,
+            offset: 2,
             color: '#384e4d',
             font: { weight: 'bold', size: 14 },
             clamp: false,
