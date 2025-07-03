@@ -193,7 +193,7 @@ img {
 
 .route-video a {
   text-decoration: none;
-  color: inherit;
+  color: black;
 }
 
 .route-video a:hover {
