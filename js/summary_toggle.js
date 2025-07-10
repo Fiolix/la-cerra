@@ -12,6 +12,8 @@ export function setupSummaryToggle() {
     return;
   }
 
+console.log("📢 setupSummaryToggle wird ausgeführt...");
+
   toggleButton?.addEventListener("click", () => {
     summaryBox.classList.toggle("expanded");
     if (summaryBox.classList.contains("expanded")) {
