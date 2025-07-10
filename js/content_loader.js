@@ -14,6 +14,9 @@ async function loadPage(page) {
     const response = await fetch(url);
     if (!response.ok) throw new Error("Seite konnte nicht geladen werden");
     const html = await response.text();
+    
+    // ✅ Vorherigen Inhalt komplett entfernen
+    contentElement.innerHTML = '';
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
     console.log("📄 HTML-Inhalt erhalten:", html);
