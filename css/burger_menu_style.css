@@ -131,8 +131,8 @@
 }
 
 .flags img {
-  width: 32px;
-  height: 32px;
+  width: 16px;
+  height: 16px;
   object-fit: cover;
   cursor: pointer;
   border: 1px solid transparent;
