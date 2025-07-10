@@ -16,6 +16,11 @@
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
 }
 
+.slide-menu .home-icon-wrapper {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
 .slide-menu.open {
   transform: translateX(0);
 }
