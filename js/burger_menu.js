@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   navMenu.classList.add("slide-menu");
   navMenu.innerHTML = `
-    <div style="margin-bottom: 1rem; font-size: 1.5rem;">
+    <div style="margin-bottom: 2rem; font-size: 1.5rem;">
       <a href="#" data-page="start" title="Home"><img src="img/home_icon.png" alt="Home" style="width: 48px; height: 48px;" /></a>
     </div>
     <ul>
