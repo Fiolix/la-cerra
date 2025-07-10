@@ -44,12 +44,6 @@ header.hero h1 {
   color: white;
 }
 
-.language-switcher img {
-  width: 16px;
-  height: 16px;
-  ...
-}
-
 main {
   padding: 1rem;
   display: block; /* von grid zu block geändert */
