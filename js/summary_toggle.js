@@ -7,7 +7,7 @@ export function setupSummaryToggle() {
   const textElement = document.querySelector(".text-preview");
   const toggleButton = document.querySelector(".toggle-summary");
 
-  if (!summaryBox || !textElement) {
+  if (!summaryBox || !textElement || !toggleButton) {
     console.warn("❌ summaryBox oder textElement nicht gefunden");
     return;
   }
