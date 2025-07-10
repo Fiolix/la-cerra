@@ -4,8 +4,8 @@ export function setupSummaryToggle() {
   console.log("✅ summary_toggle.js wurde als Modul geladen");
 
   const summaryBox = document.querySelector(".sector-summary");
-  const textElement = document.querySelector(".sector-summary .text-preview");
-  const toggleButton = document.querySelector(".sector-summary .toggle-summary");
+  const textElement = summaryBox?.querySelector(".text-preview");
+  const toggleButton = summaryBox?.querySelector(".toggle-summary");
 
   if (!summaryBox || !textElement || !toggleButton) {
     console.warn("❌ summaryBox, textElement oder toggleButton nicht gefunden");
