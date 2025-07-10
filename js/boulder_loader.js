@@ -14,7 +14,9 @@ export async function loadBlocks() {
     return;
   }
 
-  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', 'somewhere').order('nummer');
+  const path = window.location.pathname;
+  const sektor = path.substring(path.lastIndexOf('/') + 1).replace('.html', '').toLowerCase();
+  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer');
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
   if (blockError) {
