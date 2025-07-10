@@ -4,24 +4,19 @@ export function setupSummaryToggle() {
   console.log("✅ summary_toggle.js wurde als Modul geladen");
 
   const summaryBox = document.querySelector(".sector-summary");
-  const textElement = document.querySelector(".text-preview");
-  const toggleButton = document.querySelector(".toggle-summary");
+  const textElement = document.querySelector(".sector-summary .text-preview");
+  const toggleButton = document.querySelector(".sector-summary .toggle-summary");
 
   if (!summaryBox || !textElement || !toggleButton) {
-    console.warn("❌ summaryBox oder textElement nicht gefunden");
+    console.warn("❌ summaryBox, textElement oder toggleButton nicht gefunden");
     return;
   }
 
-console.log("📢 setupSummaryToggle wird ausgeführt...");
+  console.log("📢 setupSummaryToggle wird ausgeführt...");
 
-  toggleButton?.addEventListener("click", () => {
-    summaryBox.classList.toggle("expanded");
-    if (summaryBox.classList.contains("expanded")) {
-      textElement.classList.remove("text-preview");
-      toggleButton.textContent = "Show less";
-    } else {
-      textElement.classList.add("text-preview");
-      toggleButton.textContent = "Show more";
-    }
+  toggleButton.addEventListener("click", () => {
+    const isExpanded = summaryBox.classList.toggle("expanded");
+    textElement.classList.toggle("text-preview", !isExpanded);
+    toggleButton.textContent = isExpanded ? "Show less" : "Show more";
   });
 }
