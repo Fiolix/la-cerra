@@ -14,9 +14,13 @@ export function setupSummaryToggle() {
 
   console.log("📢 setupSummaryToggle wird ausgeführt...");
 
-  toggleButton.addEventListener("click", () => {
+  // Vorherige Eventlistener entfernen durch Ersetzen des Buttons
+  toggleButton.replaceWith(toggleButton.cloneNode(true));
+  const newToggleButton = summaryBox.querySelector(".toggle-summary");
+
+  newToggleButton.addEventListener("click", () => {
     const isExpanded = summaryBox.classList.toggle("expanded");
     textElement.classList.toggle("text-preview", !isExpanded);
-    toggleButton.textContent = isExpanded ? "Show less" : "Show more";
+    newToggleButton.textContent = isExpanded ? "Show less" : "Show more";
   });
 }
