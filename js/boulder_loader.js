@@ -14,8 +14,12 @@ export async function loadBlocks() {
     return;
   }
 
-  const path = window.location.pathname;
-  const sektor = path.substring(path.lastIndexOf('/') + 1).replace('.html', '').toLowerCase();
+  const sektor = document.querySelector('main[data-sektor]')?.dataset.sektor;
+  if (!sektor) {
+    console.error('❌ Kein data-sektor im <main> Element gefunden');
+    return;
+  }
+
   const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer');
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
@@ -28,7 +32,7 @@ export async function loadBlocks() {
     return;
   }
 
-  console.log(`ℹ️ ${blocks.length} Blöcke geladen`);
+  console.log(`ℹ️ ${blocks.length} Blöcke geladen für Sektor '${sektor}'`);
 
   container.innerHTML = '';
   dropdown.innerHTML = '<option value="#">-- Select a block --</option>';
