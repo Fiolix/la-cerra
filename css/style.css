@@ -143,6 +143,9 @@ img {
   align-items: baseline;
   font-weight: bold;
   margin-bottom: 0.25rem;
+  background-color: #d4edc9; /* Helles Grün */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.3rem;
 }
 
 .route-label {
