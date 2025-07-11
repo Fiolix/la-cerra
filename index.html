@@ -9,15 +9,10 @@
   <script defer src="js/burger_menu.js"></script>
   <script defer src="js/content_loader.js"></script>
   <script type="module" src="js/boulder_loader.js"></script>
-
-  <!-- Supabase laden -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script>
-    const supabase = supabase.createClient(
-      "https://ymeumqnmcumgqlffwwjb.supabase.co", // <-- HIER deine Supabase-URL einsetzen
-     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs" // <-- HIER deinen anon public API key einsetzen
-    );
-  </script>
+  <script type="module">
+  import { initAuth } from './js/auth_handler.js';
+  initAuth();
+</script>
 </head>
 <body>
   <header class="hero">
