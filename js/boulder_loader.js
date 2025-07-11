@@ -1,16 +1,18 @@
+import { supabase } from './supabase.js';
+
 export async function loadBlocks() {
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
 
   if (!container || !dropdown) {
-    console.warn('\u23f3 container oder dropdown nicht vorhanden – retry in 200ms');
+    console.warn('⏳ container oder dropdown nicht vorhanden – retry in 200ms');
     setTimeout(loadBlocks, 200);
     return;
   }
 
   const sektor = document.querySelector('main[data-sektor]')?.dataset.sektor;
   if (!sektor) {
-    console.error('\u274c Kein data-sektor im <main> Element gefunden');
+    console.error('❌ Kein data-sektor im <main> Element gefunden');
     return;
   }
 
@@ -18,11 +20,11 @@ export async function loadBlocks() {
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
   if (blockError) {
-    console.error('\u274c Fehler beim Laden der Blöcke:', blockError);
+    console.error('❌ Fehler beim Laden der Blöcke:', blockError);
     return;
   }
   if (routeError) {
-    console.error('\u274c Fehler beim Laden der Routen:', routeError);
+    console.error('❌ Fehler beim Laden der Routen:', routeError);
     return;
   }
 
