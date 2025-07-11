@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <h3>Login</h3>
       <input type="text" id="user" name="user" placeholder="User" />
       <input type="password" id="password" name="password" placeholder="Password" />
-      <button type="button">Log In</button>
+      <button id="login-button" type="button">Log In</button>
     </div>
 
     <div class="language-switcher">
@@ -43,6 +43,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.insertBefore(navMenu, document.body.firstChild);
 
+  // Neues Event feuern, wenn Login-Elemente vorhanden sind
+  const checkLoginBlockReady = setInterval(() => {
+    if (
+      document.getElementById("user") &&
+      document.getElementById("password") &&
+      document.getElementById("login-button")
+    ) {
+      document.dispatchEvent(new CustomEvent("loginBlockReady"));
+      clearInterval(checkLoginBlockReady);
+    }
+  }, 50);
+
   navMenu.querySelectorAll("li.toggleable > a").forEach(link => {
     link.addEventListener("click", function (e) {
       e.preventDefault();
@@ -51,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // WICHTIG: Links mit data-page aktivieren den content_loader
   navMenu.querySelectorAll("a[data-page]").forEach(link => {
     link.addEventListener("click", function (e) {
       e.preventDefault();
