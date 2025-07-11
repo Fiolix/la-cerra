@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
 
 export function initAuth() {
-  const observer = new MutationObserver(() => {
+  document.addEventListener("loginBlockReady", () => {
     const emailInput = document.getElementById("user");
     const passwordInput = document.getElementById("password");
     const loginButton = document.getElementById("login-button");
