@@ -1,22 +1,16 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-const supabaseUrl = 'https://ymeumqnmcumgqlffwwjb.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZXVtcW5tY3VtZ3FsZmZ3d2piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTAyMTEsImV4cCI6MjA2NjYyNjIxMX0.wOCjVUegJsBS8t11yXkgrN-I41wJlOreJ3feUtVaMxs';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 export async function loadBlocks() {
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
 
   if (!container || !dropdown) {
-    console.warn('⏳ container oder dropdown nicht vorhanden – retry in 200ms');
+    console.warn('\u23f3 container oder dropdown nicht vorhanden – retry in 200ms');
     setTimeout(loadBlocks, 200);
     return;
   }
 
   const sektor = document.querySelector('main[data-sektor]')?.dataset.sektor;
   if (!sektor) {
-    console.error('❌ Kein data-sektor im <main> Element gefunden');
+    console.error('\u274c Kein data-sektor im <main> Element gefunden');
     return;
   }
 
@@ -24,11 +18,11 @@ export async function loadBlocks() {
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
   if (blockError) {
-    console.error('❌ Fehler beim Laden der Blöcke:', blockError);
+    console.error('\u274c Fehler beim Laden der Blöcke:', blockError);
     return;
   }
   if (routeError) {
-    console.error('❌ Fehler beim Laden der Routen:', routeError);
+    console.error('\u274c Fehler beim Laden der Routen:', routeError);
     return;
   }
 
