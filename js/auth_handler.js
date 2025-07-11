@@ -32,10 +32,6 @@ export function initAuth() {
           passwordInput.value = "";
         }
       });
-
-      observer.disconnect();
     }
   });
-
-  observer.observe(document.body, { childList: true, subtree: true });
 }
