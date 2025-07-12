@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const { error: profileError } = await supabase.from("profiles").insert({
       user_id: userId,
-      username: username
+      username: username,
       email: email
     });
 
