@@ -60,7 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (profileError) {
-      alert("❌ Benutzerkonto wurde erstellt, aber das Speichern des Benutzernamens ist fehlgeschlagen.");
+      console.error("❌ Fehler beim Speichern in 'profiles':", profileError);
+      alert("❌ Fehler beim Speichern des Profils. Details findest du in der Konsole.");
     } else {
       alert("✅ Registrierung erfolgreich! Du kannst dich jetzt einloggen.");
       window.location.href = "/index.html"; // oder wohin du willst
