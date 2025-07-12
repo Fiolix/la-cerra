@@ -47,8 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const { data: sessionData } = await supabase.auth.getSession();
-    const userId = sessionData?.session?.user?.id;
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData?.user?.id;
 
     if (!userId) {
       alert("Etwas ist schiefgelaufen. Kein Nutzer-ID erhalten.");
