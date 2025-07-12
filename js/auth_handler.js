@@ -29,9 +29,9 @@ export function initAuth() {
         }
 
         const { data: userRecord, error: userError } = await supabase
-          .from("users")
+          .from("profiles")
           .select("email")
-          .eq("id", profile.user_id)
+          .eq("user_id", profile.user_id)
           .maybeSingle();
 
         if (!userRecord || userError) {
