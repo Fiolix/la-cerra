@@ -1,67 +1,68 @@
 import { supabase } from './supabase.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-  const emailInput = document.getElementById("user");
+  const usernameInput = document.getElementById("username");
+  const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
-  const loginButton = document.getElementById("login-button");
+  const confirmPasswordInput = document.getElementById("confirm-password");
+  const registerButton = document.getElementById("register-button");
 
-  loginButton?.addEventListener("click", async () => {
-    let identifier = emailInput.value.trim();
+  registerButton.addEventListener("click", async () => {
+    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
     const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
 
-    if (!identifier || !password) {
-      alert("Bitte gib Username oder E-Mail und ein Passwort ein.");
+    if (!username || !email || !password || !confirmPassword) {
+      alert("Bitte fülle alle Felder aus.");
       return;
     }
 
-    // Wenn kein "@" im Feld → Username → passende Email suchen
-    if (!identifier.includes("@")) {
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("user_id")
-        .eq("username", identifier)
-        .maybeSingle();
-
-      if (!profile || profileError) {
-        alert("Dieser Username ist nicht registriert. Bitte registrieren.");
-        return;
-      }
-
-      // Hole die zugehörige E-Mail aus auth.users
-      const { data: userRecord, error: userError } = await supabase
-        .from("users")
-        .select("email")
-        .eq("id", profile.user_id)
-        .maybeSingle();
-
-      if (!userRecord || userError) {
-        alert("E-Mail konnte zu diesem Username nicht gefunden werden.");
-        return;
-      }
-
-      identifier = userRecord.email;
+    if (password !== confirmPassword) {
+      alert("Die Passwörter stimmen nicht überein.");
+      return;
     }
 
-    // Jetzt Login mit Email (egal ob direkt oder über Username) durchführen
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-      email: identifier,
+    const { data: existing, error: nameCheckError } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("username", username)
+      .maybeSingle();
+
+    if (existing) {
+      alert("Dieser Username ist bereits vergeben.");
+      return;
+    }
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
       password
     });
 
-    if (loginError) {
-      if (loginError.message?.toLowerCase().includes("invalid login credentials")) {
-        alert("❌ Passwort falsch.");
-      } else {
-        alert("❌ Login fehlgeschlagen: " + loginError.message);
-      }
+    if (signUpError) {
+      alert("❌ Registrierung fehlgeschlagen: " + signUpError.message);
       return;
     }
 
-    // Nach Login: einfache Anzeige im Feld
     const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user?.email) {
-      emailInput.value = `Angemeldet als: ${userData.user.email}`;
-      passwordInput.value = "";
+    const userId = userData?.user?.id;
+
+    if (!userId) {
+      alert("Etwas ist schiefgelaufen. Kein Nutzer-ID erhalten.");
+      return;
+    }
+
+    const { error: profileError } = await supabase.from("profiles").insert({
+      user_id: userId,
+      username: username
+    });
+
+    if (profileError) {
+      console.error("❌ Fehler beim Speichern in 'profiles':", profileError);
+      alert("❌ Fehler beim Speichern des Profils. Details findest du in der Konsole.");
+    } else {
+      alert("✅ Registrierung erfolgreich! Du kannst dich jetzt einloggen.");
+      window.location.href = "/index.html";
     }
   });
 });
