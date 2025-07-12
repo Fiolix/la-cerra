@@ -47,7 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const userId = signUpData?.user?.id;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData?.session?.user?.id;
+
     if (!userId) {
       alert("Etwas ist schiefgelaufen. Kein Nutzer-ID erhalten.");
       return;
@@ -64,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("❌ Fehler beim Speichern des Profils. Details findest du in der Konsole.");
     } else {
       alert("✅ Registrierung erfolgreich! Du kannst dich jetzt einloggen.");
-      window.location.href = "/index.html"; // oder wohin du willst
+      window.location.href = "/index.html";
     }
   });
 });
