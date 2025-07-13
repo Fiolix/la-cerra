@@ -92,8 +92,27 @@ export async function loadBlocks() {
         return;
       }
 
-      // ✅ Ticklist-Popup vorbereiten
+      // ✅ Ticklist-Popup vorbereiten mit Prüfung auf bestehende Einträge
       const checkboxes = blockDiv.querySelectorAll('.route-tick input[type="checkbox"]:checked');
+      const selectedRouteIds = Array.from(checkboxes).map(cb => cb.dataset.routeId);
+
+      // Prüfe in Supabase: existiert bereits ein Eintrag für diese User-Routen-Kombination?
+      const { data: existing, error: checkError } = await supabase
+        .from('ticklist')
+        .select('route_id')
+        .eq('user_id', userId)
+        .in('route_id', selectedRouteIds);
+
+      if (checkError) {
+        console.error('❌ Fehler beim Prüfen der bestehenden Ticklist:', checkError);
+        alert('An error occurred while checking your ticklist.');
+        return;
+      }
+
+      if (existing.length > 0) {
+        const proceed = confirm('You already ticked some of these routes. Are you sure you want to continue?');
+        if (!proceed) return;
+      }
       if (checkboxes.length === 0) {
         alert("Please select at least one route.");
         return;
