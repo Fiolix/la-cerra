@@ -92,8 +92,82 @@ export async function loadBlocks() {
         return;
       }
 
-      // ✅ Ab hier: Benutzer ist eingeloggt → Weiterverarbeitung folgt in nächstem Schritt
-      console.log("✅ Eingeloggt: Ticklist-Popup kann angezeigt werden (noch nicht umgesetzt)");
+      // ✅ Ticklist-Popup vorbereiten
+      const checkboxes = blockDiv.querySelectorAll('.route-tick input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) {
+        alert("Please select at least one route.");
+        return;
+      }
+
+      // Popup erzeugen
+      let popup = document.getElementById('ticklist-modal');
+      if (!popup) {
+        popup = document.createElement('div');
+        popup.id = 'ticklist-modal';
+        popup.style.position = 'fixed';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.background = '#fff';
+        popup.style.padding = '1.5rem';
+        popup.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
+        popup.style.zIndex = '1000';
+        popup.style.maxWidth = '90vw';
+        popup.style.maxHeight = '80vh';
+        popup.style.overflowY = 'auto';
+        popup.style.borderRadius = '0.5rem';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'Close';
+        closeBtn.style.marginBottom = '1rem';
+        closeBtn.onclick = () => popup.remove();
+        popup.appendChild(closeBtn);
+
+        const list = document.createElement('ul');
+        list.style.listStyle = 'none';
+        list.style.padding = '0';
+
+        checkboxes.forEach(cb => {
+          const routeId = cb.dataset.routeId;
+          const routeElement = cb.closest('.route');
+          const routeName = routeElement.querySelector('.route-name')?.textContent ?? 'Unknown';
+          const routeGrade = routeElement.querySelector('.route-grade')?.textContent ?? '?';
+
+          const item = document.createElement('li');
+          item.style.marginBottom = '1rem';
+          item.innerHTML = `
+            <strong>${routeName}</strong> (${routeGrade})<br>
+            <label>Rating:
+              <select data-rating="true">
+                <option value="">–</option>
+                <option value="1">★☆☆☆☆</option>
+                <option value="2">★★☆☆☆</option>
+                <option value="3">★★★☆☆</option>
+                <option value="4">★★★★☆</option>
+                <option value="5">★★★★★</option>
+              </select>
+            </label>
+            <label style="margin-left: 1rem">
+              <input type="checkbox" data-flash="true" /> Flash
+            </label>
+            <input type="hidden" value="${routeId}" data-route-id-hidden />
+          `;
+          list.appendChild(item);
+        });
+
+        popup.appendChild(list);
+
+        const submitBtn = document.createElement('button');
+        submitBtn.textContent = 'Save ticklist';
+        submitBtn.onclick = () => {
+          // Hier erfolgt später das Speichern
+          alert("✅ Ticklist submitted (saving logic follows in next step)");
+          popup.remove();
+        };
+
+        popup.appendChild(submitBtn);
+        document.body.appendChild(popup);
+      }
     });
 
     const option = document.createElement('option');
