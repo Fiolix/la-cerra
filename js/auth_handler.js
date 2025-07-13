@@ -36,7 +36,7 @@ export function initAuth() {
     // Hinweis-Link für neue Nutzer
     if (loginBlock && !currentUserId) {
       const hint = document.createElement("p");
-      hint.innerHTML = '<a href="/content/register.html" style="text-decoration: none; color: inherit; font-size: 0.9rem;">New here? Create an account</a>';
+      hint.innerHTML = '<a href="/la-cerra/content/register.html" style="text-decoration: none; color: inherit; font-size: 0.9rem;">New here? Create an account</a>';
       loginBlock.appendChild(hint);
     }
 
