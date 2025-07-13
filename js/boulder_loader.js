@@ -155,7 +155,7 @@ export async function loadBlocks() {
             <label style="margin-left: 1rem">
               <input type="checkbox" data-flash="true" /> Flash
             </label>
-            <input type="hidden" value="${routeId}" data-route-id-hidden />
+            <input type="hidden" data-route-id-hidden="${routeId}" />
           `;
 
           // Interaktive Sterne direkt nach Erzeugen aktivieren
@@ -198,7 +198,7 @@ export async function loadBlocks() {
           const items = popup.querySelectorAll('li');
 
           for (const item of items) {
-            const routeId = item.querySelector('[data-route-id-hidden]')?.value;
+            const routeId = item.querySelector('[data-route-id-hidden]')?.getAttribute('data-route-id-hidden');
             const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(routeId);
             if (!routeId || !isValidUUID || !userId) {
               console.warn('⏭️ Ungültiger Eintrag übersprungen:', { routeId, userId });
