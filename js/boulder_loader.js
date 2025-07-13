@@ -235,12 +235,12 @@ export async function loadBlocks() {
             const flash = item.querySelector('[data-flash]')?.checked ?? false;
 
             console.log('🔄 Sende an Supabase:', { user_id: userId, route_id: routeId, rating, flash });
-            const { data, error } = await supabase.from('ticklist').insert({
+            const { data, error } = await supabase.from('ticklist').upsert({
               user_id: userId,
               route_id: routeId,
               rating: rating,
               flash: flash
-            }, { onConflict: ['user_id', 'route_id'] });
+            }, { onConflict: ['user_id', 'route_id'], returning: 'minimal' });
 
             if (error) {
               console.error('❌ Fehler beim Speichern in Supabase:', error);
