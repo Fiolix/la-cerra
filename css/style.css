@@ -363,3 +363,19 @@ button#register-button:hover {
   background-color: #5a936a;
 }
 
+.rating-stars {
+  display: flex;
+  gap: 0;
+}
+.rating-stars span {
+  cursor: pointer;
+  padding: 0.3rem;
+  font-size: 1.5rem;
+  user-select: none;
+  color: #999;
+}
+.rating-stars span:hover,
+.rating-stars span:hover ~ span {
+  color: orange;
+}
+
