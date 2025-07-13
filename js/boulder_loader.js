@@ -251,6 +251,11 @@ export async function loadBlocks() {
 
           alert('✅ Ticklist saved successfully!');
           popup.remove();
+
+          // ⬇️ HIER Checkboxen zurücksetzen
+          blockDiv.querySelectorAll('.route-tick input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+          });
         };
 
 
