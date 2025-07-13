@@ -81,6 +81,21 @@ export async function loadBlocks() {
 
     container.appendChild(blockDiv);
 
+    // Add click listener to 'Add to tick list' button
+    const tickButton = blockDiv.querySelector(".ticklist-button button");
+    tickButton?.addEventListener("click", async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData?.session?.user?.id;
+
+      if (!userId) {
+        alert("You need an account to add routes to your personal tick list");
+        return;
+      }
+
+      // ✅ Ab hier: Benutzer ist eingeloggt → Weiterverarbeitung folgt in nächstem Schritt
+      console.log("✅ Eingeloggt: Ticklist-Popup kann angezeigt werden (noch nicht umgesetzt)");
+    });
+
     const option = document.createElement('option');
     option.value = `#block-${block.nummer}`;
     option.textContent = `${block.nummer} ${block.name}`;
