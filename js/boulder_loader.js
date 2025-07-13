@@ -203,10 +203,11 @@ export async function loadBlocks() {
 
             if (!routeId || !userId) continue;
 
+            console.log('🔄 Sende an Supabase:', { user_id: userId, route_id: routeId, rating, flash });
             const { data, error } = await supabase.from('ticklist').insert({
               user_id: userId,
               route_id: routeId,
-              rating: rating || null,
+              rating: rating,
               flash: flash
             });
 
