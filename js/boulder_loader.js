@@ -240,7 +240,7 @@ export async function loadBlocks() {
               route_id: routeId,
               rating: rating,
               flash: flash
-            });
+            }, { onConflict: ['user_id', 'route_id'] });
 
             if (error) {
               console.error('❌ Fehler beim Speichern in Supabase:', error);
