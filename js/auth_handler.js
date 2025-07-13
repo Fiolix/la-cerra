@@ -33,6 +33,13 @@ export function initAuth() {
       return;
     }
 
+    // Hinweis-Link für neue Nutzer
+    if (loginBlock && !currentUserId) {
+      const hint = document.createElement("p");
+      hint.innerHTML = '<a href="/content/register.html" style="text-decoration: none; color: inherit; font-size: 0.9rem;">New here? Create an account</a>';
+      loginBlock.appendChild(hint);
+    }
+
     loginButton?.addEventListener("click", async () => {
       let identifier = emailInput.value.trim();
       const password = passwordInput.value;
@@ -85,11 +92,7 @@ export function initAuth() {
       });
 
       if (loginError) {
-        if (loginError.message?.toLowerCase().includes("invalid login credentials")) {
-          alert("❌ Passwort falsch.");
-        } else {
-          alert("❌ Login fehlgeschlagen: " + loginError.message);
-        }
+        alert("❌ Username oder Passwort falsch.");
         return;
       }
 
