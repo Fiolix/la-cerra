@@ -1,11 +1,37 @@
 import { supabase } from './supabase.js';
 
 export function initAuth() {
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     const emailInput = document.getElementById("user");
     const passwordInput = document.getElementById("password");
     const loginButton = document.getElementById("login-button");
     const loginBlock = document.querySelector(".login-block");
+
+    // ✅ Session-Erkennung beim Laden
+    const { data: sessionData } = await supabase.auth.getSession();
+    const currentUserId = sessionData?.session?.user?.id;
+
+    if (currentUserId && loginBlock) {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("user_id", currentUserId)
+        .maybeSingle();
+
+      const username = profileData?.username || "Nutzer";
+
+      loginBlock.innerHTML = `
+        <p style="margin-bottom: 0.5rem">Angemeldet als: <strong>${username}</strong></p>
+        <button id="logout-button">Logout</button>
+      `;
+
+      const logoutButton = document.getElementById("logout-button");
+      logoutButton?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+        window.location.reload();
+      });
+      return;
+    }
 
     loginButton?.addEventListener("click", async () => {
       let identifier = emailInput.value.trim();
@@ -26,6 +52,7 @@ export function initAuth() {
           .maybeSingle();
 
         console.log("⤵️ Supabase-Ergebnis:", profile);
+        console.log("↪️ profile.user_id:", profile?.user_id);
 
         if (profileError) {
           console.error("Supabase-Fehler beim Suchen nach Username:", profileError);
