@@ -195,7 +195,8 @@ export async function loadBlocks() {
 
           for (const item of items) {
             const routeId = item.querySelector('[data-route-id-hidden]')?.value;
-            const rating = parseInt(item.querySelector('[data-rating]')?.value || '0');
+            const ratingRaw = item.querySelector('[data-rating]')?.value;
+            const rating = ratingRaw ? parseInt(ratingRaw) : null;
             const flash = item.querySelector('[data-flash]')?.checked ?? false;
 
             if (!routeId || !userId) continue;
