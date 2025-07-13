@@ -17,11 +17,15 @@ export function initAuth() {
       }
 
       if (!identifier.includes("@")) {
+        console.log("⤵️ Loginversuch mit Username:", identifier);
+
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("user_id")
           .eq("username", identifier)
           .maybeSingle();
+
+        console.log("⤵️ Supabase-Ergebnis:", profile);
 
         if (profileError) {
           console.error("Supabase-Fehler beim Suchen nach Username:", profileError);
