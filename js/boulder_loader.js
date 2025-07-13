@@ -117,9 +117,16 @@ export async function loadBlocks() {
         popup.style.overflowY = 'auto';
         popup.style.borderRadius = '0.5rem';
 
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = 'Close';
-        closeBtn.style.marginBottom = '1rem';
+        const closeBtn = document.createElement('span');
+        closeBtn.textContent = '×';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '0.5rem';
+        closeBtn.style.right = '0.75rem';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.fontSize = '1.5rem';
+        closeBtn.style.lineHeight = '1';
+        closeBtn.style.color = '#666';
+        closeBtn.title = 'Close';
         closeBtn.onclick = () => popup.remove();
         popup.appendChild(closeBtn);
 
@@ -137,16 +144,14 @@ export async function loadBlocks() {
           item.style.marginBottom = '1rem';
           item.innerHTML = `
             <strong>${routeName}</strong> (${routeGrade})<br>
-            <label>Rating:
-              <select data-rating="true">
-                <option value="">–</option>
-                <option value="1">★☆☆☆☆</option>
-                <option value="2">★★☆☆☆</option>
-                <option value="3">★★★☆☆</option>
-                <option value="4">★★★★☆</option>
-                <option value="5">★★★★★</option>
-              </select>
-            </label>
+            <div class="rating-stars" data-rating-group>
+              <span data-value="1">☆</span>
+              <span data-value="2">☆</span>
+              <span data-value="3">☆</span>
+              <span data-value="4">☆</span>
+              <span data-value="5">☆</span>
+              <input type="hidden" data-rating="true" value="" />
+            </div>
             <label style="margin-left: 1rem">
               <input type="checkbox" data-flash="true" /> Flash
             </label>
@@ -160,7 +165,32 @@ export async function loadBlocks() {
         const submitBtn = document.createElement('button');
         submitBtn.textContent = 'Save ticklist';
         submitBtn.onclick = () => {
-          // Hier erfolgt später das Speichern
+          const ratings = popup.querySelectorAll('[data-rating-group]');
+          ratings.forEach(group => {
+            const stars = group.querySelectorAll('span');
+            stars.forEach(star => {
+              star.addEventListener('click', () => {
+                const val = star.dataset.value;
+                group.querySelector('[data-rating]').value = val;
+                stars.forEach(s => {
+                  s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+                });
+              });
+              star.addEventListener('mouseover', () => {
+                const val = star.dataset.value;
+                stars.forEach(s => {
+                  s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+                });
+              });
+              star.addEventListener('mouseout', () => {
+                const val = group.querySelector('[data-rating]').value;
+                stars.forEach(s => {
+                  s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+                });
+              });
+            });
+          });
+
           alert("✅ Ticklist submitted (saving logic follows in next step)");
           popup.remove();
         };
