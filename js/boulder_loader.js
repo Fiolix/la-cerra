@@ -190,34 +190,31 @@ export async function loadBlocks() {
 
         const submitBtn = document.createElement('button');
         submitBtn.textContent = 'Save ticklist';
-        submitBtn.onclick = () => {
-          const ratings = popup.querySelectorAll('[data-rating-group]');
-          ratings.forEach(group => {
-            const stars = group.querySelectorAll('span');
-            stars.forEach(star => {
-              star.addEventListener('click', () => {
-                const val = star.dataset.value;
-                group.querySelector('[data-rating]').value = val;
-                stars.forEach(s => {
-                  s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
-                });
-              });
-              star.addEventListener('mouseover', () => {
-                const val = star.dataset.value;
-                stars.forEach(s => {
-                  s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
-                });
-              });
-              star.addEventListener('mouseout', () => {
-                const val = group.querySelector('[data-rating]').value;
-                stars.forEach(s => {
-                  s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
-                });
-              });
-            });
-          });
+        submitBtn.onclick = async () => {
+          const items = popup.querySelectorAll('li');
 
-          alert("✅ Ticklist submitted (saving logic follows in next step)");
+          for (const item of items) {
+            const routeId = item.querySelector('[data-route-id-hidden]')?.value;
+            const rating = parseInt(item.querySelector('[data-rating]')?.value || '0');
+            const flash = item.querySelector('[data-flash]')?.checked ?? false;
+
+            if (!routeId || !userId) continue;
+
+            const { data, error } = await supabase.from('ticklist').insert({
+              user_id: userId,
+              route_id: routeId,
+              rating: rating || null,
+              flash: flash
+            });
+
+            if (error) {
+              console.error('❌ Fehler beim Speichern in Supabase:', error);
+              alert('An error occurred while saving your ticklist.');
+              return;
+            }
+          }
+
+          alert('✅ Ticklist saved successfully!');
           popup.remove();
         };
 
