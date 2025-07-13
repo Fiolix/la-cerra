@@ -33,11 +33,15 @@ export function initAuth() {
       return;
     }
 
-    // Hinweis-Link für neue Nutzer
+    // Hinweis-Link für neue Nutzer (geladen über loadContent)
     if (loginBlock && !currentUserId) {
       const hint = document.createElement("p");
-      hint.innerHTML = '<a href="/la-cerra/content/register.html" style="text-decoration: none; color: inherit; font-size: 0.9rem;">New here? Create an account</a>';
+      hint.innerHTML = '<span id="register-link" style="cursor: pointer; text-decoration: none; color: inherit; font-size: 0.9rem;">New here? Create an account</span>';
       loginBlock.appendChild(hint);
+
+      document.getElementById("register-link")?.addEventListener("click", () => {
+        window.loadContent("content/register.html");
+      });
     }
 
     loginButton?.addEventListener("click", async () => {
