@@ -315,3 +315,51 @@ canvas {
   text-decoration: underline;
 }
 
+main {
+  display: block;
+  padding: 1rem;
+}
+
+.register-form {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.3rem;
+  box-sizing: border-box;
+}
+
+.form-note {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+button#register-button {
+  padding: 0.6rem 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.3rem;
+  background-color: #6da77d;
+  color: white;
+  cursor: pointer;
+}
+
+button#register-button:hover {
+  background-color: #5a936a;
+}
+
