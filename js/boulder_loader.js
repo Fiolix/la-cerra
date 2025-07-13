@@ -60,7 +60,7 @@ export async function loadBlocks() {
               : 'not available'}
           </div>
           <div class="route-tick">
-            <input type="checkbox" title="Mark as climbed" data-route-id="${route.id}" />
+            <input type="checkbox" title="Mark as climbed" data-route-id="${route.uuid}" />
           </div>
         </div>
       </div>
