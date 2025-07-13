@@ -145,11 +145,11 @@ export async function loadBlocks() {
           item.innerHTML = `
             <strong>${routeName}</strong> (${routeGrade})<br>
             <div class="rating-stars" data-rating-group>
-              <span data-value="1">☆</span>
-              <span data-value="2">☆</span>
-              <span data-value="3">☆</span>
-              <span data-value="4">☆</span>
-              <span data-value="5">☆</span>
+              <span data-value="1" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
+              <span data-value="2" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
+              <span data-value="3" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
+              <span data-value="4" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
+              <span data-value="5" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
               <input type="hidden" data-rating="true" value="" />
             </div>
             <label style="margin-left: 1rem">
