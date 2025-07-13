@@ -157,6 +157,32 @@ export async function loadBlocks() {
             </label>
             <input type="hidden" value="${routeId}" data-route-id-hidden />
           `;
+
+          // Interaktive Sterne direkt nach Erzeugen aktivieren
+          const ratingGroup = item.querySelector('[data-rating-group]');
+          const stars = ratingGroup.querySelectorAll('span');
+          stars.forEach(star => {
+            star.addEventListener('click', () => {
+              const val = star.dataset.value;
+              ratingGroup.querySelector('[data-rating]').value = val;
+              stars.forEach(s => {
+                s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+              });
+            });
+            star.addEventListener('mouseover', () => {
+              const val = star.dataset.value;
+              stars.forEach(s => {
+                s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+              });
+            });
+            star.addEventListener('mouseout', () => {
+              const val = ratingGroup.querySelector('[data-rating]').value;
+              stars.forEach(s => {
+                s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+              });
+            });
+          });
+
           list.appendChild(item);
         });
 
