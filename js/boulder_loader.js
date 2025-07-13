@@ -199,8 +199,6 @@ export async function loadBlocks() {
           submitBtn.textContent = 'Save ticklist';
           popup.appendChild(submitBtn);
         }
-        }
-
         // Handler immer neu setzen
         submitBtn.onclick = async () => {
           const items = popup.querySelectorAll('li');
