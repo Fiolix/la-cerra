@@ -191,13 +191,14 @@ export async function loadBlocks() {
         
         document.body.appendChild(popup);
 
-        // Submit-Button hinzufügen (immer)
+        // Submit-Button hinzufügen (einmal)
         let submitBtn = popup.querySelector('#submit-ticklist-button');
         if (!submitBtn) {
           submitBtn = document.createElement('button');
           submitBtn.id = 'submit-ticklist-button';
           submitBtn.textContent = 'Save ticklist';
           popup.appendChild(submitBtn);
+        }
         }
 
         // Handler immer neu setzen
@@ -235,44 +236,7 @@ export async function loadBlocks() {
           popup.remove();
         };
 
-        // Submit-Button aktivieren (immer neu)
-        const submitBtn = popup.querySelector('button') || document.createElement('button');
-        submitBtn.textContent = 'Save ticklist';
-        submitBtn.onclick = async () => {
-          const items = popup.querySelectorAll('li');
 
-          for (const item of items) {
-            const routeId = item.querySelector('[data-route-id-hidden]')?.getAttribute('data-route-id-hidden');
-            const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(routeId);
-            if (!routeId || !isValidUUID || !userId) {
-              console.warn('⏭️ Ungültiger Eintrag übersprungen:', { routeId, userId });
-              continue;
-            }
-
-            const ratingRaw = item.querySelector('[data-rating]')?.value;
-            const rating = ratingRaw ? parseInt(ratingRaw) : null;
-            const flash = item.querySelector('[data-flash]')?.checked ?? false;
-
-            console.log('🔄 Sende an Supabase:', { user_id: userId, route_id: routeId, rating, flash });
-            const { data, error } = await supabase.from('ticklist').insert({
-              user_id: userId,
-              route_id: routeId,
-              rating: rating,
-              flash: flash
-            });
-
-            if (error) {
-              console.error('❌ Fehler beim Speichern in Supabase:', error);
-              alert('An error occurred while saving your ticklist.');
-              return;
-            }
-          }
-
-          alert('✅ Ticklist saved successfully!');
-          popup.remove();
-        };
-
-        popup.appendChild(submitBtn);
       }
     });
 
