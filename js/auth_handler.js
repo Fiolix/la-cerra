@@ -23,8 +23,14 @@ export function initAuth() {
           .eq("username", identifier)
           .maybeSingle();
 
-        if (!profile || profileError) {
-          alert("Dieser Username ist nicht registriert. Bitte registrieren.");
+        if (profileError) {
+          console.error("Supabase-Fehler beim Suchen nach Username:", profileError);
+          alert("Fehler bei der Anmeldung. Bitte später erneut versuchen.");
+          return;
+        }
+
+        if (!profile) {
+          alert("Dieser Username wurde nicht gefunden. Achte auf die genaue Schreibweise.");
           return;
         }
 
