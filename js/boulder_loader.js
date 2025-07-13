@@ -188,7 +188,11 @@ export async function loadBlocks() {
 
         popup.appendChild(list);
 
-        const submitBtn = document.createElement('button');
+        
+        document.body.appendChild(popup);
+
+        // Submit-Button aktivieren (immer neu)
+        const submitBtn = popup.querySelector('button') || document.createElement('button');
         submitBtn.textContent = 'Save ticklist';
         submitBtn.onclick = async () => {
           const items = popup.querySelectorAll('li');
@@ -196,12 +200,14 @@ export async function loadBlocks() {
           for (const item of items) {
             const routeId = item.querySelector('[data-route-id-hidden]')?.value;
             const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(routeId);
-            if (!routeId || !isValidUUID || !userId) continue;
+            if (!routeId || !isValidUUID || !userId) {
+              console.warn('⏭️ Ungültiger Eintrag übersprungen:', { routeId, userId });
+              continue;
+            }
+
             const ratingRaw = item.querySelector('[data-rating]')?.value;
             const rating = ratingRaw ? parseInt(ratingRaw) : null;
             const flash = item.querySelector('[data-flash]')?.checked ?? false;
-
-            if (!routeId || !userId) continue;
 
             console.log('🔄 Sende an Supabase:', { user_id: userId, route_id: routeId, rating, flash });
             const { data, error } = await supabase.from('ticklist').insert({
@@ -223,7 +229,6 @@ export async function loadBlocks() {
         };
 
         popup.appendChild(submitBtn);
-        document.body.appendChild(popup);
       }
     });
 
