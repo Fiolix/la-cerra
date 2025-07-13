@@ -40,7 +40,7 @@ export function initAuth() {
       loginBlock.appendChild(hint);
 
       document.getElementById("register-link")?.addEventListener("click", () => {
-        window.loadContent("content/register.html");
+        window.loadContent("la-cerra/content/register.html");
       });
     }
 
