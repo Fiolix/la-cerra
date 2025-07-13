@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <input type="text" id="user" name="user" placeholder="User" />
       <input type="password" id="password" name="password" placeholder="Password" />
       <button id="login-button" type="button">Log In</button>
+<p><a href="#" data-page="register" style="text-decoration: none; color: inherit; font-size: 0.9rem;">New here? Create an account</a></p>
     </div>
 
     <div class="language-switcher">
