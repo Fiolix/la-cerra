@@ -6,6 +6,7 @@ export function initAuth() {
     const passwordInput = document.getElementById("password");
     const loginButton = document.getElementById("login-button");
     const loginBlock = document.querySelector(".login-block");
+    const createLink = document.querySelector('[data-page="register"]')?.closest('li');
 
     // ✅ Session-Erkennung beim Laden
     const { data: sessionData } = await supabase.auth.getSession();
@@ -30,6 +31,9 @@ export function initAuth() {
         await supabase.auth.signOut();
         window.location.reload();
       });
+
+      // 🔒 Verstecke Link zu "Create Account" wenn eingeloggt
+      if (createLink) createLink.style.display = "none";
       return;
     }
 
@@ -111,6 +115,9 @@ export function initAuth() {
           window.location.reload();
         });
       }
+
+      // 🔒 Verstecke Link zu "Create Account" nach erfolgreichem Login
+      if (createLink) createLink.style.display = "none";
     });
   });
 }
