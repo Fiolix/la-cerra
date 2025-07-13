@@ -195,6 +195,8 @@ export async function loadBlocks() {
 
           for (const item of items) {
             const routeId = item.querySelector('[data-route-id-hidden]')?.value;
+            const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(routeId);
+            if (!routeId || !isValidUUID || !userId) continue;
             const ratingRaw = item.querySelector('[data-rating]')?.value;
             const rating = ratingRaw ? parseInt(ratingRaw) : null;
             const flash = item.querySelector('[data-flash]')?.checked ?? false;
