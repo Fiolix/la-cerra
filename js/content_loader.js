@@ -1,11 +1,8 @@
-// content_loader.js (DEBUG-VERSION mit Modul-Erkennung + BurgerMenu-Kompatibilität)
+// content_loader.js (mit Modul-Erkennung + BurgerMenu-Kompatibilität)
 
 const contentElement = document.getElementById("content");
-const links = document.querySelectorAll("[data-page]");
 
-console.log("📦 content_loader.js geladen");
-
-// 1. Funktion zum Laden einer Seite auslagern
+// 1. Funktion zum Laden einer Seite
 async function loadPage(page) {
   const url = `/la-cerra/content/${page}`;
   console.log(`📥 Versuche zu laden: ${url}`);
@@ -15,11 +12,8 @@ async function loadPage(page) {
     if (!response.ok) throw new Error("Seite konnte nicht geladen werden");
     const html = await response.text();
 
-    // ✅ Vorherigen Inhalt komplett entfernen
-    contentElement.innerHTML = '';
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
-    console.log("📄 HTML-Inhalt erhalten:", html);
 
     // Dynamisch benötigte Module nachladen
     if (html.includes('id="boulder-blocks"')) {
@@ -33,17 +27,17 @@ async function loadPage(page) {
         .then(module => module.setupSummaryToggle())
         .catch(err => console.error("❌ Fehler beim Laden von summary_toggle.js:", err));
     }
+
     if (html.includes('id="routen-diagramm"')) {
       const sektorName = page.replace(".html", "");
-      console.log("📊 Importiere Diagramm-Loader für:", sektorName);
       import("/la-cerra/js/routen_diagram_loader.js")
         .then(module => module.loadRoutenDiagramm(sektorName))
         .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
     }
 
-    // Registrierungsskript nachladen
     if (page === "register.html") {
       import("/la-cerra/js/register_handler.js")
+        .then(module => module.initRegisterForm())
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
     }
 
@@ -53,7 +47,7 @@ async function loadPage(page) {
   }
 }
 
-// 2. Robuster Klick-Listener für ALLE [data-page]-Links – auch dynamisch eingefügte
+// 2. Klick-Listener für [data-page]-Links
 document.body.addEventListener("click", (e) => {
   const link = e.target.closest("[data-page]");
   if (!link) return;
@@ -63,16 +57,12 @@ document.body.addEventListener("click", (e) => {
   loadPage(page);
 });
 
-
-// 3. Für externe Aufrufe durch burger_menu.js
-
+// 3. Event-Listener für externes Laden durch burger_menu.js
 document.addEventListener("loadPage", (e) => {
-  console.log("📨 Event loadPage empfangen mit:", e.detail);
   loadPage(e.detail);
 });
 
-// 💡 Startseite automatisch laden (z. B. start.html)
+// 4. Startseite automatisch laden
 window.addEventListener("DOMContentLoaded", () => {
-  console.log("🌐 DOM fertig, lade Startseite...");
   loadPage("start.html");
 });
