@@ -1,11 +1,16 @@
 import { supabase } from './supabase.js';
 
-document.addEventListener("DOMContentLoaded", () => {
+export async function initRegisterForm() {
   const usernameInput = document.getElementById("username");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirm-password");
   const registerButton = document.getElementById("register-button");
+
+  if (!registerButton) {
+    console.warn("⚠️ Kein #register-button gefunden – Registrierung wird nicht initialisiert.");
+    return;
+  }
 
   registerButton.addEventListener("click", async () => {
     const username = usernameInput.value.trim();
@@ -34,10 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password
-    });
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
 
     if (signUpError) {
       alert("❌ Registrierung fehlgeschlagen: " + signUpError.message);
@@ -63,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("❌ Fehler beim Speichern des Profils. Details findest du in der Konsole.");
     } else {
       alert("✅ Registrierung erfolgreich! Du kannst dich jetzt einloggen.");
-      window.location.href = "/index.html";
+      window.location.href = "index.html";
     }
   });
-});
+}
