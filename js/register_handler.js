@@ -4,27 +4,38 @@ export async function initRegisterForm() {
   console.log("🛠️ initRegisterForm() gestartet");
 
   const form = document.querySelector(".register-form");
-  const usernameInput = document.getElementById("username");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const confirmPasswordInput = document.getElementById("confirm-password");
-
   if (!form) {
     console.warn("⚠️ Kein Formular gefunden – Registrierung wird nicht initialisiert.");
     return;
   }
 
-  // Vorherige Listener entfernen, falls mehrfach geladen
+  // Testausgabe aller Felder
+  console.log("📋 Gefundene Felder:", {
+    username: document.getElementById("username"),
+    email: document.getElementById("email"),
+    password: document.getElementById("password"),
+    confirmPassword: document.getElementById("confirm-password"),
+  });
+
+  // Klonen, um alte Eventlistener zu entfernen
   const newForm = form.cloneNode(true);
   form.replaceWith(newForm);
 
+  const usernameInput = newForm.querySelector("#username");
+  const emailInput = newForm.querySelector("#email");
+  const passwordInput = newForm.querySelector("#password");
+  const confirmPasswordInput = newForm.querySelector("#confirm-password");
+
   newForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    console.log("🚀 submit-Handler ausgelöst");
 
     const username = usernameInput.value.trim();
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
+
+    console.log("📨 Formulardaten:", { username, email, password, confirmPassword });
 
     if (!username || !email || !password || !confirmPassword) {
       alert("Bitte fülle alle Felder aus.");
