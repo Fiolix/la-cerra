@@ -14,7 +14,7 @@ async function loadPage(page) {
     const response = await fetch(url);
     if (!response.ok) throw new Error("Seite konnte nicht geladen werden");
     const html = await response.text();
-    
+
     // ✅ Vorherigen Inhalt komplett entfernen
     contentElement.innerHTML = '';
     contentElement.innerHTML = html;
@@ -39,7 +39,13 @@ async function loadPage(page) {
       import("/la-cerra/js/routen_diagram_loader.js")
         .then(module => module.loadRoutenDiagramm(sektorName))
         .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
-}
+    }
+
+    // Registrierungsskript nachladen
+    if (page === "register.html") {
+      import("/la-cerra/js/register_handler.js")
+        .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
+    }
 
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
@@ -70,6 +76,3 @@ window.addEventListener("DOMContentLoaded", () => {
   console.log("🌐 DOM fertig, lade Startseite...");
   loadPage("start.html");
 });
-
-
-
