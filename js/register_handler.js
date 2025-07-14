@@ -3,23 +3,23 @@ import { supabase } from './supabase.js';
 export async function initRegisterForm() {
   console.log("🛠️ initRegisterForm() gestartet");
 
+  const form = document.querySelector(".register-form");
   const usernameInput = document.getElementById("username");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirm-password");
-  const registerButton = document.getElementById("register-button");
 
-  if (!registerButton) {
-    console.warn("⚠️ Kein #register-button gefunden – Registrierung wird nicht initialisiert.");
+  if (!form) {
+    console.warn("⚠️ Kein Formular gefunden – Registrierung wird nicht initialisiert.");
     return;
   }
 
-  // Bestehende Eventlistener entfernen (falls Seite mehrfach geladen wurde)
-  registerButton.replaceWith(registerButton.cloneNode(true));
-  const newRegisterButton = document.getElementById("register-button");
+  // Vorherige Listener entfernen, falls mehrfach geladen
+  const newForm = form.cloneNode(true);
+  form.replaceWith(newForm);
 
-  newRegisterButton.addEventListener("click", async (event) => {
-    event.preventDefault(); // Unterdrückt Standard-HTML-Validierung
+  newForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
     const username = usernameInput.value.trim();
     const email = emailInput.value.trim();
