@@ -1,9 +1,15 @@
-// content_loader.js (mit robuster Erkennung für register)
+// content_loader.js (DEBUG-VERSION mit doppelter Ladeprüfung)
 
 const contentElement = document.getElementById("content");
+let lastLoadedPage = null;
 
-// 1. Funktion zum Laden einer Seite
 async function loadPage(page) {
+  if (page === lastLoadedPage) {
+    console.log(`⚠️ Seite '${page}' wurde bereits geladen – Abbruch.`);
+    return;
+  }
+  lastLoadedPage = page;
+
   const url = `/la-cerra/content/${page}`;
   console.log(`📥 Versuche zu laden: ${url}`);
 
@@ -15,7 +21,6 @@ async function loadPage(page) {
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
 
-    // Dynamisch benötigte Module nachladen
     if (html.includes('id="boulder-blocks"')) {
       import("/la-cerra/js/boulder_loader.js")
         .then(module => module.loadBlocks())
@@ -35,7 +40,6 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
     }
 
-    // Wichtig: Register-Modul auch bei "register" oder "register.html" laden
     if (page.replace(/\.html$/, '') === "register") {
       import("/la-cerra/js/register_handler.js")
         .then(module => module.initRegisterForm())
@@ -48,7 +52,7 @@ async function loadPage(page) {
   }
 }
 
-// 2. Klick-Listener für [data-page]-Links
+// Klick-Listener für [data-page]-Links
 document.body.addEventListener("click", (e) => {
   const link = e.target.closest("[data-page]");
   if (!link) return;
@@ -58,12 +62,12 @@ document.body.addEventListener("click", (e) => {
   loadPage(page);
 });
 
-// 3. Event-Listener für externes Laden durch burger_menu.js
+// Event-Listener für externes Laden durch burger_menu.js
 document.addEventListener("loadPage", (e) => {
   loadPage(e.detail);
 });
 
-// 4. Startseite automatisch laden
+// Startseite automatisch laden
 window.addEventListener("DOMContentLoaded", () => {
   loadPage("start.html");
 });
