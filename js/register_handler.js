@@ -1,6 +1,8 @@
 import { supabase } from './supabase.js';
 
 export async function initRegisterForm() {
+  console.log("🛠️ initRegisterForm() gestartet");
+
   const usernameInput = document.getElementById("username");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -12,7 +14,13 @@ export async function initRegisterForm() {
     return;
   }
 
-  registerButton.addEventListener("click", async () => {
+  // Bestehende Eventlistener entfernen (falls Seite mehrfach geladen wurde)
+  registerButton.replaceWith(registerButton.cloneNode(true));
+  const newRegisterButton = document.getElementById("register-button");
+
+  newRegisterButton.addEventListener("click", async (event) => {
+    event.preventDefault(); // Unterdrückt Standard-HTML-Validierung
+
     const username = usernameInput.value.trim();
     const email = emailInput.value.trim();
     const password = passwordInput.value;
