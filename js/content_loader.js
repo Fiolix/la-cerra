@@ -1,4 +1,4 @@
-// content_loader.js (mit Modul-Erkennung + BurgerMenu-Kompatibilität)
+// content_loader.js (mit robuster Erkennung für register)
 
 const contentElement = document.getElementById("content");
 
@@ -35,7 +35,8 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
     }
 
-    if (page === "register.html") {
+    // Wichtig: Register-Modul auch bei "register" oder "register.html" laden
+    if (page.replace(/\.html$/, '') === "register") {
       import("/la-cerra/js/register_handler.js")
         .then(module => module.initRegisterForm())
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
