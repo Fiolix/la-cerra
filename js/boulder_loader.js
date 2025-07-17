@@ -257,6 +257,7 @@ ratings.forEach(entry => {
           const items = popup.querySelectorAll('li');
 
           for (const item of items) {
+            const gradeSuggestion = item.querySelector('[data-grade-suggestion]')?.value ?? null;
             const routeId = item.querySelector('[data-route-id-hidden]')?.getAttribute('data-route-id-hidden');
             const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(routeId);
             if (!routeId || !isValidUUID || !userId) {
@@ -273,7 +274,8 @@ ratings.forEach(entry => {
               user_id: userId,
               route_id: routeId,
               rating: rating,
-              flash: flash
+              flash: flash,
+              grade_suggestion: gradeSuggestion
             }, { onConflict: ['user_id', 'route_id'], returning: 'minimal' });
 
             if (error) {
