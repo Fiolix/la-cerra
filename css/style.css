@@ -379,3 +379,9 @@ button#register-button:hover {
   color: orange;
 }
 
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+}
