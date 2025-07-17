@@ -115,6 +115,7 @@ gradeData.forEach(entry => {
       <div class=\"route-meta\">
         <div class=\"route-stars\">${ratingDisplay}</div>
         ${gradeDisplay ? `<div class=\"route-usergrade\">${gradeDisplay}</div>` : ''}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem;">
         <div class=\"route-video\">
           ${route.video_url
             ? `<a href=\"${route.video_url}\" target=\"_blank\" rel=\"noopener noreferrer\">Beta video</a>`
