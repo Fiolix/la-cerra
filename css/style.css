@@ -165,9 +165,7 @@ img {
 }
 
 .route-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: block;
   margin-top: 0.25rem;
   font-size: 1.1rem;
   color: #999;
