@@ -87,7 +87,7 @@ ratings.forEach(entry => {
       </div>
     </div>
   `;
-}).join(''););
+}).join('');
 
     blockDiv.innerHTML = `
       <div class="block-header">
