@@ -80,31 +80,54 @@ gradeData.forEach(entry => {
   const routeRatings = ratingMap[route.uuid] || [];
   const ratingCount = routeRatings.length;
   const ratingAvg = ratingCount > 0 ? routeRatings.reduce((a, b) => a + b, 0) / ratingCount : 0;
-  const stars = Array.from({ length: 5 }, (_, i) => `<span style="color:${i < ratingAvg ? 'gold' : '#ccc'}">★</span>`).join('');
+  const stars = Array.from({ length: 5 }, (_, i) => `<span style=\"color:${i < ratingAvg ? 'gold' : '#ccc'}\">★</span>`).join('');
   const ratingDisplay = ratingCount > 0 ? `${stars} <span style='color:#999; font-size: 0.8em;'>(${ratingCount})</span>` : '★★★★★';
 
+  const routeGrades = gradeMap[route.uuid] || [];
+  const gradeCount = routeGrades.length;
+
+  const fbToValue = {
+    '2a': 1, '2b': 2, '2c': 3,
+    '3a': 4, '3b': 5, '3c': 6,
+    '4a': 7, '4b': 8, '4c': 9,
+    '5a': 10, '5b': 11, '5c': 12,
+    '6a': 13, '6a+': 14, '6b': 15, '6b+': 16, '6c': 17, '6c+': 18,
+    '7a': 19, '7a+': 20, '7b': 21, '7b+': 22, '7c': 23, '7c+': 24,
+    '8a': 25, '8a+': 26, '8b': 27, '8b+': 28, '8c': 29, '8c+': 30,
+    '9a': 31
+  };
+  const valueToFb = Object.fromEntries(Object.entries(fbToValue).map(([k, v]) => [v, k]));
+
+  const numericGrades = routeGrades.map(g => fbToValue[g]).filter(Boolean);
+  const gradeAvg = numericGrades.length > 0
+    ? Math.round(numericGrades.reduce((a, b) => a + b, 0) / numericGrades.length)
+    : null;
+  const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg]} <span style='color:#999; font-size: 0.8em;'>(${gradeCount})</span>` : '';
+
   return `
-    <div class="route">
-      <div class="route-title">
-        <span class="route-label">${route.buchstabe}</span>
-        <span class="route-name">${route.name ?? ''}</span>
-        <span class="route-grade">${route.grad ?? '?'}</span>
+    <div class=\"route\">
+      <div class=\"route-title\">
+        <span class=\"route-label\">${route.buchstabe}</span>
+        <span class=\"route-name\">${route.name ?? ''}</span>
+        <span class=\"route-grade\">${route.grad ?? '?'}</span>
       </div>
-      ${route.beschreibung ? `<p class="route-description"><em>${route.beschreibung}</em></p>` : ''}
-      <div class="route-meta">
-        <div class="route-stars">${ratingDisplay}</div>
-        <div class="route-video">
+      ${route.beschreibung ? `<p class=\"route-description\"><em>${route.beschreibung}</em></p>` : ''}
+      <div class=\"route-meta\">
+        <div class=\"route-stars\">${ratingDisplay}</div>
+        ${gradeDisplay ? `<div class=\"route-usergrade\">${gradeDisplay}</div>` : ''}
+        <div class=\"route-video\">
           ${route.video_url
-            ? `<a href="${route.video_url}" target="_blank" rel="noopener noreferrer">Beta video</a>`
+            ? `<a href=\"${route.video_url}\" target=\"_blank\" rel=\"noopener noreferrer\">Beta video</a>`
             : 'not available'}
         </div>
-        <div class="route-tick">
-          <input type="checkbox" title="Mark as climbed" data-route-id="${route.uuid}" />
+        <div class=\"route-tick\">
+          <input type=\"checkbox\" title=\"Mark as climbed\" data-route-id=\"${route.uuid}\" />
         </div>
       </div>
     </div>
   `;
 }).join('');
+
 
     blockDiv.innerHTML = `
       <div class="block-header">
