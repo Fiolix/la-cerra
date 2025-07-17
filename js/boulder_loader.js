@@ -50,6 +50,23 @@ ratings.forEach(entry => {
   ratingMap[entry.route_id].push(entry.rating);
 });
 
+const { data: gradeData, error: gradeError } = await supabase
+  .from('ticklist')
+  .select('route_id, grade_suggestion')
+  .not('grade_suggestion', 'is', null);
+
+if (gradeError) {
+  console.error('❌ Fehler beim Laden der Grade:', gradeError);
+  return;
+}
+
+const gradeMap = {};
+gradeData.forEach(entry => {
+  if (!gradeMap[entry.route_id]) gradeMap[entry.route_id] = [];
+  gradeMap[entry.route_id].push(entry.grade_suggestion);
+});
+
+
   blocks.forEach(block => {
     const blockRoutes = routes
       .filter(r => r.block_id === block.id)
