@@ -113,22 +113,23 @@ gradeData.forEach(entry => {
       </div>
       ${route.beschreibung ? `<p class=\"route-description\"><em>${route.beschreibung}</em></p>` : ''}
       <div class=\"route-meta\">
-<div style="display: flex; justify-content: space-between;">        
-<div class=\"route-stars\">${ratingDisplay}</div>
-        ${gradeDisplay ? `<div class="route-usergrade">User grading: ${gradeDisplay}</div>` : ''}
+        <div style="display: flex; justify-content: space-between;">        
+          <div class=\"route-stars\">${ratingDisplay}</div>
+          ${gradeDisplay ? `<div class="route-usergrade">User grading: ${gradeDisplay}</div>` : ''}
+        </div>        
+
         <div style="display: flex; justify-content: space-between; margin-top: 0.25rem;">
-        <div class=\"route-video\">
-          ${route.video_url
+          <div class=\"route-video\">
+            ${route.video_url
             ? `<a href=\"${route.video_url}\" target=\"_blank\" rel=\"noopener noreferrer\">Beta video</a>`
             : 'not available'}
         </div>
         <div class=\"route-tick\">
-          <input type=\"checkbox\" title=\"Mark as climbed\" data-route-id=\"${route.uuid}\" />
+          Tick route: <input type=\"checkbox\" title=\"Mark as climbed\" data-route-id=\"${route.uuid}\" />
         </div>
       </div>
     </div>
-   </div>
-  `;
+
 }).join('');
 
 
