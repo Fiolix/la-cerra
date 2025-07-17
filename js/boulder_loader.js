@@ -64,7 +64,7 @@ ratings.forEach(entry => {
   const ratingCount = routeRatings.length;
   const ratingAvg = ratingCount > 0 ? routeRatings.reduce((a, b) => a + b, 0) / ratingCount : 0;
   const stars = Array.from({ length: 5 }, (_, i) => `<span style="color:${i < ratingAvg ? 'gold' : '#ccc'}">★</span>`).join('');
-  const ratingDisplay = ratingCount > 0 ? `${stars} <span style='color:#999'>(${ratingCount})</span>` : '★★★★★';
+  const ratingDisplay = ratingCount > 0 ? `${stars} <span style='color:#999; font-size: 0.8em;'>(${ratingCount})</span>` : '★★★★★';
 
   return `
     <div class="route">
