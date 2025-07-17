@@ -59,33 +59,35 @@ ratings.forEach(entry => {
     blockDiv.id = `block-${block.nummer}`;
     blockDiv.style.marginTop = '2rem';
 
-    const routesHtml = blockRoutes.map(route => `
-      const routeRatings = ratingMap[route.uuid] || [];
-      const ratingCount = routeRatings.length;
-      const ratingAvg = ratingCount > 0 ? routeRatings.reduce((a, b) => a + b, 0) / ratingCount : 0;
-      const stars = Array.from({ length: 5 }, (_, i) => `<span style="color:${i < ratingAvg ? 'gold' : '#ccc'}">★</span>`).join('');
-      const ratingDisplay = ratingCount > 0 ? `${stars} <span style='color:#999'>(${ratingCount})</span>` : '★★★★★';
+    const routesHtml = blockRoutes.map(route => {
+  const routeRatings = ratingMap[route.uuid] || [];
+  const ratingCount = routeRatings.length;
+  const ratingAvg = ratingCount > 0 ? routeRatings.reduce((a, b) => a + b, 0) / ratingCount : 0;
+  const stars = Array.from({ length: 5 }, (_, i) => `<span style="color:${i < ratingAvg ? 'gold' : '#ccc'}">★</span>`).join('');
+  const ratingDisplay = ratingCount > 0 ? `${stars} <span style='color:#999'>(${ratingCount})</span>` : '★★★★★';
 
-      <div class="route">
-        <div class="route-title">
-          <span class="route-label">${route.buchstabe}</span>
-          <span class="route-name">${route.name ?? ''}</span>
-          <span class="route-grade">${route.grad ?? '?'}</span>
+  return `
+    <div class="route">
+      <div class="route-title">
+        <span class="route-label">${route.buchstabe}</span>
+        <span class="route-name">${route.name ?? ''}</span>
+        <span class="route-grade">${route.grad ?? '?'}</span>
+      </div>
+      ${route.beschreibung ? `<p class="route-description"><em>${route.beschreibung}</em></p>` : ''}
+      <div class="route-meta">
+        <div class="route-stars">${ratingDisplay}</div>
+        <div class="route-video">
+          ${route.video_url
+            ? `<a href="${route.video_url}" target="_blank" rel="noopener noreferrer">Beta video</a>`
+            : 'not available'}
         </div>
-        ${route.beschreibung ? `<p class="route-description"><em>${route.beschreibung}</em></p>` : ''}
-        <div class="route-meta">
-          <div class="route-stars">${ratingDisplay}</div>
-          <div class="route-video">
-            ${route.video_url
-              ? `<a href="${route.video_url}" target="_blank" rel="noopener noreferrer">Beta video</a>`
-              : 'not available'}
-          </div>
-          <div class="route-tick">
-            <input type="checkbox" title="Mark as climbed" data-route-id="${route.uuid}" />
-          </div>
+        <div class="route-tick">
+          <input type="checkbox" title="Mark as climbed" data-route-id="${route.uuid}" />
         </div>
       </div>
-    `).join('');
+    </div>
+  `;
+}).join(''););
 
     blockDiv.innerHTML = `
       <div class="block-header">
