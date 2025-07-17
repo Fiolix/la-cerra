@@ -197,8 +197,6 @@ ratings.forEach(entry => {
             <label style="margin-left: 1rem">
               <input type="checkbox" data-flash="true" /> Flash
             </label>
-            <input type="hidden" data-route-id-hidden="${routeId}" />
-          `;
 <select data-grade-suggestion style="margin-top: 0.5rem;">
   <option value="">Grad vorschlagen ...</option>
   <option>2a</option><option>2b</option><option>2c</option>
@@ -210,6 +208,9 @@ ratings.forEach(entry => {
   <option>8a</option><option>8a+</option><option>8b</option><option>8b+</option><option>8c</option><option>8c+</option>
   <option>9a</option>
 </select>
+            <input type="hidden" data-route-id-hidden="${routeId}" />
+          `;
+
           // Interaktive Sterne direkt nach Erzeugen aktivieren
           const ratingGroup = item.querySelector('[data-rating-group]');
           const stars = ratingGroup.querySelectorAll('span');
