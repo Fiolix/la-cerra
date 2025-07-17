@@ -126,6 +126,7 @@ gradeData.forEach(entry => {
         </div>
       </div>
     </div>
+   </div>
   `;
 }).join('');
 
