@@ -1,6 +1,6 @@
 // 📦 Lädt und zeigt Profildaten + Ticklist-Statistiken
 
-async function initProfile() {
+export async function initProfile() {
   console.log("🧾 Lade Profildaten...");
 
   const user = supabase.auth.user();
@@ -51,7 +51,4 @@ async function initProfile() {
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
 }
 
-// Optional: bei Seitenladung ausführen, wenn Profilseite aktiv ist
-if (document.querySelector(".profile-container")) {
-  initProfile();
-}
+
