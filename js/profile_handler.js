@@ -5,7 +5,10 @@ import { supabase } from './supabase.js';
 export async function initProfile() {
   console.log("🧾 Lade Profildaten...");
 
-  const user = supabase.auth.user();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
   if (!user) {
     alert("Not logged in");
     return;
