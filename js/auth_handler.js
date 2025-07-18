@@ -23,6 +23,7 @@ export function initAuth() {
 
       loginBlock.innerHTML = `
         <p style="margin-bottom: 0.5rem">Angemeldet als: <strong>${username}</strong></p>
+        <p><a href="#" data-page="profile">My Profile</a></p>
         <button id="logout-button">Logout</button>
       `;
 
