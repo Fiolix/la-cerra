@@ -21,6 +21,12 @@ async function loadPage(page) {
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
 
+    if (page === "profile") {
+      import("/la-cerra/js/profile_handler.js")
+        .then(module => module.initProfile())
+        .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
+    }
+
     if (html.includes('id="boulder-blocks"')) {
       import("/la-cerra/js/boulder_loader.js")
         .then(module => module.loadBlocks())
