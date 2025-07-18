@@ -1,5 +1,7 @@
 // 📦 Lädt und zeigt Profildaten + Ticklist-Statistiken
 
+import { supabase } from './supabase.js';
+
 export async function initProfile() {
   console.log("🧾 Lade Profildaten...");
 
