@@ -4,6 +4,7 @@ const contentElement = document.getElementById("content");
 let lastLoadedPage = null;
 
 async function loadPage(page) {
+localStorage.setItem("lastPage", page);
   if (page === lastLoadedPage) {
     console.log(`⚠️ Seite '${page}' wurde bereits geladen – Abbruch.`);
     return;
