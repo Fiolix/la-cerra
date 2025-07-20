@@ -7,6 +7,16 @@ async function loadPage(page) {
   if (page === lastLoadedPage) {
     console.log(`⚠️ Seite '${page}' wurde bereits geladen – Abbruch.`);
     return;
+
+// 🔁 Scrollposition nach dem Laden wiederherstellen
+    const savedScroll = sessionStorage.getItem('scrollY');
+  if (savedScroll) {
+    setTimeout(() => {
+    window.scrollTo(0, Number(savedScroll));
+    sessionStorage.removeItem('scrollY');
+    }, 100);
+   }
+
   }
   lastLoadedPage = page;
 
@@ -73,14 +83,8 @@ document.addEventListener("loadPage", (e) => {
   loadPage(e.detail);
 });
 
-// Startseite oder letzte Seite automatisch laden
 window.addEventListener("DOMContentLoaded", () => {
   const lastPage = localStorage.getItem("lastPage") || "start.html";
-
-  loadPage(lastPage).then(() => {
-    const savedScroll = sessionStorage.getItem('scrollY');
-    if (savedScroll) {
-      window.scrollTo(0, Number(savedScroll));
-    }
-  });
+  loadPage(lastPage);
 });
+
