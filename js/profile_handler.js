@@ -15,7 +15,7 @@ export async function initProfile() {
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("username")
-    .eq("id", user.id)
+    .eq("user_id", user.id)
     .single();
 
   const username = profileData?.username || "-";
