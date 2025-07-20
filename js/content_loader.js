@@ -63,13 +63,35 @@ localStorage.setItem("lastPage", page);
 
 // 🔁 Scrollposition nach dem Laden wiederherstellen
     const savedScroll = sessionStorage.getItem('scrollY');
-  if (savedScroll) {
-    setTimeout(() => {
+if (savedScroll) {
+  const images = contentElement.querySelectorAll("img");
+  let loadedCount = 0;
+
+  if (images.length === 0) {
     window.scrollTo(0, Number(savedScroll));
-    sessionStorage.removeItem('scrollY');
-    }, 100);
-   }
+    sessionStorage.removeItem("scrollY");
+  } else {
+    images.forEach((img) => {
+      if (img.complete) {
+        loadedCount++;
+      } else {
+        img.addEventListener("load", () => {
+          loadedCount++;
+          if (loadedCount === images.length) {
+            window.scrollTo(0, Number(savedScroll));
+            sessionStorage.removeItem("scrollY");
+          }
+        });
+      }
+    });
+
+    if (loadedCount === images.length) {
+      window.scrollTo(0, Number(savedScroll));
+      sessionStorage.removeItem("scrollY");
+    }
+  }
 }
+
 
 // Klick-Listener für [data-page]-Links
 document.body.addEventListener("click", (e) => {
