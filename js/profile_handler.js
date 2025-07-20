@@ -5,24 +5,30 @@ import { supabase } from './supabase.js';
 export async function initProfile() {
   console.log("🧾 Lade Profildaten...");
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
     alert("Not logged in");
     return;
   }
 
+  // Zusätzliche Abfrage aus 'profiles'
+  const { data: profileData, error: profileError } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .single();
+
+  const username = profileData?.username || "-";
+
   // Persönliche Daten anzeigen
-  document.getElementById("profile-username").textContent = user.user_metadata.username || "-";
+  document.getElementById("profile-username").textContent = username;
   document.getElementById("profile-email").textContent = user.email || "-";
   document.getElementById("profile-since").textContent = new Date(user.created_at).toLocaleDateString();
 
-  // Ticklist auslesen
+  // Ticklist auslesen inkl. zugehöriger Route-Info
   const { data: ticks, error } = await supabase
     .from("ticklist")
-    .select("grade_suggestion, flash")
+    .select("flash, route:route_id(grad)")
     .eq("user_id", user.id);
 
   if (error) {
@@ -44,8 +50,8 @@ export async function initProfile() {
   };
   const valueToFb = Object.fromEntries(Object.entries(fbToValue).map(([k, v]) => [v, k]));
 
-  const allGrades = ticks.map(t => fbToValue[t.grade_suggestion]).filter(Boolean);
-  const flashGrades = ticks.filter(t => t.flash).map(t => fbToValue[t.grade_suggestion]).filter(Boolean);
+  const allGrades = ticks.map(t => fbToValue[t.route?.grad]).filter(Boolean);
+  const flashGrades = ticks.filter(t => t.flash).map(t => fbToValue[t.route?.grad]).filter(Boolean);
 
   const max = arr => arr.length ? Math.max(...arr) : null;
 
@@ -55,5 +61,3 @@ export async function initProfile() {
   document.getElementById("highest-grade").textContent = maxGrade ? valueToFb[maxGrade] : "-";
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
 }
-
-
