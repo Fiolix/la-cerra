@@ -367,8 +367,7 @@ for (const entry of tickStats) {
       window.scrollTo(0, Number(savedScroll));
       sessionStorage.removeItem('scrollY');
     }, 100);
-  }
-    
-  });
+  } 
+});
 }
 
