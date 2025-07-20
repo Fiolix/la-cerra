@@ -360,32 +360,35 @@ for (const entry of tickStats) {
     }
   });
 
-// 🔁 Scrollposition erst wiederherstellen, wenn alle Bilder geladen sind
-const savedScroll = sessionStorage.getItem('scrollY');
-if (savedScroll) {
-  const allImages = container.querySelectorAll('img');
-  let loadedCount = 0;
-  if (allImages.length === 0) {
-    window.scrollTo(0, Number(savedScroll));
-    sessionStorage.removeItem('scrollY');
-  } else {
-    allImages.forEach(img => {
-      if (img.complete) {
-        loadedCount++;
-      } else {
-        img.addEventListener('load', () => {
-          loadedCount++;
-          if (loadedCount === allImages.length) {
-            window.scrollTo(0, Number(savedScroll));
-            sessionStorage.removeItem('scrollY');
-          }
-        });
-      }
-    });
-    if (loadedCount === allImages.length) {
+  // 🔁 Scrollposition erst wiederherstellen, wenn alle Bilder geladen sind
+  const savedScroll = sessionStorage.getItem('scrollY');
+  if (savedScroll) {
+    const allImages = container.querySelectorAll('img');
+    let loadedCount = 0;
+
+    if (allImages.length === 0) {
       window.scrollTo(0, Number(savedScroll));
       sessionStorage.removeItem('scrollY');
-     }
+    } else {
+      allImages.forEach(img => {
+        if (img.complete) {
+          loadedCount++;
+        } else {
+          img.addEventListener('load', () => {
+            loadedCount++;
+            if (loadedCount === allImages.length) {
+              window.scrollTo(0, Number(savedScroll));
+              sessionStorage.removeItem('scrollY');
+            }
+          });
+        }
+      });
+
+      // Falls alle Bilder bereits geladen
+      if (loadedCount === allImages.length) {
+        window.scrollTo(0, Number(savedScroll));
+        sessionStorage.removeItem('scrollY');
+      }
     }
   }
 }
