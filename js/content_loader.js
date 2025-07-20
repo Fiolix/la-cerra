@@ -7,16 +7,6 @@ async function loadPage(page) {
   if (page === lastLoadedPage) {
     console.log(`⚠️ Seite '${page}' wurde bereits geladen – Abbruch.`);
     return;
-
-// 🔁 Scrollposition nach dem Laden wiederherstellen
-    const savedScroll = sessionStorage.getItem('scrollY');
-  if (savedScroll) {
-    setTimeout(() => {
-    window.scrollTo(0, Number(savedScroll));
-    sessionStorage.removeItem('scrollY');
-    }, 100);
-   }
-
   }
   lastLoadedPage = page;
 
@@ -66,6 +56,15 @@ async function loadPage(page) {
     console.error("❌ Fehler beim Laden der Seite:", err);
     contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${page}</p>`;
   }
+
+// 🔁 Scrollposition nach dem Laden wiederherstellen
+    const savedScroll = sessionStorage.getItem('scrollY');
+  if (savedScroll) {
+    setTimeout(() => {
+    window.scrollTo(0, Number(savedScroll));
+    sessionStorage.removeItem('scrollY');
+    }, 100);
+   }
 }
 
 // Klick-Listener für [data-page]-Links
