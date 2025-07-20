@@ -112,5 +112,3 @@ window.addEventListener("DOMContentLoaded", () => {
   const lastPage = localStorage.getItem("lastPage") || "start.html";
   loadPage(lastPage);
 });
-
-}
