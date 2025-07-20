@@ -113,3 +113,4 @@ window.addEventListener("DOMContentLoaded", () => {
   loadPage(lastPage);
 });
 
+}
