@@ -360,13 +360,5 @@ for (const entry of tickStats) {
     }
   });
 
-  const savedScroll = sessionStorage.getItem('scrollY');
-  if (savedScroll) {
-    window.addEventListener('load', () => {
-      window.scrollTo(0, Number(savedScroll));
-      sessionStorage.removeItem('scrollY');
-    });
-  }
-}
 
 
