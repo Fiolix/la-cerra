@@ -337,6 +337,7 @@ for (const entry of tickStats) {
           alert('✅ Ticklist saved successfully!');
 
           sessionStorage.setItem('scrollY', window.scrollY);
+          localStorage.setItem('lastPage', window.location.hash.replace('#', '') || 'start');
           location.reload();
 
           popup.remove();
