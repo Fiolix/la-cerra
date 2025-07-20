@@ -6,11 +6,6 @@ export async function loadBlocks() {
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
 
-  const savedScroll = sessionStorage.getItem('scrollY');
-  if (savedScroll) {
-    setTimeout(() => window.scrollTo(0, Number(savedScroll)), 100);
-  }
-
   if (!container || !dropdown) {
     console.warn('⏳ container oder dropdown nicht vorhanden – retry in 200ms');
     setTimeout(loadBlocks, 200);
