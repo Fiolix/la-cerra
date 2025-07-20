@@ -76,5 +76,11 @@ document.addEventListener("loadPage", (e) => {
 // Startseite oder letzte Seite automatisch laden
 window.addEventListener("DOMContentLoaded", () => {
   const lastPage = localStorage.getItem("lastPage") || "start.html";
-  loadPage(lastPage);
+
+  loadPage(lastPage).then(() => {
+    const savedScroll = sessionStorage.getItem('scrollY');
+    if (savedScroll) {
+      window.scrollTo(0, Number(savedScroll));
+    }
+  });
 });
