@@ -332,7 +332,11 @@ for (const entry of tickStats) {
           alert('✅ Ticklist saved successfully!');
 
           sessionStorage.setItem('scrollY', window.scrollY);
-          localStorage.setItem('lastPage', window.location.hash.replace('#', '') || 'start');
+          const sektor = document.querySelector('main[data-sektor]')?.dataset.sektor;
+          if (sektor) {
+            localStorage.setItem('lastPage', `content/${sektor}.html`);
+          }
+
           location.reload();
 
           popup.remove();
