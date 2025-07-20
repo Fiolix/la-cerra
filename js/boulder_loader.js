@@ -359,4 +359,16 @@ for (const entry of tickStats) {
       document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
     }
   });
+
+// 🔁 Scrollposition nach dem Laden wiederherstellen
+  const savedScroll = sessionStorage.getItem('scrollY');
+  if (savedScroll) {
+    setTimeout(() => {
+      window.scrollTo(0, Number(savedScroll));
+      sessionStorage.removeItem('scrollY');
+    }, 100);
+  }
+    }
+  });
 }
+
