@@ -332,10 +332,6 @@ for (const entry of tickStats) {
           alert('✅ Ticklist saved successfully!');
 
           sessionStorage.setItem('scrollY', window.scrollY);
-          const sektor = document.querySelector('main[data-sektor]')?.dataset.sektor;
-          if (sektor) {
-            localStorage.setItem('lastPage', `content/${sektor}.html`);
-          }
 
           location.reload();
 
