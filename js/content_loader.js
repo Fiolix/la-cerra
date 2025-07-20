@@ -73,7 +73,8 @@ document.addEventListener("loadPage", (e) => {
   loadPage(e.detail);
 });
 
-// Startseite automatisch laden
+// Startseite oder letzte Seite automatisch laden
 window.addEventListener("DOMContentLoaded", () => {
-  loadPage("start.html");
+  const lastPage = localStorage.getItem("lastPage") || "start.html";
+  loadPage(lastPage);
 });
