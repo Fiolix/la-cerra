@@ -359,6 +359,6 @@ for (const entry of tickStats) {
       document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
     }
   });
-
+}
 
 
