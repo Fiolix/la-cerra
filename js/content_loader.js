@@ -28,11 +28,14 @@ localStorage.setItem("lastPage", page);
         .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
     }
 
-    if (html.includes('id="boulder-blocks"')) {
-      import("/la-cerra/js/boulder_loader.js")
-        .then(module => module.loadBlocks())
-        .catch(err => console.error("❌ Fehler beim Laden von boulder_loader.js:", err));
-    }
+   if (html.includes('id="boulder-blocks"')) {
+     try {
+       const module = await import("/la-cerra/js/boulder_loader.js");
+       await module.loadBlocks();
+     } catch (err) {
+       console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
+     }
+   }
 
     if (html.includes("sector-summary")) {
       import("/la-cerra/js/summary_toggle.js")
