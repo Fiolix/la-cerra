@@ -1,7 +1,4 @@
-// content_loader.js (überarbeitete Version)
-
-// 🔁 Lädt dynamisch HTML-Inhalte und JS-Module je nach Seite
-// ✅ Scrollposition wird nach dem Laden zuverlässig wiederhergestellt
+// content_loader.js (finale Version mit robuster Bildwartelogik)
 
 async function loadPage(page) {
   const contentElement = document.getElementById("content");
@@ -22,8 +19,6 @@ async function loadPage(page) {
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
 
-    let afterImageLoad = () => restoreScrollPosition();
-
     if (page === "profile") {
       import("/la-cerra/js/profile_handler.js")
         .then(m => m.initProfile())
@@ -34,7 +29,13 @@ async function loadPage(page) {
       try {
         const mod = await import("/la-cerra/js/boulder_loader.js");
         await mod.loadBlocks();
-        afterImageLoad = () => waitForImagesThenRestore(contentElement);
+
+        const images = document.querySelectorAll("#boulder-blocks img");
+        await Promise.all(Array.from(images).map(img =>
+          img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
+        ));
+        restoreScrollPosition();
+        return;
       } catch (err) {
         console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
       }
@@ -59,7 +60,7 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
     }
 
-    afterImageLoad();
+    restoreScrollPosition();
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
     contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${page}</p>`;
@@ -72,28 +73,6 @@ function restoreScrollPosition() {
     window.scrollTo(0, Number(scrollY));
     sessionStorage.removeItem("scrollY");
   }
-}
-
-function waitForImagesThenRestore(container) {
-  const scrollY = sessionStorage.getItem("scrollY");
-  if (!scrollY) return;
-
-  const images = container.querySelectorAll("img");
-  if (images.length === 0) {
-    restoreScrollPosition();
-    return;
-  }
-
-  let loaded = 0;
-  images.forEach(img => {
-    if (img.complete) loaded++;
-    else img.addEventListener("load", () => {
-      loaded++;
-      if (loaded === images.length) restoreScrollPosition();
-    });
-  });
-
-  if (loaded === images.length) restoreScrollPosition();
 }
 
 document.body.addEventListener("click", (e) => {
