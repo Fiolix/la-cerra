@@ -1,4 +1,4 @@
-// content_loader.js (finale Version mit Scroll-Fix und Diagramm-Kompatibilität)
+// content_loader.js (angepasst: Scrollposition wird verzögert wiederhergestellt)
 
 async function loadPage(page) {
   const contentElement = document.getElementById("content");
@@ -37,7 +37,7 @@ async function loadPage(page) {
           img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
         ));
 
-        restoreScrollPosition();
+        setTimeout(() => restoreScrollPosition(), 100);
         scrollRestored = true;
       } catch (err) {
         console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
@@ -63,7 +63,7 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
     }
 
-    if (!scrollRestored) restoreScrollPosition();
+    if (!scrollRestored) setTimeout(() => restoreScrollPosition(), 100);
 
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
@@ -74,6 +74,7 @@ async function loadPage(page) {
 function restoreScrollPosition() {
   const scrollY = sessionStorage.getItem("scrollY");
   if (scrollY) {
+    console.log("🔁 Wiederherstellung ScrollY:", scrollY);
     window.scrollTo(0, Number(scrollY));
     sessionStorage.removeItem("scrollY");
   }
