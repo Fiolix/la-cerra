@@ -1,4 +1,4 @@
-// content_loader.js (finale Version mit robuster Bildwartelogik)
+// content_loader.js (finale Version mit Scroll-Fix und Diagramm-Kompatibilität)
 
 async function loadPage(page) {
   const contentElement = document.getElementById("content");
@@ -19,6 +19,8 @@ async function loadPage(page) {
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
 
+    let scrollRestored = false;
+
     if (page === "profile") {
       import("/la-cerra/js/profile_handler.js")
         .then(m => m.initProfile())
@@ -34,8 +36,9 @@ async function loadPage(page) {
         await Promise.all(Array.from(images).map(img =>
           img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
         ));
+
         restoreScrollPosition();
-        return;
+        scrollRestored = true;
       } catch (err) {
         console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
       }
@@ -60,7 +63,8 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
     }
 
-    restoreScrollPosition();
+    if (!scrollRestored) restoreScrollPosition();
+
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
     contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${page}</p>`;
