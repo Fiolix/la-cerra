@@ -1,4 +1,4 @@
-// content_loader.js (angepasst: Scrollposition wird verzögert wiederhergestellt)
+// content_loader.js (finale Version mit sicherer Scroll-Wiederherstellung)
 
 async function loadPage(page) {
   const contentElement = document.getElementById("content");
@@ -19,7 +19,7 @@ async function loadPage(page) {
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
 
-    let scrollRestored = false;
+    let handledScroll = false;
 
     if (page === "profile") {
       import("/la-cerra/js/profile_handler.js")
@@ -37,8 +37,8 @@ async function loadPage(page) {
           img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
         ));
 
-        setTimeout(() => restoreScrollPosition(), 100);
-        scrollRestored = true;
+        restoreScrollPosition();
+        handledScroll = true;
       } catch (err) {
         console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
       }
@@ -63,7 +63,8 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
     }
 
-    if (!scrollRestored) setTimeout(() => restoreScrollPosition(), 100);
+    // Wenn kein Boulder-Block geladen wurde, trotzdem Scrollposition setzen
+    if (!handledScroll) restoreScrollPosition();
 
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
