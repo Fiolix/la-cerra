@@ -1,16 +1,16 @@
-// content_loader.js (DEBUG-VERSION mit doppelter Ladeprüfung)
+// content_loader.js (überarbeitete Version)
 
-const contentElement = document.getElementById("content");
-let lastLoadedPage = null;
+// 🔁 Lädt dynamisch HTML-Inhalte und JS-Module je nach Seite
+// ✅ Scrollposition wird nach dem Laden zuverlässig wiederhergestellt
 
 async function loadPage(page) {
-localStorage.setItem("lastPage", page);
-  if (page === lastLoadedPage) {
-    console.log(`⚠️ Seite '${page}' wurde bereits geladen – Abbruch.`);
+  const contentElement = document.getElementById("content");
+  if (!contentElement) {
+    console.error("❌ Kein #content-Element gefunden!");
     return;
   }
-  lastLoadedPage = page;
 
+  localStorage.setItem("lastPage", page);
   const url = `/la-cerra/content/${page}`;
   console.log(`📥 Versuche zu laden: ${url}`);
 
@@ -22,93 +22,100 @@ localStorage.setItem("lastPage", page);
     contentElement.innerHTML = html;
     console.log("✅ Inhalt erfolgreich geladen:", page);
 
+    let afterImageLoad = () => restoreScrollPosition();
+
     if (page === "profile") {
       import("/la-cerra/js/profile_handler.js")
-        .then(module => module.initProfile())
+        .then(m => m.initProfile())
         .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
     }
 
-   if (html.includes('id="boulder-blocks"')) {
-     try {
-       const module = await import("/la-cerra/js/boulder_loader.js");
-       await module.loadBlocks();
-     } catch (err) {
-       console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
-     }
-   }
+    if (html.includes('id="boulder-blocks"')) {
+      try {
+        const mod = await import("/la-cerra/js/boulder_loader.js");
+        await mod.loadBlocks();
+        afterImageLoad = () => waitForImagesThenRestore(contentElement);
+      } catch (err) {
+        console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
+      }
+    }
 
     if (html.includes("sector-summary")) {
       import("/la-cerra/js/summary_toggle.js")
-        .then(module => module.setupSummaryToggle())
-        .catch(err => console.error("❌ Fehler beim Laden von summary_toggle.js:", err));
+        .then(m => m.setupSummaryToggle())
+        .catch(err => console.error("❌ Fehler beim Diagramm-Toggle:", err));
     }
 
     if (html.includes('id="routen-diagramm"')) {
       const sektorName = page.replace(".html", "");
       import("/la-cerra/js/routen_diagram_loader.js")
-        .then(module => module.loadRoutenDiagramm(sektorName))
+        .then(m => m.loadRoutenDiagramm(sektorName))
         .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
     }
 
-    if (page.replace(/\.html$/, '') === "register") {
+    if (page === "register") {
       import("/la-cerra/js/register_handler.js")
-        .then(module => module.initRegisterForm())
+        .then(m => m.initRegisterForm())
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
     }
 
+    afterImageLoad();
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
     contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${page}</p>`;
   }
+}
 
-// 🔁 Scrollposition nach dem Laden wiederherstellen
-    const savedScroll = sessionStorage.getItem('scrollY');
-if (savedScroll) {
-  const images = contentElement.querySelectorAll("img");
-  let loadedCount = 0;
-
-  if (images.length === 0) {
-    window.scrollTo(0, Number(savedScroll));
+function restoreScrollPosition() {
+  const scrollY = sessionStorage.getItem("scrollY");
+  if (scrollY) {
+    window.scrollTo(0, Number(scrollY));
     sessionStorage.removeItem("scrollY");
-  } else {
-    images.forEach((img) => {
-      if (img.complete) {
-        loadedCount++;
-      } else {
-        img.addEventListener("load", () => {
-          loadedCount++;
-          if (loadedCount === images.length) {
-            window.scrollTo(0, Number(savedScroll));
-            sessionStorage.removeItem("scrollY");
-          }
-        });
-      }
-    });
-
-    if (loadedCount === images.length) {
-      window.scrollTo(0, Number(savedScroll));
-      sessionStorage.removeItem("scrollY");
-    }
   }
 }
 
+function waitForImagesThenRestore(container) {
+  const scrollY = sessionStorage.getItem("scrollY");
+  if (!scrollY) return;
 
-// Klick-Listener für [data-page]-Links
+  const images = container.querySelectorAll("img");
+  if (images.length === 0) {
+    restoreScrollPosition();
+    return;
+  }
+
+  let loaded = 0;
+  images.forEach(img => {
+    if (img.complete) loaded++;
+    else img.addEventListener("load", () => {
+      loaded++;
+      if (loaded === images.length) restoreScrollPosition();
+    });
+  });
+
+  if (loaded === images.length) restoreScrollPosition();
+}
+
 document.body.addEventListener("click", (e) => {
   const link = e.target.closest("[data-page]");
   if (!link) return;
-
   e.preventDefault();
   const page = link.getAttribute("data-page");
+  sessionStorage.setItem("scrollY", window.scrollY);
   loadPage(page);
 });
 
-// Event-Listener für externes Laden durch burger_menu.js
 document.addEventListener("loadPage", (e) => {
+  sessionStorage.setItem("scrollY", window.scrollY);
   loadPage(e.detail);
 });
 
-window.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
+  const contentElement = document.getElementById("content");
+  if (!contentElement) {
+    console.error("❌ content-Element nicht vorhanden beim Initialisieren");
+    return;
+  }
   const lastPage = localStorage.getItem("lastPage") || "start.html";
   loadPage(lastPage);
 });
