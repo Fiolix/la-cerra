@@ -3,6 +3,12 @@ import { supabase } from './supabase.js';
 import { getPublicTickStats } from './tick_stats_loader.js';
 
 export async function loadBlocks() {
+  // ❗ Verhindere doppeltes Nachladen
+  if (document.querySelectorAll('.boulder-block').length > 0) {
+    console.warn('🚫 Boulder wurden bereits geladen – Abbruch.');
+    return;
+  }
+
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
 
