@@ -6,11 +6,11 @@ window.addEventListener("beforeunload", () => {
 });
 
 async function loadPage(page) {
-  if (loadPage.currentPage === page) {
-    console.warn(`🚫 Seite '${page}' ist bereits aktiv – kein erneutes Laden.`);
+  if (loadPage.isLoading) {
+    console.warn(`⏳ Seite wird gerade geladen – Abbruch.`);
     return;
   }
-  loadPage.currentPage = page;
+  loadPage.isLoading = true;
 
   const contentElement = document.getElementById("content");
   if (!contentElement) {
@@ -75,6 +75,9 @@ async function loadPage(page) {
     }
 
     if (!handledScroll) restoreScrollPosition();
+
+    // 🔓 Ladevorgang abgeschlossen
+    loadPage.isLoading = false;
 
     // 🔍 Fokus entfernen, damit z. B. Dropdown kein scrollIntoView auslöst
     document.activeElement?.blur();
