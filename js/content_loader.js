@@ -6,6 +6,12 @@ window.addEventListener("beforeunload", () => {
 });
 
 async function loadPage(page) {
+  if (loadPage.currentPage === page) {
+    console.warn(`🚫 Seite '${page}' ist bereits aktiv – kein erneutes Laden.`);
+    return;
+  }
+  loadPage.currentPage = page;
+
   const contentElement = document.getElementById("content");
   if (!contentElement) {
     console.error("❌ Kein #content-Element gefunden!");
