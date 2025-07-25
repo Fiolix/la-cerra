@@ -84,6 +84,7 @@ async function loadPage(page) {
 
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
+    loadPage.isLoading = false;
     contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${page}</p>`;
   }
 }
