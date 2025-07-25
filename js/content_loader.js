@@ -107,10 +107,13 @@ document.body.addEventListener("click", (e) => {
   loadPage(page);
 });
 
-document.addEventListener("loadPage", (e) => {
-  sessionStorage.setItem("scrollY", window.scrollY);
-  loadPage(e.detail);
-});
+if (!window.loadPageListenerRegistered) {
+  document.addEventListener("loadPage", (e) => {
+    sessionStorage.setItem("scrollY", window.scrollY);
+    loadPage(e.detail);
+  });
+  window.loadPageListenerRegistered = true;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const contentElement = document.getElementById("content");
