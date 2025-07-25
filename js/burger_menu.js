@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // ✅ Menü existiert schon? → nicht erneut einfügen
+  if (document.querySelector("nav.slide-menu")) return;
+
   const menuIcon = document.querySelector(".menu-icon");
   const navMenu = document.createElement("nav");
 
