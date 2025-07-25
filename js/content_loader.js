@@ -1,4 +1,9 @@
-// content_loader.js (finale Version mit sicherer Scroll-Wiederherstellung)
+// content_loader.js (mit Scroll-Speicherung & Fokus-Reset)
+
+// Scrollposition beim Verlassen speichern
+window.addEventListener("beforeunload", () => {
+  sessionStorage.setItem("scrollY", window.scrollY);
+});
 
 async function loadPage(page) {
   const contentElement = document.getElementById("content");
@@ -63,8 +68,10 @@ async function loadPage(page) {
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
     }
 
-    // Wenn kein Boulder-Block geladen wurde, trotzdem Scrollposition setzen
     if (!handledScroll) restoreScrollPosition();
+
+    // 🔍 Fokus entfernen, damit z. B. Dropdown kein scrollIntoView auslöst
+    document.activeElement?.blur();
 
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
