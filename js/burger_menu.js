@@ -65,14 +65,17 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   navMenu.querySelectorAll("a[data-page]").forEach(link => {
-    link.addEventListener("click", function (e) {
-      e.preventDefault();
-      const page = this.getAttribute("data-page");
-      if (page && page !== "#") {
-        const event = new CustomEvent("loadPage", { detail: page });
-        document.dispatchEvent(event);
-      }
-    });
+    if (!link.dataset.bound) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const page = this.getAttribute("data-page");
+        if (page && page !== "#") {
+          const event = new CustomEvent("loadPage", { detail: page });
+          document.dispatchEvent(event);
+        }
+      });
+      link.dataset.bound = "true"; // ✅ Markiere diesen Link als \"gebunden\"
+    }
   });
 
   menuIcon.addEventListener("click", function () {
