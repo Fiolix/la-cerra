@@ -302,7 +302,7 @@ for (const entry of tickStats) {
                   s.style.color = 'gold';
                 } else {
                   s.textContent = '☆';
-                  s.style.color = '#ccc';
+                  s.style.color = '#999';
                 }
               });
             });
