@@ -247,6 +247,7 @@ for (const entry of tickStats) {
             <label style="margin-left: 1rem">
               Flash <input type="checkbox" data-flash="true" />
             </label>
+            <br>
             <label style="margin-left: 1rem">
               Grade suggestion
             </label>
