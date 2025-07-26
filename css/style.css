@@ -167,7 +167,7 @@ img {
 .route-meta {
   display: block;
   margin-top: 0.25rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #999;
 }
 
@@ -181,7 +181,7 @@ img {
   margin: 0 0.75rem;
   display: flex;
   align-items: center;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #999;
   gap: 0.25rem;
 }
