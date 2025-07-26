@@ -107,7 +107,7 @@ for (const entry of tickStats) {
   const gradeAvg = numericGrades.length > 0
     ? Math.round(numericGrades.reduce((a, b) => a + b, 0) / numericGrades.length)
     : null;
-  const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg]} <span style='color:#999; font-size: 0.8em;'>(${gradeCount})</span>` : '';
+  const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg]} <span style='color:#333; font-size: 0.8em;'>(${gradeCount})</span>` : '';
 
   return `
     <div class=\"route\">
