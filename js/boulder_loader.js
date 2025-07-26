@@ -248,7 +248,7 @@ for (const entry of tickStats) {
               <input type="checkbox" data-flash="true" /> Flash
             </label>
 <select data-grade-suggestion style="margin-top: 0.5rem;">
-  <option value="">Grad vorschlagen ...</option>
+  <option value="">Grade</option>
   <option>2a</option><option>2b</option><option>2c</option>
   <option>3a</option><option>3b</option><option>3c</option>
   <option>4a</option><option>4b</option><option>4c</option>
