@@ -304,7 +304,7 @@ for (const entry of tickStats) {
                   s.style.color = 'gold';
                 } else {
                   s.textContent = '☆';
-                  s.style.color = '#999';
+                  s.style.color = '#ccc';
                 }
               });
             });
