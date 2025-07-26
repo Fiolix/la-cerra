@@ -383,3 +383,15 @@ button#register-button:hover {
   align-items: center;
   margin-top: 0.25rem;
 }
+
+.stars {
+  font-family: sans-serif;
+  font-size: 1rem;
+  color: gold;
+}
+
+.stars .count {
+  font-size: 0.8em;
+  color: #333;
+  letter-spacing: normal;
+}
