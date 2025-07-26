@@ -1,3 +1,9 @@
+import { supabase } from './supabase.js';
+
+supabase.auth.getUser().then(({ data }) => {
+  console.log("👤 Eingeloggt als:", data?.user?.email);
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Menü existiert schon? → nicht erneut einfügen
   if (document.querySelector("nav.slide-menu")) return;
