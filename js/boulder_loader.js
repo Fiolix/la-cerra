@@ -87,7 +87,7 @@ for (const entry of tickStats) {
   const ratingAvg = ratingCount > 0 ? routeRatings.reduce((a, b) => a + b, 0) / ratingCount : 0;
   const stars = Array.from({ length: 5 }, (_, i) => `<span style=\"color:${i < ratingAvg ? 'gold' : '#ccc'}\">★</span>`).join('');
   const ratingDisplay = ratingCount > 0
-  ? `<span class="stars">${stars}<span class="count">(${ratingCount})</span></span>`
+  ? `<span class="stars">${stars}<span class="count"> (${ratingCount})</span></span>`
   : '<span class="stars">★★★★★</span>';
 
   const routeGrades = gradeMap[route.uuid] || [];
