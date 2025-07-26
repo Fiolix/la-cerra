@@ -303,7 +303,7 @@ for (const entry of tickStats) {
         if (!submitBtn) {
           submitBtn = document.createElement('button');
           submitBtn.id = 'submit-ticklist-button';
-          submitBtn.textContent = 'Save ticklist';
+          submitBtn.textContent = 'Add to ticklist';
           popup.appendChild(submitBtn);
         }
         // Handler immer neu setzen

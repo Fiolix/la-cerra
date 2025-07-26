@@ -374,7 +374,7 @@ button#register-button:hover {
 }
 .rating-stars span:hover,
 .rating-stars span:hover ~ span {
-  color: orange;
+  color: gold;
 }
 
 .meta-row {
