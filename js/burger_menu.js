@@ -108,8 +108,6 @@ document.addEventListener("loginBlockReady", () => {
   initAuth();
 });
 
-import { supabase } from './supabase.js';
-
 supabase.auth.getSession().then(({ data }) => {
   console.log("✅ Session beim Start (burger_menu.js):", data?.session);
 });
