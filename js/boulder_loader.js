@@ -206,8 +206,8 @@ for (const entry of tickStats) {
         popup.style.padding = '1.5rem';
         popup.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
         popup.style.zIndex = '1000';
-        popup.style.width = '90vw';
-        popup.style.maxwidth = '90vw';
+        popup.style.width = '50vw';
+        popup.style.maxwidth = '50vw';
         popup.style.maxheight = '80vh';
         popup.style.overflowY = 'auto';
         popup.style.borderRadius = '0.5rem';
@@ -253,7 +253,7 @@ for (const entry of tickStats) {
             <br>
             <label style="display: block; text-align: center;">
               Grade:
-            </label>
+            
 <select data-grade-suggestion style="display: block; text-align: center; margin-top: 0.5rem;">
   <option value="">...</option>
   <option>2a</option><option>2b</option><option>2c</option>
@@ -265,6 +265,7 @@ for (const entry of tickStats) {
   <option>8a</option><option>8a+</option><option>8b</option><option>8b+</option><option>8c</option><option>8c+</option>
   <option>9a</option>
 </select>
+</label>
             <input type="hidden" data-route-id-hidden="${routeId}" />
           `;
 
