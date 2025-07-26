@@ -206,9 +206,9 @@ for (const entry of tickStats) {
         popup.style.padding = '1.5rem';
         popup.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
         popup.style.zIndex = '1000';
-        popup.style.Width = '90vw';
-        popup.style.maxWidth = '90vw';
-        popup.style.maxHeight = '80vh';
+        popup.style.width = '90vw';
+        popup.style.maxwidth = '90vw';
+        popup.style.maxheight = '80vh';
         popup.style.overflowY = 'auto';
         popup.style.borderRadius = '0.5rem';
 
