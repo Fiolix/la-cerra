@@ -251,7 +251,7 @@ for (const entry of tickStats) {
             </label>
             <br>
             <label style="text-align: center">
-              Grade?
+              Grade:
             </label>
 <select data-grade-suggestion style="margin-top: 0.5rem;">
   <option value="">...</option>
