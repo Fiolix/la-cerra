@@ -154,14 +154,14 @@ for (const entry of tickStats) {
 
     container.appendChild(blockDiv);
 
-    // Add click listener to 'Add to tick list' button
+    // Add click listener to 'Add to ticklist' button
     const tickButton = blockDiv.querySelector(".ticklist-button button");
     tickButton?.addEventListener("click", async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const userId = sessionData?.session?.user?.id;
 
       if (!userId) {
-        alert("You need an account to add routes to your personal tick list");
+        alert("You need an account to add routes to your personal ticklist");
         return;
       }
 
@@ -244,7 +244,7 @@ for (const entry of tickStats) {
               <span data-value="5" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
               <input type="hidden" data-rating="true" value="" />
             </div>
-            <label style="margin-left: 1rem">
+            <label style="margin-left: 0rem">
               Flash <input type="checkbox" data-flash="true" />
             </label>
             <br>
