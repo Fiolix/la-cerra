@@ -244,11 +244,11 @@ for (const entry of tickStats) {
               <span data-value="5" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
               <input type="hidden" data-rating="true" value="" />
             </div>
-            <label>
+            <label style="text-align: center">
               Flash <input type="checkbox" data-flash="true" />
             </label>
             <br>
-            <label>
+            <label style="text-align: center">
               Grade suggestion
             </label>
 <select data-grade-suggestion style="margin-top: 0.5rem;">
