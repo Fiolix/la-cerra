@@ -95,3 +95,9 @@ document.addEventListener("DOMContentLoaded", function () {
 function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
+
+import { initAuth } from './auth_handler.js';
+
+document.addEventListener("loginBlockReady", () => {
+  initAuth();
+});
