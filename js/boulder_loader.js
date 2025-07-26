@@ -239,7 +239,7 @@ for (const entry of tickStats) {
           item.style.marginBottom = '1rem';
           item.innerHTML = `
             <strong>${routeName}</strong> (${routeGrade})<br>
-            <div class="rating-stars" data-rating-group>
+            <div class="rating-stars" data-rating-group style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
               <span data-value="1" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
               <span data-value="2" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
               <span data-value="3" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
