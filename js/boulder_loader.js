@@ -273,19 +273,37 @@ for (const entry of tickStats) {
               const val = star.dataset.value;
               ratingGroup.querySelector('[data-rating]').value = val;
               stars.forEach(s => {
-                s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+                if (Number(s.dataset.value) <= val) {
+                  s.textContent = '★';
+                  s.style.color = 'gold';
+                } else {
+                  s.textContent = '☆';
+                  s.style.color = '#ccc';
+                }
               });
             });
             star.addEventListener('mouseover', () => {
               const val = star.dataset.value;
               stars.forEach(s => {
-                s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+                if (Number(s.dataset.value) <= val) {
+                  s.textContent = '★';
+                  s.style.color = 'gold';
+                } else {
+                  s.textContent = '☆';
+                  s.style.color = '#ccc';
+                }
               });
             });
             star.addEventListener('mouseout', () => {
               const val = ratingGroup.querySelector('[data-rating]').value;
               stars.forEach(s => {
-                s.textContent = Number(s.dataset.value) <= val ? '★' : '☆';
+                if (Number(s.dataset.value) <= val) {
+                  s.textContent = '★';
+                  s.style.color = 'gold';
+                } else {
+                  s.textContent = '☆';
+                  s.style.color = '#ccc';
+                }
               });
             });
           });
