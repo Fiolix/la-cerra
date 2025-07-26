@@ -251,10 +251,10 @@ for (const entry of tickStats) {
               Flash <input type="checkbox" data-flash="true" />
             </label>
             <br>
-            <label style="display: block; text-align: center;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
               Grade:
             
-<select data-grade-suggestion style="display: block; text-align: center; margin-top: 0.5rem;">
+<select data-grade-suggestion>
   <option value="">...</option>
   <option>2a</option><option>2b</option><option>2c</option>
   <option>3a</option><option>3b</option><option>3c</option>
