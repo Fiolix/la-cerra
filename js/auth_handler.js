@@ -14,12 +14,16 @@ export function initAuth() {
     const { data: sessionData } = await supabase.auth.getSession();
     const currentUserId = sessionData?.session?.user?.id;
 
+console.log("🔎 Aktuelle user_id:", currentUserId);
+
     if (currentUserId && loginBlock) {
       const { data: profileData } = await supabase
         .from("profiles")
         .select("username")
         .eq("user_id", currentUserId)
         .maybeSingle();
+
+console.log("🧠 Ergebnis der Profile-Abfrage:", profileData);
 
       const username = profileData?.username || "Nutzer";
 
