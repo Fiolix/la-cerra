@@ -1,5 +1,5 @@
 // 📁 ticklist_table.js
-// Läd die Ticklist-Einträge des Users und zeigt sie als sortierbare Tabelle mit Bearbeitungs- und Löschfunktion
+// Läd die Ticklist-Einträge des Users und zeigt sie als kompakte Tabelle mit Bearbeitungs- und Löschfunktion
 
 import { supabase } from './supabase.js';
 
@@ -46,9 +46,7 @@ function renderTable() {
           <th>Route</th>
           <th>Grad</th>
           <th>Flash</th>
-          <th>Vorschlag</th>
           <th>Bewertung</th>
-          <th>Datum</th>
           <th>Aktionen</th>
         </tr>
       </thead>
@@ -56,17 +54,16 @@ function renderTable() {
   `;
 
   for (const entry of pageItems) {
+    const stars = renderStars(entry.rating);
     html += `
       <tr>
         <td>${entry.route?.name ?? '-'}</td>
         <td>${entry.route?.grad ?? '-'}</td>
         <td>${entry.flash ? '✅' : '❌'}</td>
-        <td>${entry.grade_suggestion ?? '-'}</td>
-        <td>${entry.rating ?? '-'}</td>
-        <td>${new Date(entry.created_at).toLocaleDateString()}</td>
+        <td>${stars}</td>
         <td>
-          <button onclick="editTick('${entry.id}')">✏️</button>
-          <button onclick="deleteTick('${entry.id}')">🗑️</button>
+          <span onclick="editTick('${entry.id}')">✏️</span>
+          <span onclick="deleteTick('${entry.id}')">🗑️</span>
         </td>
       </tr>
     `;
@@ -81,6 +78,17 @@ function renderTable() {
     pageControls += `<button onclick="goToPage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
   }
   pagination.innerHTML = pageControls;
+}
+
+function renderStars(rating) {
+  if (!rating) return '-';
+  const maxStars = 5;
+  let fullStars = Math.round(rating);
+  let starsHtml = '';
+  for (let i = 1; i <= maxStars; i++) {
+    starsHtml += i <= fullStars ? '⭐' : '☆';
+  }
+  return starsHtml;
 }
 
 window.goToPage = (page) => {
