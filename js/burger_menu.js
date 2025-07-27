@@ -105,6 +105,8 @@ function setLanguage(lang) {
 import { initAuth } from './auth_handler.js';
 
 document.addEventListener("loginBlockReady", () => {
+console.log("📡 loginBlockReady ausgelöst – auth_handler.js sollte jetzt starten");
+
   initAuth();
 });
 
