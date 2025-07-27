@@ -17,13 +17,14 @@ export function initAuth() {
 console.log("🔎 Aktuelle user_id:", currentUserId);
 
     if (currentUserId && loginBlock) {
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("username")
         .eq("user_id", currentUserId)
         .maybeSingle();
 
 console.log("🧠 Ergebnis der Profile-Abfrage:", profileData);
+console.log("❗ Fehler bei Profile-Abfrage:", profileError);
 
       const username = profileData?.username || "Nutzer";
 
