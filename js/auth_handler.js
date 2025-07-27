@@ -130,4 +130,4 @@ console.log("❗ Fehler bei Profile-Abfrage:", profileError);
       // 🔒 Verstecke Link zu "Create Account" nach erfolgreichem Login
       if (createLink) createLink.style.display = "none";
     });
-  });
+}
