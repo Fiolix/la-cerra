@@ -1,3 +1,5 @@
+console.log("🚀 initAuth() gestartet");
+
 import { supabase } from './supabase.js';
 
 export function initAuth() {
