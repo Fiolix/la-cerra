@@ -3,7 +3,7 @@ console.log("🚀 initAuth() gestartet");
 import { supabase } from './supabase.js';
 
 export function initAuth() {
-  document.addEventListener("DOMContentLoaded", async () => {
+
     const emailInput = document.getElementById("user");
     const passwordInput = document.getElementById("password");
     const loginButton = document.getElementById("login-button");
