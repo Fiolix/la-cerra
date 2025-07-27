@@ -2,7 +2,7 @@ console.log("🚀 initAuth() gestartet");
 
 import { supabase } from './supabase.js';
 
-export function initAuth() {
+export async function initAuth() {
 
     const emailInput = document.getElementById("user");
     const passwordInput = document.getElementById("password");
