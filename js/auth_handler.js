@@ -131,4 +131,3 @@ console.log("❗ Fehler bei Profile-Abfrage:", profileError);
       if (createLink) createLink.style.display = "none";
     });
   });
-}
