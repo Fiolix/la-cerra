@@ -19,8 +19,6 @@ console.log("🔎 Aktuelle user_id:", currentUserId);
 const loginBlock = document.querySelector(".login-block");
 console.log("📣 loginBlock:", loginBlock);
 
-
-if (currentUserId && loginBlock) {
   console.log("✅ Bedingung erfüllt – Abfrage wird ausgeführt");
 } else {
   console.warn("⛔ Bedingung NICHT erfüllt – kein Zugriff auf loginBlock oder user_id");
