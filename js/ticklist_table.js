@@ -16,7 +16,7 @@ export async function initTicklistTable(userId) {
       rating,
       grade_suggestion,
       created_at,
-      route:route_id(name, sektor, grad)
+      route:route_id(name, grad)
     `)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
@@ -44,7 +44,6 @@ function renderTable() {
       <thead>
         <tr>
           <th>Route</th>
-          <th>Sektor</th>
           <th>Grad</th>
           <th>Flash</th>
           <th>Vorschlag</th>
@@ -60,7 +59,6 @@ function renderTable() {
     html += `
       <tr>
         <td>${entry.route?.name ?? '-'}</td>
-        <td>${entry.route?.sektor ?? '-'}</td>
         <td>${entry.route?.grad ?? '-'}</td>
         <td>${entry.flash ? '✅' : '❌'}</td>
         <td>${entry.grade_suggestion ?? '-'}</td>
