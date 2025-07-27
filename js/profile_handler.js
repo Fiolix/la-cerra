@@ -2,6 +2,8 @@
 
 import { supabase } from './supabase.js';
 
+import { initTicklistTable } from './ticklist_table.js';
+
 export async function initProfile() {
   console.log("🧾 Lade Profildaten...");
 
@@ -60,4 +62,6 @@ export async function initProfile() {
 
   document.getElementById("highest-grade").textContent = maxGrade ? valueToFb[maxGrade] : "-";
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
+
+  initTicklistTable(user.id);
 }
