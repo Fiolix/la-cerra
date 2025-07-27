@@ -8,6 +8,8 @@ export function initAuth() {
     const passwordInput = document.getElementById("password");
     const loginButton = document.getElementById("login-button");
     const loginBlock = document.querySelector(".login-block");
+console.log("📣 loginBlock:", loginBlock);
+
     const createLink = document.querySelector('[data-page="register"]')?.closest('li');
 
     // ✅ Session-Erkennung beim Laden
