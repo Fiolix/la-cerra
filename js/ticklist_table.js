@@ -74,7 +74,7 @@ function renderTable() {
         <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
         <td style="text-align: center;">${stars}</td>
         <td style="text-align: center;">
-          <span onclick="editTick('${entry.id}')">✏️</span>
+          <span onclick="editTick('${entry.id}', '${userId}')">✏️</span>
         </td>
       </tr>
     `;
@@ -119,7 +119,7 @@ window.deleteTick = async (tickId) => {
   }
 };
 
-window.editTick = (tickId) => {
+window.editTick = (tickId, userId) => {
 const entry = tickData.find(t => t.id === tickId);
 if (!entry) return alert("Eintrag nicht gefunden");
 
