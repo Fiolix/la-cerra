@@ -77,7 +77,7 @@ function renderTable() {
         <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
         <td style="text-align: center;">${stars}</td>
         <td style="text-align: center;">
-          <span onclick="editTick('${entry.id}', '${currentUserId}')">✏️</span>
+          <span onclick="editTick('${entry.id}', ${currentUserId})">✏️</span>
         </td>
       </tr>
     `;
