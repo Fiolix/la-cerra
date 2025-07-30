@@ -195,5 +195,49 @@ function updateStars(value) {
   });
 }
 
+document.getElementById("save-tick").onclick = async () => {
+  const newRating = parseInt(popup.querySelector('[data-rating]').value);
+  const newFlash = popup.querySelector('[data-flash]').checked;
+  const newGrade = popup.querySelector('[data-grade-suggestion]').value;
+
+  const { error } = await supabase
+    .from('ticklist')
+    .update({
+      rating: newRating,
+      flash: newFlash,
+      grade_suggestion: newGrade,
+    })
+    .eq('id', tickId);
+
+  if (error) {
+    alert('Fehler beim Speichern');
+    console.error(error);
+    return;
+  }
+
+  // Tabelle neu laden
+  const { data, error: loadError } = await supabase
+    .from('ticklist')
+    .select(`
+      id,
+      flash,
+      rating,
+      grade_suggestion,
+      created_at,
+      route:route_id(name, grad)
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (loadError) {
+    console.error("❌ Fehler beim Neuladen der Ticklist:", loadError);
+  } else {
+    tickData = data;
+    renderTable();
+  }
+
+  popup.remove();
+};
+
 
 };
