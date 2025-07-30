@@ -5,6 +5,8 @@ import { supabase } from './supabase.js';
 
 let tickData = [];
 
+let currentUserId = null;
+
 const fbToValue = {
   '2a': 1, '2b': 2, '2c': 3,
   '3a': 4, '3b': 5, '3c': 6,
@@ -20,6 +22,7 @@ let currentPage = 1;
 const itemsPerPage = 20;
 
 export async function initTicklistTable(userId) {
+  currentUserId = userId;
   const { data, error } = await supabase
     .from('ticklist')
     .select(`
@@ -74,7 +77,7 @@ function renderTable() {
         <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
         <td style="text-align: center;">${stars}</td>
         <td style="text-align: center;">
-          <span onclick="editTick('${entry.id}', '${userId}')">✏️</span>
+          <span onclick="editTick('${entry.id}', '${currentUserId}')">✏️</span>
         </td>
       </tr>
     `;
