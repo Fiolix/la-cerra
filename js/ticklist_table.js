@@ -80,14 +80,15 @@ function renderTable() {
 }
 
 function renderStars(rating) {
-  if (!rating) return '-';
-  const maxStars = 5;
-  let fullStars = Math.round(rating);
-  let starsHtml = '';
-  for (let i = 1; i <= maxStars; i++) {
-    starsHtml += i <= fullStars ? '⭐' : '☆';
-  }
-  return starsHtml;
+  if (!rating || rating < 0) return '<span class="stars">★★★★★</span>';
+
+  const full = Math.round(rating);
+
+  const stars = Array.from({ length: 5 }, (_, i) =>
+    `<span class="${i < full ? 'filled' : ''}">★</span>`
+  ).join('');
+
+  return `<span class="stars">${stars}</span>`;
 }
 
 window.goToPage = (page) => {
