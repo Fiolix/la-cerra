@@ -396,4 +396,9 @@ button#register-button:hover {
   letter-spacing: normal;
 }
 
-
+.stars span {
+  color: #ccc;
+}
+.stars .filled {
+  color: gold;
+}
