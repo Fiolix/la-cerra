@@ -65,7 +65,7 @@ function renderTable() {
           <th style="text-align: center;">Grade</th>
           <th style="text-align: center;">Flash</th>
           <th style="text-align: center;">Rating</th>
-          <th style="text-align: center;"></th>
+          <th class="ticklist-action"></th>
         </tr>
       </thead>
       <tbody>
@@ -79,7 +79,7 @@ function renderTable() {
         <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
         <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
         <td style="text-align: center;">${stars}</td>
-        <td style="text-align: center;">
+        <td class="ticklist-action">
           <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">✏️</span>
         </td>
       </tr>
