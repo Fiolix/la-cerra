@@ -29,6 +29,7 @@ export async function initTicklistTable(userId) {
     .from('ticklist')
     .select(`
       id,
+      route_id,
       flash,
       rating,
       grade_suggestion,
