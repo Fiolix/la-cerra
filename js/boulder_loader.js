@@ -213,5 +213,5 @@ showTicklistPopup({
   entry: routesForPopup
 });
     });
-
+}
 
