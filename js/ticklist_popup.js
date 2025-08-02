@@ -112,6 +112,8 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
         s.style.color = s.dataset.value <= val ? 'gold' : '#ccc';
       });
     }
+
+updateStars(rating);
   });
 
   popup.appendChild(list);
