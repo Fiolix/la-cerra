@@ -423,7 +423,7 @@ button#register-button:hover {
 }
 
 .ticklist-route {
-  width: 50%;
+  width: 30%;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
