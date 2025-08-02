@@ -62,10 +62,10 @@ function renderTable() {
       <thead>
         <tr>
           <th>Route</th>
-          <th style="text-align: center;">Grad</th>
+          <th style="text-align: center;">Grade</th>
           <th style="text-align: center;">Flash</th>
-          <th style="text-align: center;">Bewertung</th>
-          <th style="text-align: center;">Aktionen</th>
+          <th style="text-align: center;">Rating</th>
+          <th style="text-align: center;"></th>
         </tr>
       </thead>
       <tbody>
