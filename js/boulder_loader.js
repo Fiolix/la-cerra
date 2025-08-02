@@ -213,5 +213,6 @@ showTicklistPopup({
   entry: routesForPopup
 });
     });
+  });
 }
 
