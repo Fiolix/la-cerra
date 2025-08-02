@@ -422,3 +422,10 @@ button#register-button:hover {
   padding: 0.5rem;
 }
 
+.ticklist-route {
+  width: 50%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+

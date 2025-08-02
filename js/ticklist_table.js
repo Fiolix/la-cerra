@@ -61,7 +61,7 @@ function renderTable() {
     <table class="ticklist">
       <thead>
         <tr>
-          <th>Route</th>
+          <th class="ticklist-route">Route</th>
           <th style="text-align: center;">Grade</th>
           <th style="text-align: center;">Flash</th>
           <th style="text-align: center;">Rating</th>
@@ -75,7 +75,7 @@ function renderTable() {
     const stars = renderStars(entry.rating);
     html += `
       <tr>
-        <td>${entry.route?.name ?? '-'}</td>
+        <td class="ticklist-route">${entry.route?.name ?? '-'}</td>
         <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
         <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
         <td style="text-align: center;">${stars}</td>
