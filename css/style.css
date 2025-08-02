@@ -402,3 +402,16 @@ button#register-button:hover {
 .stars .filled {
   color: gold;
 }
+
+.ticklist {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.ticklist th,
+.ticklist td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
