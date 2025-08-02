@@ -2,6 +2,8 @@ import { supabase } from './supabase.js';
 
 import { getPublicTickStats } from './tick_stats_loader.js';
 
+import { showTicklistPopup } from './ticklist_popup.js';
+
 export async function loadBlocks() {
   // ❗ Verhindere doppeltes Nachladen
   if (document.querySelectorAll('.boulder-block').length > 0) {
@@ -197,204 +199,19 @@ const ratingDisplay = ratingCount > 0
         return;
       }
 
-      // Popup erzeugen
-      let popup = document.getElementById('ticklist-modal');
-      if (!popup) {
-        popup = document.createElement('div');
-        popup.id = 'ticklist-modal';
-        popup.style.position = 'fixed';
-        popup.style.top = '50%';
-        popup.style.left = '50%';
-        popup.style.transform = 'translate(-50%, -50%)';
-        popup.style.background = '#fff';
-        popup.style.padding = '1.5rem';
-        popup.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
-        popup.style.zIndex = '1000';
-        popup.style.width = '50vw';
-        popup.style.maxwidth = '50vw';
-        popup.style.maxheight = '80vh';
-        popup.style.overflowY = 'auto';
-        popup.style.borderRadius = '0.5rem';
+      const routesForPopup = Array.from(checkboxes).map(cb => {
+  const routeElement = cb.closest('.route');
+  return {
+    route_id: cb.dataset.routeId,
+    route_name: routeElement.querySelector('.route-name')?.textContent ?? 'Unknown',
+    grad: routeElement.querySelector('.route-grade')?.textContent ?? '?'
+  };
+});
 
-        const closeBtn = document.createElement('span');
-        closeBtn.textContent = '×';
-        closeBtn.style.position = 'absolute';
-        closeBtn.style.top = '0.5rem';
-        closeBtn.style.right = '0.75rem';
-        closeBtn.style.cursor = 'pointer';
-        closeBtn.style.fontSize = '1.5rem';
-        closeBtn.style.lineHeight = '1';
-        closeBtn.style.color = '#666';
-        closeBtn.title = 'Close';
-        closeBtn.onclick = () => popup.remove();
-        popup.appendChild(closeBtn);
+showTicklistPopup({
+  mode: 'add',
+  entry: routesForPopup
+});
 
-        const list = document.createElement('ul');
-        list.style.listStyle = 'none';
-        list.style.padding = '0';
-
-        checkboxes.forEach(cb => {
-          const routeId = cb.dataset.routeId;
-          const routeElement = cb.closest('.route');
-          const routeName = routeElement.querySelector('.route-name')?.textContent ?? 'Unknown';
-          const routeGrade = routeElement.querySelector('.route-grade')?.textContent ?? '?';
-
-          const item = document.createElement('li');
-          item.style.marginBottom = '1rem';
-          item.innerHTML = `
-            <strong>${routeName}</strong> (${routeGrade})<br>
-            <div class="rating-stars" data-rating-group style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-              <span data-value="1" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
-              <span data-value="2" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
-              <span data-value="3" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
-              <span data-value="4" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
-              <span data-value="5" style="cursor: pointer; display: inline-block; padding: 0 4px;">☆</span>
-              <input type="hidden" data-rating="true" value="" />
-            </div>
-            <label style="display: block; text-align: center;">
-              Flash <input type="checkbox" data-flash="true" />
-            </label>
-            <br>
-            <label style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
-              Grade:
-            
-<select data-grade-suggestion>
-  <option value="">...</option>
-  <option>2a</option><option>2b</option><option>2c</option>
-  <option>3a</option><option>3b</option><option>3c</option>
-  <option>4a</option><option>4b</option><option>4c</option>
-  <option>5a</option><option>5b</option><option>5c</option>
-  <option>6a</option><option>6a+</option><option>6b</option><option>6b+</option><option>6c</option><option>6c+</option>
-  <option>7a</option><option>7a+</option><option>7b</option><option>7b+</option><option>7c</option><option>7c+</option>
-  <option>8a</option><option>8a+</option><option>8b</option><option>8b+</option><option>8c</option><option>8c+</option>
-  <option>9a</option>
-</select>
-</label>
-            <input type="hidden" data-route-id-hidden="${routeId}" />
-          `;
-
-          // Interaktive Sterne direkt nach Erzeugen aktivieren
-          const ratingGroup = item.querySelector('[data-rating-group]');
-          const stars = ratingGroup.querySelectorAll('span');
-          stars.forEach(star => {
-            star.addEventListener('click', () => {
-              const val = star.dataset.value;
-              ratingGroup.querySelector('[data-rating]').value = val;
-              stars.forEach(s => {
-                if (Number(s.dataset.value) <= val) {
-                  s.textContent = '★';
-                  s.style.color = 'gold';
-                } else {
-                  s.textContent = '☆';
-                  s.style.color = '#ccc';
-                }
-              });
-            });
-            star.addEventListener('mouseover', () => {
-              const val = star.dataset.value;
-              stars.forEach(s => {
-                if (Number(s.dataset.value) <= val) {
-                  s.textContent = '★';
-                  s.style.color = 'gold';
-                } else {
-                  s.textContent = '☆';
-                  s.style.color = '#ccc';
-                }
-              });
-            });
-            star.addEventListener('mouseout', () => {
-              const val = ratingGroup.querySelector('[data-rating]').value;
-              stars.forEach(s => {
-                if (Number(s.dataset.value) <= val) {
-                  s.textContent = '★';
-                  s.style.color = 'gold';
-                } else {
-                  s.textContent = '☆';
-                  s.style.color = '#ccc';
-                }
-              });
-            });
-          });
-
-          list.appendChild(item);
-        });
-
-        popup.appendChild(list);
-
-        
-        document.body.appendChild(popup);
-
-        // Submit-Button hinzufügen (einmal)
-        let submitBtn = popup.querySelector('#submit-ticklist-button');
-        if (!submitBtn) {
-          submitBtn = document.createElement('button');
-          submitBtn.id = 'submit-ticklist-button';
-          submitBtn.textContent = 'Add to ticklist';
-          popup.appendChild(submitBtn);
-        }
-        // Handler immer neu setzen
-        submitBtn.onclick = async () => {
-          const items = popup.querySelectorAll('li');
-
-          for (const item of items) {
-            const gradeSuggestion = item.querySelector('[data-grade-suggestion]')?.value ?? null;
-            const routeId = item.querySelector('[data-route-id-hidden]')?.getAttribute('data-route-id-hidden');
-            const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(routeId);
-            if (!routeId || !isValidUUID || !userId) {
-              console.warn('⏭️ Ungültiger Eintrag übersprungen:', { routeId, userId });
-              continue;
-            }
-
-            const ratingRaw = item.querySelector('[data-rating]')?.value;
-            const rating = ratingRaw ? parseInt(ratingRaw) : null;
-            const flash = item.querySelector('[data-flash]')?.checked ?? false;
-
-            console.log('🔄 Sende an Supabase:', { user_id: userId, route_id: routeId, rating, flash });
-            const { data, error } = await supabase.from('ticklist').upsert({
-              user_id: userId,
-              route_id: routeId,
-              rating: rating,
-              flash: flash,
-              grade_suggestion: gradeSuggestion
-            }, { onConflict: ['user_id', 'route_id'], returning: 'minimal' });
-
-            if (error) {
-              console.error('❌ Fehler beim Speichern in Supabase:', error);
-              alert('An error occurred while saving your ticklist.');
-              return;
-            }
-          }
-
-          alert('✅ Ticklist saved successfully!');
-
-          sessionStorage.setItem('scrollY', window.scrollY);
-
-          location.reload();
-
-          popup.remove();
-
-          // ⬇️ HIER Checkboxen zurücksetzen
-          blockDiv.querySelectorAll('.route-tick input[type="checkbox"]').forEach(cb => {
-            cb.checked = false;
-          });
-        };
-
-
-      }
-    });
-
-    const option = document.createElement('option');
-    option.value = `#block-${block.nummer}`;
-    option.textContent = `${block.nummer} ${block.name}`;
-    dropdown.appendChild(option);
-  });
-
-  dropdown.addEventListener('change', (e) => {
-    const target = e.target.value;
-    if (target !== '#') {
-      document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-}
 
 
