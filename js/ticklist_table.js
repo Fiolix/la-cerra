@@ -63,6 +63,7 @@ function renderTable() {
         <tr>
           <th class="ticklist-route">Route</th>
           <th style="text-align: center;">Grade</th>
+          <th style="text-align: center;">Your<br>grade</th>
           <th style="text-align: center;">Flash</th>
           <th style="text-align: center;">Rating</th>
           <th class="ticklist-action"></th>
@@ -77,6 +78,7 @@ function renderTable() {
       <tr>
         <td class="ticklist-route">${entry.route?.name ?? '-'}</td>
         <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
+        <td style="text-align: center;">${entry.grade_suggestion ?? '-'}</td>
         <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
         <td style="text-align: center;">${stars}</td>
         <td class="ticklist-action">
