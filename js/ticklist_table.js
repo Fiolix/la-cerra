@@ -21,6 +21,7 @@ const fbToValue = {
 };
 
 let currentPage = 1;
+let currentSort = { column: null, direction: 'asc' };
 const itemsPerPage = 20;
 
 export async function initTicklistTable(userId) {
@@ -54,6 +55,20 @@ function renderTable() {
 
   if (!container || !pagination) return;
 
+if (currentSort.column) {
+  tickData.sort((a, b) => {
+    let valA = getValueForSort(a, currentSort.column);
+    let valB = getValueForSort(b, currentSort.column);
+
+    if (valA == null) valA = '';
+    if (valB == null) valB = '';
+
+    if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+    if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
   const start = (currentPage - 1) * itemsPerPage;
   const pageItems = tickData.slice(start, start + itemsPerPage);
 
@@ -61,11 +76,11 @@ function renderTable() {
     <table class="ticklist">
       <thead>
         <tr>
-          <th class="ticklist-route">Route</th>
-          <th style="text-align: center;">Fb</th>
-          <th style="text-align: center;">Sugg.</th>
-          <th style="text-align: center;">Flash</th>
-          <th style="text-align: center;">Rating</th>
+          <th class="ticklist-route" data-sort="route">Route</th>
+          <th style="text-align: center;" data-sort="grad">Fb</th>
+          <th style="text-align: center;" data-sort="suggestion">Sugg.</th>
+          <th style="text-align: center;" data-sort="flash">Flash</th>
+          <th style="text-align: center;" data-sort="rating">Rating</th>
           <th class="ticklist-action"></th>
         </tr>
       </thead>
@@ -98,6 +113,22 @@ document.querySelectorAll('.edit-tick').forEach(el => {
   });
 });
 
+// Spaltenüberschriften klickbar machen (Sortierung)
+container.querySelectorAll('th[data-sort]').forEach(th => {
+  th.style.cursor = 'pointer';
+  th.addEventListener('click', () => {
+    const column = th.dataset.sort;
+    if (currentSort.column === column) {
+      currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+      currentSort.column = column;
+      currentSort.direction = 'asc';
+    }
+    renderTable();
+  });
+});
+
+
   const totalPages = Math.ceil(tickData.length / itemsPerPage);
   let pageControls = '';
   for (let i = 1; i <= totalPages; i++) {
@@ -117,6 +148,18 @@ function renderStars(rating) {
 
   return `<span class="stars">${stars}</span>`;
 }
+
+function getValueForSort(entry, column) {
+  switch (column) {
+    case 'route': return entry.route?.name?.toLowerCase();
+    case 'grad': return fbToValue[entry.route?.grad] ?? 0;
+    case 'suggestion': return fbToValue[entry.grade_suggestion] ?? 0;
+    case 'flash': return entry.flash ? 1 : 0;
+    case 'rating': return entry.rating ?? 0;
+    default: return '';
+  }
+}
+
 
 window.goToPage = (page) => {
   currentPage = page;
