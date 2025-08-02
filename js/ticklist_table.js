@@ -154,6 +154,7 @@ window.editTick = (tickId, userId) => {
         .from('ticklist')
         .select(`
           id,
+          route_id,
           flash,
           rating,
           grade_suggestion,
