@@ -164,7 +164,3 @@ window.editTick = (tickId, userId) => {
     }
   });
 };
-
-
-
-};
