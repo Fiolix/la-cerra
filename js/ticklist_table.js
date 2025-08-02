@@ -3,6 +3,8 @@
 
 import { supabase } from './supabase.js';
 
+import { showTicklistPopup } from './ticklist_popup.js';
+
 let tickData = [];
 
 let currentUserId = null;
@@ -123,124 +125,46 @@ window.deleteTick = async (tickId) => {
 };
 
 window.editTick = (tickId, userId) => {
-const entry = tickData.find(t => t.id === tickId);
-if (!entry) return alert("Eintrag nicht gefunden");
+  const entry = tickData.find(t => t.id === tickId);
+  if (!entry) return alert("Eintrag nicht gefunden");
 
-const popup = document.createElement("div");
-popup.id = "ticklist-modal";
+  const route_id = entry.route_id || entry.route?.id || entry.route?.uuid;
 
-popup.style.position = 'fixed';
-popup.style.top = '50%';
-popup.style.left = '50%';
-popup.style.transform = 'translate(-50%, -50%)';
-popup.style.background = '#fff';
-popup.style.padding = '1.5rem';
-popup.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
-popup.style.zIndex = '1000';
-popup.style.width = '50vw';
-popup.style.maxWidth = '50vw';
-popup.style.maxHeight = '80vh';
-popup.style.overflowY = 'auto';
-popup.style.borderRadius = '0.5rem';
+  showTicklistPopup({
+    mode: 'edit',
+    entry: {
+      route_id: route_id,
+      route_name: entry.route?.name ?? 'Unbekannt',
+      grad: entry.route?.grad ?? '?',
+      rating: entry.rating ?? '',
+      flash: entry.flash ?? false,
+      grade_suggestion: entry.grade_suggestion ?? ''
+    },
+    onSuccess: async () => {
+      // ⟳ Tabelle neu laden (wie im alten Code)
+      const { data, error: loadError } = await supabase
+        .from('ticklist')
+        .select(`
+          id,
+          flash,
+          rating,
+          grade_suggestion,
+          created_at,
+          route:route_id(name, grad)
+        `)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
 
-
-popup.innerHTML = `
-  <div class="tick-popup">
-    <strong>${entry.route.name}</strong> (${entry.route.grad})<br>
-    <div class="rating-stars" data-rating-group>
-      ${[1, 2, 3, 4, 5].map(i => `
-        <span data-value="${i}" style="cursor: pointer;">${entry.rating >= i ? '★' : '☆'}</span>
-      `).join('')}
-      <input type="hidden" data-rating value="${entry.rating ?? ''}" />
-    </div>
-    <label>Flash <input type="checkbox" data-flash ${entry.flash ? 'checked' : ''}></label><br>
-    <label>
-      Grade:
-      <select data-grade-suggestion>
-        <option value="">...</option>
-        ${Object.keys(fbToValue).map(grad => `<option value="${grad}" ${entry.grade_suggestion === grad ? 'selected' : ''}>${grad}</option>`).join('')}
-      </select>
-    </label>
-    <br><br>
-    <button id="save-tick">Speichern</button>
-    <button id="cancel-tick">Abbrechen</button>
-  </div>
-`;
-
-const stars = popup.querySelectorAll('[data-rating-group] span');
-const ratingInput = popup.querySelector('[data-rating]');
-
-stars.forEach(star => {
-  // Klick: Sterne setzen
-  star.addEventListener('click', () => {
-    const value = parseInt(star.dataset.value);
-    ratingInput.value = value;
-    updateStars(value);
+      if (loadError) {
+        console.error("❌ Fehler beim Neuladen der Ticklist:", loadError);
+      } else {
+        tickData = data;
+        renderTable();
+      }
+    }
   });
-
-  // Hover: Vorschau anzeigen
-  star.addEventListener('mouseover', () => {
-    const value = parseInt(star.dataset.value);
-    updateStars(value);
-  });
-
-  // Maus verlässt Sterne: Zurück zum gespeicherten Wert
-  star.addEventListener('mouseout', () => {
-    updateStars(parseInt(ratingInput.value));
-  });
-});
-
-// ⭐ Hilfsfunktion: Sterne optisch aktualisieren
-function updateStars(value) {
-  stars.forEach(star => {
-    const current = parseInt(star.dataset.value);
-    star.textContent = current <= value ? '★' : '☆';
-  });
-}
-
-document.getElementById("save-tick").onclick = async () => {
-  const newRating = parseInt(popup.querySelector('[data-rating]').value);
-  const newFlash = popup.querySelector('[data-flash]').checked;
-  const newGrade = popup.querySelector('[data-grade-suggestion]').value;
-
-  const { error } = await supabase
-    .from('ticklist')
-    .update({
-      rating: newRating,
-      flash: newFlash,
-      grade_suggestion: newGrade,
-    })
-    .eq('id', tickId);
-
-  if (error) {
-    alert('Fehler beim Speichern');
-    console.error(error);
-    return;
-  }
-
-  // Tabelle neu laden
-  const { data, error: loadError } = await supabase
-    .from('ticklist')
-    .select(`
-      id,
-      flash,
-      rating,
-      grade_suggestion,
-      created_at,
-      route:route_id(name, grad)
-    `)
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (loadError) {
-    console.error("❌ Fehler beim Neuladen der Ticklist:", loadError);
-  } else {
-    tickData = data;
-    renderTable();
-  }
-
-  popup.remove();
 };
+
 
 
 };
