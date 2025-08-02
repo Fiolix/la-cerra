@@ -79,7 +79,7 @@ function renderTable() {
         <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
         <td style="text-align: center;">${stars}</td>
         <td style="text-align: center;">
-          <span style="cursor: pointer;" onclick="editTick('${entry.id}', ${currentUserId})">✏️</span>
+          <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">✏️</span>
         </td>
       </tr>
     `;
@@ -87,6 +87,13 @@ function renderTable() {
 
   html += '</tbody></table>';
   container.innerHTML = html;
+
+// Neue Event-Bindings für ✏️-Buttons
+document.querySelectorAll('.edit-tick').forEach(el => {
+  el.addEventListener('click', () => {
+    editTick(el.dataset.id, currentUserId);
+  });
+});
 
   const totalPages = Math.ceil(tickData.length / itemsPerPage);
   let pageControls = '';
