@@ -35,7 +35,15 @@ export async function initTicklistTable(userId) {
       rating,
       grade_suggestion,
       created_at,
-      route:route_id(name, grad)
+      route:route_id(
+        name,
+        grad,
+        block:block_id(
+          name,
+          nummer,
+          sektor
+        )
+      )
     `)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
@@ -198,14 +206,22 @@ window.editTick = (tickId, userId) => {
       const { data, error: loadError } = await supabase
         .from('ticklist')
         .select(`
-          id,
-          route_id,
-          flash,
-          rating,
-          grade_suggestion,
-          created_at,
-          route:route_id(name, grad)
-        `)
+                       id,
+                       route_id,
+                       flash,
+                       rating,
+                       grade_suggestion,
+                       created_at,
+                       route:route_id(
+                            name,
+                            grad,
+                            block:block_id(
+                                 name,
+                                 nummer,
+                                 sektor
+                               )
+                             )
+                         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
