@@ -96,7 +96,7 @@ if (currentSort.column) {
   `;
 
   for (const entry of pageItems) {
-console.log(entry);
+
     const stars = renderStars(entry.rating);
     html += `
       <tr>
@@ -110,6 +110,25 @@ console.log(entry);
         </td>
       </tr>
     `;
+
+const sektor = entry.route?.block?.sektor;
+  const blockname = entry.route?.block?.name;
+  const nummer = entry.route?.block?.nummer;
+
+  const sektorLink = sektor ? `${sektor}.html` : '#';
+  const blockAnchor = nummer ? `#block-${nummer}` : '';
+  const blockLink = sektor ? `${sektorLink}${blockAnchor}` : '#';
+
+  html += `
+    <tr class="ticklist-meta">
+      <td colspan="6">
+        Block: ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
+        Sektor: ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
+        <a href="#" onclick="editTick('${entry.id}', ${currentUserId}); return false;">Edit</a>
+      </td>
+    </tr>
+  `;
+
   }
 
   html += '</tbody></table>';
