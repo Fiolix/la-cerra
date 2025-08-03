@@ -96,6 +96,7 @@ if (currentSort.column) {
   `;
 
   for (const entry of pageItems) {
+console.log(entry);
     const stars = renderStars(entry.rating);
     html += `
       <tr>
