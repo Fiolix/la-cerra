@@ -113,9 +113,8 @@ const blockname = entry.route?.block?.name;
 let nummer = entry.route?.block?.nummer;
 if (nummer) nummer = nummer.replaceAll('/', '-');
 
-// Robuster Linkaufbau für GitHub Pages
 const blockAnchor = nummer ? `#block-${nummer}` : '';
-const blockLink = sektor ? `${base}/${sektor}.html${blockAnchor}` : '#';
+const blockPage = sektor ? `${sektor}.html` : null;
 
 html += `
   <tr class="ticklist-meta">
