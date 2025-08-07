@@ -114,7 +114,7 @@ let nummer = entry.route?.block?.nummer;
 if (nummer) nummer = nummer.replaceAll('/', '-');
 
 // Robuster Linkaufbau für GitHub Pages
-const base = `${window.location.origin}/la-cerra`;
+const base = `${window.location.origin}/la-cerra/content`;
 const sektorLink = sektor ? `${base}/${sektor}.html` : '#';
 const blockAnchor = nummer ? `#block-${nummer}` : '';
 const blockLink = sektor ? `${base}/${sektor}.html${blockAnchor}` : '#';
