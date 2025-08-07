@@ -452,4 +452,9 @@ button#register-button:hover {
 
 #ticklist-table table {
   min-width: unset;
+
+.ticklist tr.ticklist-meta td a {
+  color: #555;
+  text-decoration: none;
+}
 }
