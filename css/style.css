@@ -419,7 +419,7 @@ button#register-button:hover {
 
 .ticklist tr.ticklist-meta td {
   border-top: 1px solid #ddd;
-  border-bottom: none;
+  border-bottom: none !important;
   padding-top: 0.25rem;
   padding-bottom: 0.5rem;
   font-size: 0.85rem;
