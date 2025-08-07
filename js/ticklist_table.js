@@ -103,7 +103,7 @@ if (currentSort.column) {
         <td class="ticklist-route">${entry.route?.name ?? '-'}</td>
         <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
         <td style="text-align: center;">${entry.grade_suggestion ?? '-'}</td>
-        <td style="text-align: center;">${entry.flash ? '✅' : '❌'}</td>
+        <td style="text-align: center;">${entry.flash ? '✅' : ''}</td>
         <td style="text-align: center;">${stars}</td>
         <td class="ticklist-action">
           <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">✏️</span>
