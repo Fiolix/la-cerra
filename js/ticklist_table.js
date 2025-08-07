@@ -107,24 +107,27 @@ if (currentSort.column) {
       </tr>
     `;
 
+// Innerhalb der renderTable()-Schleife
 const sektor = entry.route?.block?.sektor;
-  const blockname = entry.route?.block?.name;
-  const nummer = entry.route?.block?.nummer;
+const blockname = entry.route?.block?.name;
+let nummer = entry.route?.block?.nummer;
+if (nummer) nummer = nummer.replaceAll('/', '-');
 
-  const sektorLink = sektor ? `${sektor}.html` : '#';
-  const blockAnchor = nummer ? `#block-${nummer}` : '';
-  const blockLink = sektor ? `${sektorLink}${blockAnchor}` : '#';
+// Robuster Linkaufbau für GitHub Pages
+const base = `${window.location.origin}/la-cerra`;
+const sektorLink = sektor ? `${base}/${sektor}.html` : '#';
+const blockAnchor = nummer ? `#block-${nummer}` : '';
+const blockLink = sektor ? `${sektorLink}${blockAnchor}` : '#';
 
-  html += `
-    <tr class="ticklist-meta">
-      <td colspan="5">
-        ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
-        ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
-        <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
-
-      </td>
-    </tr>
-  `;
+html += `
+  <tr class="ticklist-meta">
+    <td colspan="5">
+      ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
+      ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
+      <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
+    </td>
+  </tr>
+`;
 
   }
 
