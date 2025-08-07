@@ -429,6 +429,23 @@ button#register-button:hover {
   hyphens: auto;
 }
 
+/* Verbesserte mobile Darstellung der Ticklist-Tabelle */
+@media (max-width: 599px) {
+  .ticklist {
+    table-layout: auto;
+    word-break: break-word;
+  }
+  .ticklist td:last-child,
+  .ticklist th:last-child {
+    width: auto;
+    max-width: 40px;
+    text-align: center;
+  }
+  .stars {
+    font-size: 0.9rem;
+  }
+}
+
 /* Horizontal scrollbare Tabelle auf kleinen Bildschirmen */
 #ticklist-table {
   overflow-x: auto;
