@@ -89,7 +89,6 @@ if (currentSort.column) {
           <th style="text-align: center;" data-sort="suggestion">Sugg.</th>
           <th style="text-align: center;" data-sort="flash">Flash</th>
           <th style="text-align: center;" data-sort="rating">Rating</th>
-          <th class="ticklist-action"></th>
         </tr>
       </thead>
       <tbody>
@@ -105,9 +104,6 @@ if (currentSort.column) {
         <td style="text-align: center;">${entry.grade_suggestion ?? '-'}</td>
         <td style="text-align: center;">${entry.flash ? '✅' : ''}</td>
         <td style="text-align: center;">${stars}</td>
-        <td class="ticklist-action">
-          <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">✏️</span>
-        </td>
       </tr>
     `;
 
@@ -121,7 +117,7 @@ const sektor = entry.route?.block?.sektor;
 
   html += `
     <tr class="ticklist-meta">
-      <td colspan="6">
+      <td colspan="5">
         Block: ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
         Sektor: ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
         <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
