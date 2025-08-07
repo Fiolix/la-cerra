@@ -421,6 +421,7 @@ button#register-button:hover {
   width: 40%;
   max-width: 40%;
   white-space: normal;
+  text-align: left;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
