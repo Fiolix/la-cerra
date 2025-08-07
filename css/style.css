@@ -403,56 +403,41 @@ button#register-button:hover {
   color: gold;
 }
 
+/* Verbesserte Darstellung der Ticklist-Tabelle (mobil und allgemein) */
 .ticklist {
-  width: 100%;
+  width: auto;
+  table-layout: auto;
   border-collapse: collapse;
-  table-layout: fixed;
-}
-.ticklist th,
-.ticklist td {
-  padding: 0.5rem;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
 }
 
-.ticklist-action {
-  width: 5%;
+.ticklist td,
+.ticklist th {
   white-space: nowrap;
-  text-align: center;
-  padding: 0.5rem;
+  padding: 0.4rem 0.6rem;
 }
 
-.ticklist-route {
-  width: 30%;
+.ticklist td.ticklist-route,
+.ticklist th.ticklist-route {
+  width: 40%;
+  max-width: 40%;
+  white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
 }
 
-/* Verbesserte mobile Darstellung der Ticklist-Tabelle */
-@media (max-width: 599px) {
-  .ticklist {
-    table-layout: auto;
-    word-break: break-word;
-  }
-  .ticklist td:last-child,
-  .ticklist th:last-child {
-    width: auto;
-    max-width: 40px;
-    text-align: center;
-  }
-  .stars {
-    font-size: 0.9rem;
-  }
+.ticklist td:not(.ticklist-route),
+.ticklist th:not(.ticklist-route) {
+  width: 1%;
+  text-align: center;
 }
 
-/* Horizontal scrollbare Tabelle auf kleinen Bildschirmen */
+/* Kein Scrollen nötig, Tabelle passt sich ihrem Inhalt an */
 #ticklist-table {
   overflow-x: auto;
   width: 100%;
 }
 
 #ticklist-table table {
-  min-width: 600px; /* oder höher, je nach Spaltenzahl */
-  border-collapse: collapse;
+  min-width: unset;
 }
