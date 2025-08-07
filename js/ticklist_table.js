@@ -117,7 +117,7 @@ if (nummer) nummer = nummer.replaceAll('/', '-');
 const base = `${window.location.origin}/la-cerra`;
 const sektorLink = sektor ? `${base}/${sektor}.html` : '#';
 const blockAnchor = nummer ? `#block-${nummer}` : '';
-const blockLink = sektor ? `${sektorLink}${blockAnchor}` : '#';
+const blockLink = sektor ? `${base}/${sektor}.html${blockAnchor}` : '#';
 
 html += `
   <tr class="ticklist-meta">
