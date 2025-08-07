@@ -124,7 +124,8 @@ const sektor = entry.route?.block?.sektor;
       <td colspan="6">
         Block: ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
         Sektor: ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
-        <a href="#" onclick="editTick('${entry.id}', ${currentUserId}); return false;">Edit</a>
+        <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
+
       </td>
     </tr>
   `;
