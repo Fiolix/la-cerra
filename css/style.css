@@ -429,3 +429,13 @@ button#register-button:hover {
   hyphens: auto;
 }
 
+/* Horizontal scrollbare Tabelle auf kleinen Bildschirmen */
+#ticklist-table {
+  overflow-x: auto;
+  width: 100%;
+}
+
+#ticklist-table table {
+  min-width: 600px; /* oder höher, je nach Spaltenzahl */
+  border-collapse: collapse;
+}
