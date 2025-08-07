@@ -118,8 +118,8 @@ const sektor = entry.route?.block?.sektor;
   html += `
     <tr class="ticklist-meta">
       <td colspan="5">
-        Block: ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
-        Sektor: ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
+        ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
+        ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
         <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
 
       </td>
