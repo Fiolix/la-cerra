@@ -114,16 +114,14 @@ let nummer = entry.route?.block?.nummer;
 if (nummer) nummer = nummer.replaceAll('/', '-');
 
 // Robuster Linkaufbau für GitHub Pages
-const base = `${window.location.origin}/la-cerra/content`;
-const sektorLink = sektor ? `${base}/${sektor}.html` : '#';
 const blockAnchor = nummer ? `#block-${nummer}` : '';
 const blockLink = sektor ? `${base}/${sektor}.html${blockAnchor}` : '#';
 
 html += `
   <tr class="ticklist-meta">
     <td colspan="5">
-      ${blockname ? `<a href="${blockLink}">${blockname}</a>` : '–'} &nbsp;|
-      ${sektor ? `<a href="${sektorLink}">${sektor}</a>` : '–'} &nbsp;|
+      ${blockname && blockPage ? `<a href="#" data-page="${blockPage}${blockAnchor}">${blockname}</a>` : '–'} &nbsp;|
+      ${sektor ? `<a href="#" data-page="${blockPage}">${sektor}</a>` : '–'} &nbsp;|
       <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
     </td>
   </tr>
