@@ -414,6 +414,16 @@ button#register-button:hover {
 .ticklist th {
   white-space: nowrap;
   padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.ticklist tr.ticklist-meta td {
+  border-bottom: none;
+  padding-top: 0.25rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #555;
+  background: #f9f9f9;
 }
 
 .ticklist td.ticklist-route,
