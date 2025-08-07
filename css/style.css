@@ -453,6 +453,6 @@ button#register-button:hover {
 }
 
 #ticklist-table table {
-  min-width: 100px; /* oder höher, je nach Spaltenzahl */
+
   border-collapse: collapse;
 }
