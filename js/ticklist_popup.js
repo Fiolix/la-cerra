@@ -132,7 +132,8 @@ if (mode === 'edit') {
   const delLink = document.createElement('span');
   delLink.textContent = '(Delete)';
   delLink.style.cursor = 'pointer';
-  delLink.style.color = '#c00';
+  delLink.style.color = '#555';
+  delLink.style.fontSize = '0.75rem';
   delLink.style.textDecoration = 'underline';
 
   delWrap.appendChild(delLink);
