@@ -5,6 +5,24 @@ import { supabase } from './supabase.js';
 
 import { showTicklistPopup } from './ticklist_popup.js';
 
+// Schöne Anzeigenamen für Sektoren (Slug -> Label)
+const SEKTOR_LABELS = {
+  la_sportiva: 'La Sportiva',
+  somewhere: 'Somewhere',
+  // hier kannst du weitere ~20 Einträge pflegen
+};
+
+// Fallback: underscores in Leerzeichen, jedes Wort groß
+function formatSectorName(slug) {
+  if (!slug) return '-';
+  if (SEKTOR_LABELS[slug]) return SEKTOR_LABELS[slug];
+  return slug
+    .split('_')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+
 let tickData = [];
 
 let currentUserId = null;
@@ -120,7 +138,7 @@ html += `
   <tr class="ticklist-meta">
     <td colspan="5">
       ${blockname && blockPage ? `<a href="#" data-page="${blockPage}${blockAnchor}">${blockname}</a>` : '–'} &nbsp;|
-      ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${sektor}</a>` : '–'} &nbsp;|
+      ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${formatSectorName(sektor)}</a>` : '–'} &nbsp;|
       <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
     </td>
   </tr>
