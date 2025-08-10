@@ -458,3 +458,39 @@ button#register-button:hover {
   color: #555;
   text-decoration: none;
 }
+
+/* Dezente Pagination für Ticklist */
+#pagination-controls {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.pagination a,
+.pagination span {
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  color: #555;
+}
+
+.pagination a:hover {
+  background: #eee;
+}
+
+.pagination .current {
+  font-weight: bold;
+  background: #e9ecef;
+  color: #333;
+}
+
+.pagination .disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
