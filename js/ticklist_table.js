@@ -120,7 +120,7 @@ html += `
   <tr class="ticklist-meta">
     <td colspan="5">
       ${blockname && blockPage ? `<a href="#" data-page="${blockPage}${blockAnchor}">${blockname}</a>` : '–'} &nbsp;|
-      ${sektor ? `<a href="#" data-page="${blockPage}">${sektor}</a>` : '–'} &nbsp;|
+      ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${sektor}</a>` : '–'} &nbsp;|
       <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
     </td>
   </tr>
