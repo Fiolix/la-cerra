@@ -18,9 +18,11 @@ async function loadPage(page) {
     return;
   }
 
-  localStorage.setItem("lastPage", page);
-  const url = `/la-cerra/content/${page}`;
-  console.log(`📥 Versuche zu laden: ${url}`);
+const [basePage, anchor] = page.split('#'); // z.B. "somewhere.html", "block-04-05"
+
+localStorage.setItem("lastPage", basePage);
+const url = `/la-cerra/content/${basePage}`;
+console.log(`📥 Versuche zu laden: ${url}`);
 
   try {
     const response = await fetch(url);
@@ -28,11 +30,11 @@ async function loadPage(page) {
     const html = await response.text();
 
     contentElement.innerHTML = html;
-    console.log("✅ Inhalt erfolgreich geladen:", page);
+    console.log("✅ Inhalt erfolgreich geladen:", basePage);
 
     let handledScroll = false;
 
-    if (page === "profile") {
+    if (basePage === "profile") {
       import("/la-cerra/js/profile_handler.js")
         .then(m => m.initProfile())
         .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
@@ -48,8 +50,24 @@ async function loadPage(page) {
           img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
         ));
 
-        restoreScrollPosition();
-        handledScroll = true;
+if (anchor) {
+  // 🔎 Warte kurz, bis der Ziel-Block existiert, dann scrolle dorthin
+  let tries = 20;
+  const tryScroll = () => {
+    const el = document.getElementById(anchor); // z.B. "block-04-05"
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (tries-- > 0) {
+      setTimeout(tryScroll, 100);
+    }
+  };
+  tryScroll();
+  handledScroll = true;
+} else {
+  restoreScrollPosition();
+  handledScroll = true;
+}
+
       } catch (err) {
         console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
       }
@@ -62,13 +80,13 @@ async function loadPage(page) {
     }
 
     if (html.includes('id="routen-diagramm"')) {
-      const sektorName = page.replace(".html", "");
+      const sektorName = basePage.replace(".html", "");
       import("/la-cerra/js/routen_diagram_loader.js")
         .then(m => m.loadRoutenDiagramm(sektorName))
         .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
     }
 
-    if (page === "register") {
+    if (basePage === "register") {
       import("/la-cerra/js/register_handler.js")
         .then(m => m.initRegisterForm())
         .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
@@ -103,7 +121,7 @@ document.body.addEventListener("click", (e) => {
   if (!link) return;
   e.preventDefault();
   const page = link.getAttribute("data-page");
-  sessionStorage.setItem("scrollY", window.scrollY);
+  history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
   loadPage(page);
 });
 
@@ -115,12 +133,22 @@ if (!window.loadPageListenerRegistered) {
   window.loadPageListenerRegistered = true;
 }
 
+window.addEventListener('popstate', () => {
+  const params = new URLSearchParams(location.search);
+  const p = params.get('p');
+  const page = p ? decodeURIComponent(p) : 'start.html';
+  loadPage(page);
+});
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const contentElement = document.getElementById("content");
   if (!contentElement) {
     console.error("❌ content-Element nicht vorhanden beim Initialisieren");
     return;
   }
-  const lastPage = localStorage.getItem("lastPage") || "start.html";
-  loadPage(lastPage);
+  const params = new URLSearchParams(location.search);
+  const p = params.get('p');
+  const initial = p ? decodeURIComponent(p) : (localStorage.getItem("lastPage") || "start.html");
+  loadPage(initial);
 });
