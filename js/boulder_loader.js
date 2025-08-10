@@ -4,6 +4,11 @@ import { getPublicTickStats } from './tick_stats_loader.js';
 
 import { showTicklistPopup } from './ticklist_popup.js';
 
+function toAnchorId(nr) {
+  // aus "04/05" wird "04-05"
+  return `block-${String(nr).replaceAll('/', '-')}`;
+}
+
 export async function loadBlocks() {
   // ❗ Verhindere doppeltes Nachladen
   if (document.querySelectorAll('.boulder-block').length > 0) {
@@ -13,6 +18,45 @@ export async function loadBlocks() {
 
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
+
+// Dropdown leeren und Start-Option setzen
+if (dropdown) {
+  dropdown.innerHTML = '';
+  const opt0 = document.createElement('option');
+  opt0.value = '';
+  opt0.textContent = '-- Select a block --';
+  dropdown.appendChild(opt0);
+}
+
+// >>> nach dem Rendern der Blöcke: Optionen einfügen
+// Hinweis: 'blocks' ist Dein Array aus der DB mit allen Blöcken dieses Sektors.
+// Falls es bei Dir anders heißt, sag mir kurz den Namen, dann passe ich es an.
+if (dropdown && Array.isArray(blocks)) {
+  blocks.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = '#' + toAnchorId(b.nummer);                  // z.B. "#block-04-05"
+    opt.textContent = (b.nummer || '') + (b.name ? ` – ${b.name}` : '');
+    dropdown.appendChild(opt);
+  });
+
+  // Wechsel im Dropdown: zum gewählten Block scrollen
+  dropdown.addEventListener('change', () => {
+    const hash = dropdown.value;  // z.B. "#block-04-05"
+    if (!hash) return;
+    const id = hash.slice(1);     // "block-04-05"
+    let tries = 20;
+    const tryScroll = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (tries-- > 0) {
+        setTimeout(tryScroll, 100);
+      }
+    };
+    tryScroll();
+  });
+}
+
 
   if (!container || !dropdown) {
     console.warn('⏳ container oder dropdown nicht vorhanden – retry in 200ms');
@@ -42,6 +86,34 @@ export async function loadBlocks() {
 
   container.innerHTML = '';
   dropdown.innerHTML = '<option value="#">-- Select a block --</option>';
+
+// Optionen je Block einfügen (Anzeige "04/05 – Name", Wert "#block-04-05")
+if (dropdown && Array.isArray(blocks)) {
+  blocks.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = '#' + toAnchorId(b.nummer);                 // z.B. "#block-04-05"
+    opt.textContent = (b.nummer || '') + (b.name ? ` – ${b.name}` : '');
+    dropdown.appendChild(opt);
+  });
+
+  // Wechsel im Dropdown: zum gewählten Block scrollen (wartet kurz, falls DOM noch rendert)
+  dropdown.addEventListener('change', () => {
+    const hash = dropdown.value;  // z.B. "#block-04-05"
+    if (!hash) return;
+    const id = hash.slice(1);     // "block-04-05"
+    let tries = 20;
+    const tryScroll = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (tries-- > 0) {
+        setTimeout(tryScroll, 100);
+      }
+    };
+    tryScroll();
+  });
+}
+
 
 // ⭐ Neue Bewertungsladung – ersetzt durch View
 const tickStats = await getPublicTickStats();
@@ -80,7 +152,7 @@ for (const entry of tickStats) {
       .sort((a, b) => a.buchstabe.localeCompare(b.buchstabe));
     const blockDiv = document.createElement('section');
     blockDiv.className = 'boulder-block';
-    blockDiv.id = `block-${block.nummer}`;
+    blockDiv.id = toAnchorId(block.nummer);
     blockDiv.style.marginTop = '2rem';
 
     const routesHtml = blockRoutes.map(route => {
