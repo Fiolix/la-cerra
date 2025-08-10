@@ -123,6 +123,64 @@ updateStars(rating);
   submitBtn.textContent = mode === 'edit' ? 'Speichern' : 'Ticklist speichern';
   popup.appendChild(submitBtn);
 
+// --- Delete-Link (nur im Edit-Modus) ---
+if (mode === 'edit') {
+  const delWrap = document.createElement('div');
+  delWrap.style.textAlign = 'center';
+  delWrap.style.marginTop = '0.5rem';
+
+  const delLink = document.createElement('span');
+  delLink.textContent = '(Delete)';
+  delLink.style.cursor = 'pointer';
+  delLink.style.color = '#c00';
+  delLink.style.textDecoration = 'underline';
+
+  delWrap.appendChild(delLink);
+  popup.appendChild(delWrap);
+
+  delLink.addEventListener('click', async () => {
+    const proceed = confirm('Are you sure? This action cannot be undone.');
+    if (!proceed) return;
+
+    // route_id aus dem ersten LI im Popup ziehen
+    const firstLi = popup.querySelector('li');
+    const route_id = firstLi?.querySelector('[data-route-id-hidden]')?.getAttribute('data-route-id-hidden');
+
+    // aktuellen User holen
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user_id = sessionData?.session?.user?.id;
+
+    // einfache UUID-Validierung wie beim Speichern
+    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(route_id);
+    if (!route_id || !user_id || !isValidUUID) {
+      alert('Delete failed: invalid route or user.');
+      return;
+    }
+
+    // Eintrag löschen (für diesen Nutzer + diese Route)
+    const { error } = await supabase
+      .from('ticklist')
+      .delete()
+      .eq('user_id', user_id)
+      .eq('route_id', route_id);
+
+    if (error) {
+      alert('❌ Error while deleting.');
+      console.error(error);
+      return;
+    }
+
+    // Erfolgs-Handling: Tabelle neu laden (onSuccess), Popup schließen
+    if (typeof onSuccess === 'function') {
+      onSuccess();
+    } else {
+      location.reload();
+    }
+    popup.remove();
+  });
+}
+
+
   submitBtn.onclick = async () => {
     const items = popup.querySelectorAll('li');
 
