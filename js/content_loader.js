@@ -63,10 +63,19 @@ if (anchor) {
   };
   tryScroll();
   handledScroll = true;
+
+} else if (sessionStorage.getItem('forceTop') === '1') {
+  // 🔝 explizit am Seitenanfang starten (Sektor-Link aus der Ticklist)
+  window.scrollTo(0, 0);
+  sessionStorage.removeItem('forceTop');
+  handledScroll = true;
+
 } else {
+  // 🔁 normales Verhalten: alte Scrollposition wiederherstellen
   restoreScrollPosition();
   handledScroll = true;
 }
+
 
       } catch (err) {
         console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
@@ -103,7 +112,7 @@ if (anchor) {
   } catch (err) {
     console.error("❌ Fehler beim Laden der Seite:", err);
     loadPage.isLoading = false;
-    contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${page}</p>`;
+    contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
   }
 }
 
@@ -121,6 +130,13 @@ document.body.addEventListener("click", (e) => {
   if (!link) return;
   e.preventDefault();
   const page = link.getAttribute("data-page");
+
+  // 🔝 Wenn der Link den Seitenanfang erzwingen soll (Sektor-Link aus der Ticklist)
+  const forceTop = link.hasAttribute('data-scrolltop');
+  if (forceTop) {
+    sessionStorage.setItem('forceTop', '1');
+  }
+
   history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
   loadPage(page);
 });
