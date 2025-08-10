@@ -28,35 +28,6 @@ if (dropdown) {
   dropdown.appendChild(opt0);
 }
 
-// >>> nach dem Rendern der Blöcke: Optionen einfügen
-// Hinweis: 'blocks' ist Dein Array aus der DB mit allen Blöcken dieses Sektors.
-// Falls es bei Dir anders heißt, sag mir kurz den Namen, dann passe ich es an.
-if (dropdown && Array.isArray(blocks)) {
-  blocks.forEach(b => {
-    const opt = document.createElement('option');
-    opt.value = '#' + toAnchorId(b.nummer);                  // z.B. "#block-04-05"
-    opt.textContent = (b.nummer || '') + (b.name ? ` – ${b.name}` : '');
-    dropdown.appendChild(opt);
-  });
-
-  // Wechsel im Dropdown: zum gewählten Block scrollen
-  dropdown.addEventListener('change', () => {
-    const hash = dropdown.value;  // z.B. "#block-04-05"
-    if (!hash) return;
-    const id = hash.slice(1);     // "block-04-05"
-    let tries = 20;
-    const tryScroll = () => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else if (tries-- > 0) {
-        setTimeout(tryScroll, 100);
-      }
-    };
-    tryScroll();
-  });
-}
-
 
   if (!container || !dropdown) {
     console.warn('⏳ container oder dropdown nicht vorhanden – retry in 200ms');
@@ -85,7 +56,7 @@ if (dropdown && Array.isArray(blocks)) {
   console.log(`ℹ️ ${blocks.length} Blöcke geladen für Sektor '${sektor}'`);
 
   container.innerHTML = '';
-  dropdown.innerHTML = '<option value="#">-- Select a block --</option>';
+  dropdown.innerHTML = '<option value="">-- Select a block --</option>';
 
 // Optionen je Block einfügen (Anzeige "04/05 – Name", Wert "#block-04-05")
 if (dropdown && Array.isArray(blocks)) {
