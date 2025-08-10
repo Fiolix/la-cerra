@@ -172,12 +172,49 @@ container.querySelectorAll('th[data-sort]').forEach(th => {
 });
 
 
-  const totalPages = Math.ceil(tickData.length / itemsPerPage);
-  let pageControls = '';
-  for (let i = 1; i <= totalPages; i++) {
-    pageControls += `<button onclick="goToPage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
+const totalPages = Math.ceil(tickData.length / itemsPerPage);
+
+// Dezente Pagination: Pfeile + Seitenzahlen (ohne große Buttons)
+let pageControls = '<nav class="pagination">';
+
+// Prev-Pfeil
+if (currentPage > 1) {
+  pageControls += `<a href="#" class="page-prev" data-page="${currentPage - 1}">‹</a>`;
+} else {
+  pageControls += `<span class="page-prev disabled">‹</span>`;
+}
+
+// Seitenzahlen
+for (let i = 1; i <= totalPages; i++) {
+  if (i === currentPage) {
+    pageControls += `<span class="page current">${i}</span>`;
+  } else {
+    pageControls += `<a href="#" class="page" data-page="${i}">${i}</a>`;
   }
-  pagination.innerHTML = pageControls;
+}
+
+// Next-Pfeil
+if (currentPage < totalPages) {
+  pageControls += `<a href="#" class="page-next" data-page="${currentPage + 1}">›</a>`;
+} else {
+  pageControls += `<span class="page-next disabled">›</span>`;
+}
+
+pageControls += '</nav>';
+pagination.innerHTML = pageControls;
+
+// Klick-Handling für die Links
+pagination.querySelectorAll('.pagination a').forEach(a => {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    const pg = parseInt(a.getAttribute('data-page'), 10);
+    if (!isNaN(pg)) {
+      currentPage = pg;
+      renderTable();
+    }
+  });
+});
+
 }
 
 function renderStars(rating) {
