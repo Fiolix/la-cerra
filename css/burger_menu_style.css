@@ -160,7 +160,7 @@
   line-height: 44px;       /* ☰ vertikal zentriert */
   text-align: center;
   font-size: 22px;
-  background: #2e7d32;     /* Platzhalter – wird gleich per JS auf das echte Menü-Grün gesetzt */
+  background: #384e4d;     /* Platzhalter – wird gleich per JS auf das echte Menü-Grün gesetzt */
   color: #fff;             /* guter Kontrast auf Grün */
   border: 0;               /* keine Rahmenkante */
   border-radius: 0;        /* keine runden Ecken */
@@ -182,6 +182,6 @@
 }
 
 /* Wenn das Menü offen ist, Kachel ausblenden */
-.slide-menu.open + .hero .menu-icon {
+.slide-menu.open ~ .hero .menu-icon {
   display: none;
 }
