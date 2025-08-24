@@ -53,6 +53,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.insertBefore(navMenu, document.body.firstChild);
 
+// Menü-Hintergrund ermitteln und auf die Kachel übernehmen
+const menuBg = getComputedStyle(navMenu).backgroundColor;
+const menuIcon = document.querySelector(".menu-icon"); // du nutzt diesen Selektor schon
+if (menuIcon && menuBg) {
+  menuIcon.style.backgroundColor = menuBg; // exakt dasselbe Grün wie das Slide-Menü
+  menuIcon.style.color = '#fff';
+}
+
   // Neues Event feuern, wenn Login-Elemente vorhanden sind
   const checkLoginBlockReady = setInterval(() => {
     if (
