@@ -53,13 +53,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.insertBefore(navMenu, document.body.firstChild);
 
-// Menü-Hintergrund ermitteln und auf die Kachel übernehmen
+// Rechte "Map"-Kachel anlegen (zunächst versteckt)
+const mapFab = document.createElement('div');
+mapFab.className = 'map-fab';
+mapFab.textContent = 'Map';
+mapFab.style.display = 'none';
+document.querySelector('.hero')?.appendChild(mapFab);
+
+
+// Menü-Hintergrund ermitteln und auf beide Kacheln übernehmen
 const menuBg = getComputedStyle(navMenu).backgroundColor;
-// const menuIcon = document.querySelector(".menu-icon"); // ← diese Zeile bitte löschen
-if (menuIcon && menuBg) {
-  menuIcon.style.backgroundColor = menuBg; // exakt dasselbe Grün wie das Slide-Menü
-  menuIcon.style.color = '#fff';
+const menuIconEl = document.querySelector(".menu-icon"); // linke Kachel
+if (menuBg) {
+  if (menuIconEl) {
+    menuIconEl.style.backgroundColor = menuBg;
+    menuIconEl.style.color = '#fff';
+  }
+  if (mapFab) {
+    mapFab.style.backgroundColor = menuBg;
+    mapFab.style.color = '#fff';
+  }
 }
+
 
   // Neues Event feuern, wenn Login-Elemente vorhanden sind
   const checkLoginBlockReady = setInterval(() => {
@@ -104,6 +119,49 @@ if (menuIcon && menuBg) {
       navMenu.classList.remove("open");
     }
   });
+// Hilfsfunktionen für die Map-Kachel
+function findMapEl() {
+  // Versuche mehrere mögliche IDs/Klassen – nimm die erste gefundene
+  return document.querySelector('#map, #mapid, #sektor-map, #map-container, [data-map], .sector-map');
+}
+function isSectorPage() {
+  // Merkmal für Sektorseiten: es gibt den Block-Dropdown oder die Blocks-Liste
+  return !!(document.getElementById('block-select') || document.getElementById('boulder-blocks'));
+}
+function updateMapFabVisibility() {
+  if (!mapFab) return;
+  const sector = isSectorPage();
+  const mapEl = findMapEl();
+  if (!sector || !mapEl) {
+    mapFab.style.display = 'none';
+    return;
+  }
+  const rect = mapEl.getBoundingClientRect();
+  const mapBottom = rect.bottom + window.scrollY;
+  // Erst zeigen, wenn vollständig unter der Karte gescrollt wurde
+  mapFab.style.display = (window.scrollY > mapBottom) ? 'block' : 'none';
+}
+
+// Beim Scrollen prüfen
+window.addEventListener('scroll', updateMapFabVisibility, { passive: true });
+
+// Nach Inhaltswechsel (wenn Sektor-Seite geladen wurde) erneut prüfen
+const contentRoot = document.getElementById('content');
+if (contentRoot) {
+  const mo = new MutationObserver(() => {
+    // kurz warten, bis Bilder/Map-Container im Layout sind
+    setTimeout(updateMapFabVisibility, 0);
+  });
+  mo.observe(contentRoot, { childList: true, subtree: true });
+}
+
+// Klick auf die Kachel: zur Karte scrollen
+mapFab.addEventListener('click', () => {
+  const mapEl = findMapEl();
+  const y = mapEl ? (mapEl.getBoundingClientRect().top + window.scrollY - 8) : 0;
+  window.scrollTo({ top: y, behavior: 'smooth' });
+});
+
 });
 
 function setLanguage(lang) {
