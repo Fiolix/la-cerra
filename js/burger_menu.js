@@ -123,8 +123,8 @@ if (menuBg) {
   });
 // Hilfsfunktionen für die Map-Kachel
 function findMapEl() {
-  // Versuche mehrere mögliche IDs/Klassen – nimm die erste gefundene
-  return document.querySelector('#map, #mapid, #sektor-map, #map-container, [data-map], .sector-map');
+  // Primär das Element mit data-map (sauber & eindeutig)
+  return document.querySelector('[data-map]');
 }
 function isSectorPage() {
   // Merkmal für Sektorseiten: es gibt den Block-Dropdown oder die Blocks-Liste
