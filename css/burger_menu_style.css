@@ -196,7 +196,7 @@
   line-height: 44px;        /* Text vertikal zentriert */
   text-align: center;
   font-size: 14px;          /* etwas kleiner als ☰ */
-  background: #2e7d32;      /* Platzhalter – Farbe wird per JS auf Menü-Grün gesetzt */
+  background: #384e4d;      /* Platzhalter – Farbe wird per JS auf Menü-Grün gesetzt */
   color: #fff;
   border: 0;
   border-radius: 0;         /* keine runden Ecken */
@@ -219,6 +219,6 @@
 }
 
 /* Wenn das Menü offen ist, Map-Kachel ausblenden (analog zur linken Kachel) */
-.slide-menu.open + .hero .map-fab {
+.slide-menu.open ~ .hero .map-fab {
   display: none;
 }

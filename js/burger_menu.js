@@ -57,6 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
 const mapFab = document.createElement('div');
 mapFab.className = 'map-fab';
 mapFab.textContent = 'Map';
+mapFab.setAttribute('aria-label', 'Back to map');
+mapFab.setAttribute('title', 'Map');
 mapFab.style.display = 'none';
 document.querySelector('.hero')?.appendChild(mapFab);
 
