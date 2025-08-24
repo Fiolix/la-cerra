@@ -149,3 +149,39 @@
   border: 1px solid #ccc;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
+
+/* Fixierte Burger-Kachel oben links */
+#menu-fab {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  width: 44px;
+  height: 44px;
+  line-height: 44px;       /* vertikal zentrieren des ☰ */
+  text-align: center;
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 2000;           /* sicher über dem Inhalt */
+  cursor: pointer;
+  user-select: none;
+}
+
+#menu-fab:active {
+  transform: translateY(1px);
+}
+
+/* etwas kompakter auf sehr kleinen Bildschirmen */
+@media (max-width: 480px) {
+  #menu-fab {
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+  }
+}
+
