@@ -146,6 +146,7 @@ function updateMapFabVisibility() {
 
 // Beim Scrollen prüfen
 window.addEventListener('scroll', updateMapFabVisibility, { passive: true });
+updateMapFabVisibility(); // Initial prüfen, direkt nach Seitenaufbau
 
 // Nach Inhaltswechsel (wenn Sektor-Seite geladen wurde) erneut prüfen
 const contentRoot = document.getElementById('content');
