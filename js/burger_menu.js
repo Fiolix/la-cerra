@@ -141,7 +141,9 @@ function updateMapFabVisibility() {
   const rect = mapEl.getBoundingClientRect();
   const mapBottom = rect.bottom + window.scrollY;
   // Erst zeigen, wenn vollständig unter der Karte gescrollt wurde
-  mapFab.style.display = (window.scrollY > mapBottom) ? 'block' : 'none';
+  const threshold = 24; // 24px unter Kartenunterkante
+  mapFab.style.display = (window.scrollY > mapBottom + threshold) ? 'block' : 'none';
+
 }
 
 // Beim Scrollen prüfen
