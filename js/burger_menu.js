@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Menü-Hintergrund ermitteln und auf die Kachel übernehmen
 const menuBg = getComputedStyle(navMenu).backgroundColor;
-const menuIcon = document.querySelector(".menu-icon"); // du nutzt diesen Selektor schon
+// const menuIcon = document.querySelector(".menu-icon"); // ← diese Zeile bitte löschen
 if (menuIcon && menuBg) {
   menuIcon.style.backgroundColor = menuBg; // exakt dasselbe Grün wie das Slide-Menü
   menuIcon.style.color = '#fff';
