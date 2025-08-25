@@ -577,7 +577,6 @@ button#register-button:hover {
 .table-hide-grade  .col-grade  { display: none; }
 .table-hide-flash  .col-flash  { display: none; }
 .table-hide-rating .col-rating { display: none; }
-
 .table-hide-users_grade .col-users_grade { display: none; }
 .table-hide-your_grade  .col-your_grade  { display: none; }
 

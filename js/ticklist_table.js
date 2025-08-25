@@ -5,6 +5,8 @@ import { supabase } from './supabase.js';
 
 import { showTicklistPopup } from './ticklist_popup.js';
 
+import { getPublicTickStats } from './tick_stats_loader.js';
+
 // Schöne Anzeigenamen für Sektoren (Slug -> Label)
 const SEKTOR_LABELS = {
   la_sportiva: 'La Sportiva',
@@ -37,6 +39,35 @@ const fbToValue = {
   '8a': 25, '8a+': 26, '8b': 27, '8b+': 28, '8c': 29, '8c+': 30,
   '9a': 31
 };
+
+const valueToFb = Object.fromEntries(Object.entries(fbToValue).map(([k, v]) => [v, k]));
+
+let usersGradeMap = {};            // route_id -> { fb, count }
+let currentFilterSector = '';      // Sector-Filter
+
+function getFilteredData() {
+  return currentFilterSector
+    ? tickData.filter(t => t.route?.block?.sektor === currentFilterSector)
+    : tickData;
+}
+
+// Lädt Community-Grad je Route (analog boulder_loader.js)
+async function preloadUsersGrades() {
+  const stats = await getPublicTickStats();
+  const buckets = {};
+  for (const s of stats) {
+    if (!s.grade_suggestion) continue;
+    if (!buckets[s.route_id]) buckets[s.route_id] = [];
+    buckets[s.route_id].push(s.grade_suggestion);
+  }
+  usersGradeMap = {};
+  for (const [rid, arr] of Object.entries(buckets)) {
+    const nums = arr.map(g => fbToValue[g]).filter(Boolean);
+    if (!nums.length) { usersGradeMap[rid] = { fb: null, count: 0 }; continue; }
+    const avg = Math.round(nums.reduce((a, b) => a + b, 0) / nums.length);
+    usersGradeMap[rid] = { fb: valueToFb[avg], count: nums.length };
+  }
+}
 
 let currentPage = 1;
 let currentSort = { column: null, direction: 'asc' };
@@ -72,8 +103,56 @@ export async function initTicklistTable(userId) {
   }
 
   tickData = data;
-  renderTable();
+await preloadUsersGrades();   // Community-Ø pro Route vorbereiten
+buildSectorDropdown();        // Sector-Filter befüllen + Listener
+initColumnsMenu();            // View-Dropdown an Checkboxen koppeln (Defaults setzen)
+renderTable();
+
 }
+
+function buildSectorDropdown() {
+  const sel = document.getElementById('filter-sector');
+  if (!sel) return;
+  // Distinct-Sektoren aus den Daten
+  const sectors = Array.from(new Set((tickData || [])
+    .map(t => t.route?.block?.sektor)
+    .filter(Boolean))).sort();
+
+  // "All" steht schon in HTML, wir hängen die Sektoren an
+  for (const s of sectors) {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = formatSectorName(s);
+    sel.appendChild(opt);
+  }
+  sel.addEventListener('change', () => {
+    currentFilterSector = sel.value || '';
+    currentPage = 1;
+    renderTable();
+  });
+}
+
+function initColumnsMenu() {
+  const container = document.getElementById('ticklist-table');
+  if (!container) return;
+  // Alle Checkboxen im „View“-Dropdown
+  const checks = document.querySelectorAll('.columns-panel .col-toggle, .col-toggle');
+
+  // Standard: Users grade + Your grade AUS (Route, Fb, Flash, Rating AN)
+  const defaultHidden = new Set(['users_grade', 'your_grade']);
+
+  checks.forEach(cb => {
+    const col = cb.dataset.col;
+    const hide = defaultHidden.has(col);
+    cb.checked = !hide;
+    container.classList.toggle(`table-hide-${col}`, hide);
+
+    cb.addEventListener('change', () => {
+      container.classList.toggle(`table-hide-${col}`, !cb.checked);
+    });
+  });
+}
+
 
 function renderTable() {
   const container = document.getElementById('ticklist-table');
@@ -81,14 +160,14 @@ function renderTable() {
 
   if (!container || !pagination) return;
 
+const data = getFilteredData().slice(); // gefilterte Kopie
+
 if (currentSort.column) {
-  tickData.sort((a, b) => {
+  data.sort((a, b) => {
     let valA = getValueForSort(a, currentSort.column);
     let valB = getValueForSort(b, currentSort.column);
-
     if (valA == null) valA = '';
     if (valB == null) valB = '';
-
     if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
     if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
     return 0;
@@ -96,34 +175,42 @@ if (currentSort.column) {
 }
 
   const start = (currentPage - 1) * itemsPerPage;
-  const pageItems = tickData.slice(start, start + itemsPerPage);
+  const pageItems = data.slice(start, start + itemsPerPage);
 
   let html = `
     <table class="ticklist">
-      <thead>
-        <tr>
-          <th class="ticklist-route" data-sort="route">Route</th>
-          <th style="text-align: center;" data-sort="grad">Fb</th>
-          <th style="text-align: center;" data-sort="suggestion">Sugg.</th>
-          <th style="text-align: center;" data-sort="flash">Flash</th>
-          <th style="text-align: center;" data-sort="rating">Rating</th>
-        </tr>
-      </thead>
+<thead>
+  <tr>
+    <th class="col-route"        data-sort="route">Route</th>
+    <th class="col-grade"        data-sort="grade">Fb</th>
+    <th class="col-flash"        data-sort="flash">Flash</th>
+    <th class="col-rating"       data-sort="rating">Rating</th>
+    <th class="col-users_grade"  data-sort="users_grade">Users grade</th>
+    <th class="col-your_grade"   data-sort="your_grade">Your grade</th>
+  </tr>
+</thead>
       <tbody>
   `;
 
   for (const entry of pageItems) {
 
-    const stars = renderStars(entry.rating);
-    html += `
-      <tr>
-        <td class="ticklist-route">${entry.route?.name ?? '-'}</td>
-        <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
-        <td style="text-align: center;">${entry.grade_suggestion ?? '-'}</td>
-        <td style="text-align: center;">${entry.flash ? '✅' : ''}</td>
-        <td style="text-align: center;">${stars}</td>
-      </tr>
-    `;
+const stars   = renderStars(entry.rating);
+const fb      = entry.route?.grad ?? '-';               // Fb (Routen-Grad)
+const yourFb  = entry.grade_suggestion ?? '';           // Your grade = dein Vorschlag
+const users   = usersGradeMap[entry.route_id] || { fb: null, count: 0 };
+const usersFb = users.fb || '';                         // Users grade (Community-Ø)
+const flash   = entry.flash ? '✅' : '';
+
+html += `
+  <tr>
+    <td class="ticklist-route col-route">${entry.route?.name ?? '-'}</td>
+    <td class="col-grade"        style="text-align:center;">${fb}</td>
+    <td class="col-flash"        style="text-align:center;">${flash}</td>
+    <td class="col-rating"       style="text-align:center;">${stars}</td>
+    <td class="col-users_grade"  style="text-align:center;">${usersFb}</td>
+    <td class="col-your_grade"   style="text-align:center;">${yourFb}</td>
+  </tr>
+`;
 
 // Innerhalb der renderTable()-Schleife
 const sektor = entry.route?.block?.sektor;
@@ -172,7 +259,7 @@ container.querySelectorAll('th[data-sort]').forEach(th => {
 });
 
 
-const totalPages = Math.ceil(tickData.length / itemsPerPage);
+const totalPages = Math.ceil(data.length / itemsPerPage);
 
 // Dezente Pagination: Pfeile + Seitenzahlen (ohne große Buttons)
 let pageControls = '<nav class="pagination">';
@@ -231,12 +318,26 @@ function renderStars(rating) {
 
 function getValueForSort(entry, column) {
   switch (column) {
-    case 'route': return entry.route?.name?.toLowerCase();
-    case 'grad': return fbToValue[entry.route?.grad] ?? 0;
-    case 'suggestion': return fbToValue[entry.grade_suggestion] ?? 0;
-    case 'flash': return entry.flash ? 1 : 0;
-    case 'rating': return entry.rating ?? 0;
-    default: return '';
+    case 'route':
+      return (entry.route?.name || '').toLowerCase();
+    case 'grade': { // Fb (Routen-Grad)
+      const fb = entry.route?.grad || '';
+      return fbToValue[fb] ?? -Infinity;
+    }
+    case 'users_grade': { // Community-Ø
+      const fb = usersGradeMap[entry.route_id]?.fb || '';
+      return fbToValue[fb] ?? -Infinity;
+    }
+    case 'your_grade': { // Dein Vorschlag
+      const fb = entry.grade_suggestion || '';
+      return fbToValue[fb] ?? -Infinity;
+    }
+    case 'flash':
+      return entry.flash ? 1 : 0;
+    case 'rating':
+      return typeof entry.rating === 'number' ? entry.rating : -Infinity;
+    default:
+      return '';
   }
 }
 
