@@ -57,22 +57,21 @@
 </div>
 
 <div class="filters-right">
-  <div class="columns">
-    <label>View:
-  <select id="columns-select" multiple>
-    <option value="date" selected>Date</option>
-    <option value="sector" selected>Sector</option>
-    <option value="block" selected>Block</option>
-    <option value="grade" selected>Grade</option>
-    <option value="users_grade" selected>Users grade</option>
-    <option value="your_grade" selected>Your grade</option>
-    <option value="flash" selected>Flash</option>
-    <option value="rating" selected>Rating</option>
-  </select>
-</label>
-
-  </div>
+  <details class="columns-menu">
+    <summary>View</summary>
+    <div class="columns-panel">
+      <label><input type="checkbox" class="col-toggle" data-col="date" checked> Date</label>
+      <label><input type="checkbox" class="col-toggle" data-col="sector" checked> Sector</label>
+      <label><input type="checkbox" class="col-toggle" data-col="block" checked> Block</label>
+      <label><input type="checkbox" class="col-toggle" data-col="grade" checked> Grade</label>
+      <label><input type="checkbox" class="col-toggle" data-col="users_grade" checked> Users grade</label>
+      <label><input type="checkbox" class="col-toggle" data-col="your_grade" checked> Your grade</label>
+      <label><input type="checkbox" class="col-toggle" data-col="flash" checked> Flash</label>
+      <label><input type="checkbox" class="col-toggle" data-col="rating" checked> Rating</label>
+    </div>
+  </details>
 </div>
+
 
   </div>
 
