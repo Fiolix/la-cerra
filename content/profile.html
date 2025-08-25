@@ -1,23 +1,40 @@
 <div class="profile-container">
   <h2>My Profile</h2>
 
-  <div class="profile-info">
-    <p><strong>Username:</strong> <span id="profile-username">...</span></p>
-    <p><strong>Email:</strong> <span id="profile-email">...</span></p>
-    <p><strong>User since:</strong> <span id="profile-since">...</span></p>
-  </div>
+<!-- Neuer Profil-Header (Desktop) -->
+<div class="profile-header">
+  <div class="profile-avatar" aria-hidden="true">○</div>
 
-  <div class="profile-actions">
-    <button id="change-password-btn">Change password</button>
-    <button id="delete-account-btn">Delete account</button>
-  </div>
+  <div class="profile-meta">
+    <div class="profile-name" id="profile-username">...</div>
+    <div class="profile-email" id="profile-email">...</div>
+    <div class="profile-since">Dabei seit: <span id="profile-since">...</span></div>
 
-  <div class="profile-stats">
-    <h3>Ticklist stats</h3>
-    <p><strong>Total ticks:</strong> <span id="tick-count">...</span></p>
-    <p><strong>Highest grade:</strong> <span id="highest-grade">...</span></p>
-    <p><strong>Highest flash:</strong> <span id="highest-flash">...</span></p>
+    <div class="profile-links">
+      <a href="#" id="change-password-link">Change password</a>
+      <span class="dot">·</span>
+      <a href="#" id="delete-account-link">Delete account</a>
+    </div>
   </div>
+</div>
+
+
+<!-- Stat-Kacheln -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-number" id="tick-count">...</div>
+    <div class="stat-label">Einträge</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" id="highest-grade">...</div>
+    <div class="stat-label">Höchster Grad</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" id="highest-flash">...</div>
+    <div class="stat-label">Höchster Flash</div>
+  </div>
+</div>
+
 </div>
 
 <!-- Sicherheitsabfrage für Account-Löschung -->
@@ -29,6 +46,55 @@
 
 <section class="profile-ticklist">
   <h3>My Ticklist</h3>
+
+  <!-- Filter + Spalten (Desktop) -->
+  <div class="filter-bar" id="tick-filters">
+    <div class="filters-left">
+      <label>Sektor
+        <select id="filter-sector">
+          <option value="">Alle</option>
+        </select>
+      </label>
+
+      <label>Grad
+        <select id="filter-grade">
+          <option value="">Alle</option>
+          <option value="6a+">ab 6a+</option>
+          <option value="6b">ab 6b</option>
+          <option value="6c">ab 6c</option>
+          <option value="7a">ab 7a</option>
+        </select>
+      </label>
+
+      <label>Flash
+        <select id="filter-flash">
+          <option value="">Alle</option>
+          <option value="1">Nur Flash</option>
+          <option value="0">Ohne Flash</option>
+        </select>
+      </label>
+
+      <label>Suche
+        <input id="filter-search" type="text" placeholder="Route/Block suchen" />
+      </label>
+
+      <button id="filter-reset" class="as-link">Zurücksetzen</button>
+    </div>
+
+    <div class="filters-right">
+      <div class="columns">
+        <span>Spalten:</span>
+        <label><input type="checkbox" class="col-toggle" data-col="date" checked /> Datum</label>
+        <label><input type="checkbox" class="col-toggle" data-col="sector" checked /> Sektor</label>
+        <label><input type="checkbox" class="col-toggle" data-col="block" checked /> Block</label>
+        <label><input type="checkbox" class="col-toggle" data-col="grade" checked /> Grad</label>
+        <label><input type="checkbox" class="col-toggle" data-col="flash" checked /> Flash</label>
+        <label><input type="checkbox" class="col-toggle" data-col="rating" checked /> Rating</label>
+      </div>
+    </div>
+  </div>
+
   <div id="ticklist-table"></div>
   <div id="pagination-controls"></div>
 </section>
+
