@@ -74,4 +74,30 @@ document.getElementById('delete-account-link')?.addEventListener('click', (e) =>
 });
 
   initTicklistTable(user.id);
+
+// --- Columns-Dropdown (Details) außen-klicken = schließen ---
+const columnsMenu = document.querySelector('.columns-menu'); // <details class="columns-menu">
+if (columnsMenu) {
+  // nur einmal globale Listener setzen (falls Profil mehrfach geladen wird)
+  if (!window._columnsMenuOutsideCloseBound) {
+    window._columnsMenuOutsideCloseBound = true;
+
+    document.addEventListener('click', (e) => {
+      const openMenu = document.querySelector('.columns-menu[open]');
+      if (!openMenu) return;
+      // wenn Klick NICHT im geöffneten Menü war -> schließen
+      if (!openMenu.contains(e.target)) {
+        openMenu.removeAttribute('open');
+      }
+    });
+  }
+
+  // ESC schließt das geöffnete Menü
+  columnsMenu.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      columnsMenu.removeAttribute('open');
+    }
+  });
+}
+
 }
