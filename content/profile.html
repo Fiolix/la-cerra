@@ -73,25 +73,23 @@
           <option value="0">Ohne Flash</option>
         </select>
       </label>
-
-      <label>Suche
-        <input id="filter-search" type="text" placeholder="Route/Block suchen" />
-      </label>
-
-      <button id="filter-reset" class="as-link">Zurücksetzen</button>
     </div>
 
-    <div class="filters-right">
-      <div class="columns">
-        <span>Spalten:</span>
-        <label><input type="checkbox" class="col-toggle" data-col="date" checked /> Datum</label>
-        <label><input type="checkbox" class="col-toggle" data-col="sector" checked /> Sektor</label>
-        <label><input type="checkbox" class="col-toggle" data-col="block" checked /> Block</label>
-        <label><input type="checkbox" class="col-toggle" data-col="grade" checked /> Grad</label>
-        <label><input type="checkbox" class="col-toggle" data-col="flash" checked /> Flash</label>
-        <label><input type="checkbox" class="col-toggle" data-col="rating" checked /> Rating</label>
-      </div>
-    </div>
+<div class="filters-right">
+  <div class="columns">
+    <label>Spalten
+      <select id="columns-select" multiple>
+        <option value="date" selected>Datum</option>
+        <option value="sector" selected>Sektor</option>
+        <option value="block" selected>Block</option>
+        <option value="grade" selected>Grad</option>
+        <option value="flash" selected>Flash</option>
+        <option value="rating" selected>Rating</option>
+      </select>
+    </label>
+  </div>
+</div>
+
   </div>
 
   <div id="ticklist-table"></div>
