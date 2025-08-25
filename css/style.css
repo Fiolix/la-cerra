@@ -428,7 +428,9 @@ button#register-button:hover {
 }
 
 .ticklist td.ticklist-route,
-.ticklist th.ticklist-route {
+.ticklist th.ticklist-route,
+.ticklist td.col-route,
+.ticklist th.col-route {
   width: 40%;
   max-width: 40%;
   white-space: normal;
@@ -438,8 +440,9 @@ button#register-button:hover {
   hyphens: auto;
 }
 
-.ticklist td:not(.ticklist-route),
-.ticklist th:not(.ticklist-route) {
+
+.ticklist td:not(.ticklist-route):not(.col-route),
+.ticklist th:not(.ticklist-route):not(.col-route) {
   width: 1%;
   text-align: center;
 }
