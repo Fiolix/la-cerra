@@ -519,8 +519,8 @@ button#register-button:hover {
 /* ===== Profil: Stat-Kacheln ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* immer 3 gleich breite Spalten */
-  gap: 8px;                               /* etwas geringerer Abstand gegen Überlauf */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   margin: 12px 0 20px;
   max-width: 100%;
   box-sizing: border-box;
@@ -537,11 +537,15 @@ button#register-button:hover {
 
 /* ===== Filterleiste (Desktop) ===== */
 .filter-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap;                 /* Zeilenumbruch erlauben */
-  gap: 10px;                       /* etwas kompakter */
-  padding: 10px 12px; margin: 8px 0 12px;
-  background: #f8f9fa; border: 1px solid #e6e6e6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 8px 0 12px;
+  background: #f8f9fa;
+  border: 1px solid #e6e6e6;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -576,4 +580,52 @@ button#register-button:hover {
 
 .table-hide-users_grade .col-users_grade { display: none; }
 .table-hide-your_grade  .col-your_grade  { display: none; }
+
+/* Columns-Dropdown (Details/Summary) */
+.columns-menu {
+  position: relative;
+  font-size: 13px;
+}
+.columns-menu summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  user-select: none;
+}
+.columns-menu summary::-webkit-details-marker { display: none; }
+.columns-menu summary::after {
+  content: "▾";
+  margin-left: 6px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.columns-menu[open] summary::after { content: "▴"; }
+
+.columns-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 6px 14px;
+  z-index: 10;
+  min-width: 220px;
+}
+
+.columns-panel label {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #444;
+  font-size: 13px;
+}
+
 
