@@ -63,5 +63,15 @@ export async function initProfile() {
   document.getElementById("highest-grade").textContent = maxGrade ? valueToFb[maxGrade] : "-";
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
 
+// Links statt Buttons: Change password / Delete account
+document.getElementById('change-password-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  alert('Password change: coming soon'); // hier ggf. deinen bestehenden Flow anhängen
+});
+document.getElementById('delete-account-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('delete-confirm').style.display = 'block';
+});
+
   initTicklistTable(user.id);
 }
