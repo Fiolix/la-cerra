@@ -111,6 +111,15 @@ document.getElementById('cancel-delete')?.addEventListener('click', (e) => {
   document.getElementById('delete-confirm').style.display = 'none';
 });
 
+// Modal per ESC und Outside-Click schließen
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !document.getElementById('pw-modal').classList.contains('hidden')) {
+    closePwModal();
+  }
+});
+document.getElementById('pw-modal')?.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('pw-modal')) closePwModal();
+});
 
   initTicklistTable(user.id);
 
