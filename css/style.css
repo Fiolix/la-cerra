@@ -671,5 +671,6 @@ button#register-button:hover {
   z-index: 1100;
 }
 
+.modal.hidden { display: none !important; }
 
 
