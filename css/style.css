@@ -630,4 +630,46 @@ button#register-button:hover {
   font-size: 13px;
 }
 
+/* ===== Profile: Modal & Toast ===== */
+.hidden {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.35);
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 1rem;
+  border-radius: .5rem;
+  width: min(400px, 90vw);
+}
+
+.error {
+  color: #b00020;
+  font-size: .9rem;
+  min-height: 1.25em;
+  margin: .25rem 0 .5rem;
+}
+
+.toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  background: #222;
+  color: #fff;
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+  opacity: .95;
+  z-index: 1100;
+}
+
+
 
