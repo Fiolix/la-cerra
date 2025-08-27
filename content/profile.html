@@ -43,6 +43,24 @@
   <button id="cancel-delete">Cancel</button>
 </div>
 
+<!-- Change Password Modal -->
+<div id="pw-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h3>Passwort ändern</h3>
+    <label>Neues Passwort<br>
+      <input type="password" id="pw-new" autocomplete="new-password">
+    </label><br>
+    <label>Passwort wiederholen<br>
+      <input type="password" id="pw-repeat" autocomplete="new-password">
+    </label>
+    <p id="pw-error" class="error" aria-live="polite"></p>
+    <div class="actions">
+      <button id="pw-save">Speichern</button>
+      <button id="pw-cancel">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <section class="profile-ticklist">
   <h3>My Ticklist</h3>
 
