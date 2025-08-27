@@ -143,6 +143,30 @@ document.getElementById('cancel-delete')?.addEventListener('click', (e) => {
   document.getElementById('delete-confirm').style.display = 'none';
 });
 
+// Confirm -> call Edge Function and sign out
+async function handleConfirmDelete(){
+  const errEl = document.getElementById('delete-error');
+  const btn = document.getElementById('confirm-delete');
+  errEl.textContent = '';
+  btn.disabled = true; btn.textContent = 'Deleting…';
+
+  // Call Supabase Edge Function "delete-user"
+  const { error } = await supabase.functions.invoke('delete-user', { body: {} });
+
+  btn.disabled = false; btn.textContent = 'Yes, delete my account';
+
+  if (error) {
+    errEl.textContent = 'Delete failed: ' + (error.message || 'Unknown error');
+    return;
+  }
+
+  // End session and redirect
+  await supabase.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+document.getElementById('confirm-delete')?.addEventListener('click', handleConfirmDelete);
+
 // Modal per ESC und Outside-Click schließen
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && !document.getElementById('pw-modal').classList.contains('hidden')) {
