@@ -77,17 +77,47 @@ function closePwModal(){
 }
 async function handleSavePassword(){
   const errEl = document.getElementById('pw-error');
+  const btn = document.getElementById('pw-save');
+  const currentPw = document.getElementById('pw-current').value.trim();
   const newPw = document.getElementById('pw-new').value.trim();
   const repPw = document.getElementById('pw-repeat').value.trim();
 
-  if (newPw.length < 8){ errEl.textContent = 'Mindestens 8 Zeichen.'; return; }
-  if (newPw !== repPw){ errEl.textContent = 'Passwörter stimmen nicht überein.'; return; }
+  // Basic checks
+  if (!currentPw){ errEl.textContent = 'Please enter your current password.'; return; }
+  if (newPw.length < 8){ errEl.textContent = 'New password must be at least 8 characters.'; return; }
+  if (newPw !== repPw){ errEl.textContent = 'New passwords do not match.'; return; }
 
+  errEl.textContent = '';
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  // 1) Re-authenticate with current password
+  try {
+    const email = window._profileUserEmail || '';
+    const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: currentPw });
+    if (reauthError) {
+      btn.disabled = false; btn.textContent = 'Save';
+      errEl.textContent = 'Current password is incorrect.';
+      return;
+    }
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Save';
+    errEl.textContent = 'Error while checking current password.';
+    return;
+  }
+
+  // 2) Update password
   const { error } = await supabase.auth.updateUser({ password: newPw });
-  if (error){ errEl.textContent = 'Fehler: ' + (error.message || 'Unbekannter Fehler'); return; }
 
+  btn.disabled = false; btn.textContent = 'Save';
+
+  if (error){
+    errEl.textContent = 'Password update failed: ' + (error.message || 'Unknown error');
+    return;
+  }
+
+  // Success
   closePwModal();
-  toast('Passwort geändert');
+  toast('Password changed');
 }
 
 // --- kleine Toast-Hilfe ---
