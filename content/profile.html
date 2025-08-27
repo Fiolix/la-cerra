@@ -36,30 +36,40 @@
 
 </div>
 
-<!-- Sicherheitsabfrage für Account-Löschung -->
+<!-- Delete account confirmation -->
 <div id="delete-confirm" style="display: none;">
-  <p>Are you sure you want to delete your account? This cannot be undone.</p>
+  <p>Are you sure you want to delete your account? This action cannot be undone.</p>
   <button id="confirm-delete">Yes, delete my account</button>
   <button id="cancel-delete">Cancel</button>
+  <p id="delete-error" class="error" aria-live="polite"></p>
 </div>
 
 <!-- Change Password Modal -->
 <div id="pw-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-box">
-    <h3>Passwort ändern</h3>
-    <label>Neues Passwort<br>
+  <div class="modal-box" role="document">
+    <h3>Change password</h3>
+
+    <label>Current password<br>
+      <input type="password" id="pw-current" autocomplete="current-password">
+    </label><br>
+
+    <label>New password<br>
       <input type="password" id="pw-new" autocomplete="new-password">
     </label><br>
-    <label>Passwort wiederholen<br>
+
+    <label>Repeat new password<br>
       <input type="password" id="pw-repeat" autocomplete="new-password">
     </label>
+
     <p id="pw-error" class="error" aria-live="polite"></p>
+
     <div class="actions">
-      <button id="pw-save">Speichern</button>
-      <button id="pw-cancel">Abbrechen</button>
+      <button id="pw-save">Save</button>
+      <button id="pw-cancel">Cancel</button>
     </div>
   </div>
 </div>
+
 
 <section class="profile-ticklist">
   <h3>My Ticklist</h3>
