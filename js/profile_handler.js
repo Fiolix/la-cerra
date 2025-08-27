@@ -63,15 +63,54 @@ export async function initProfile() {
   document.getElementById("highest-grade").textContent = maxGrade ? valueToFb[maxGrade] : "-";
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
 
-// Links statt Buttons: Change password / Delete account
-document.getElementById('change-password-link')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  alert('Password change: coming soon'); // hier ggf. deinen bestehenden Flow anhängen
-});
+// --- Change Password (Modal + Save) ---
+function openPwModal(e){
+  e?.preventDefault?.();
+  document.getElementById('pw-error').textContent = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-repeat').value = '';
+  document.getElementById('pw-modal').classList.remove('hidden');
+  document.getElementById('pw-new').focus();
+}
+function closePwModal(){
+  document.getElementById('pw-modal').classList.add('hidden');
+}
+async function handleSavePassword(){
+  const errEl = document.getElementById('pw-error');
+  const newPw = document.getElementById('pw-new').value.trim();
+  const repPw = document.getElementById('pw-repeat').value.trim();
+
+  if (newPw.length < 8){ errEl.textContent = 'Mindestens 8 Zeichen.'; return; }
+  if (newPw !== repPw){ errEl.textContent = 'Passwörter stimmen nicht überein.'; return; }
+
+  const { error } = await supabase.auth.updateUser({ password: newPw });
+  if (error){ errEl.textContent = 'Fehler: ' + (error.message || 'Unbekannter Fehler'); return; }
+
+  closePwModal();
+  toast('Passwort geändert');
+}
+
+// --- kleine Toast-Hilfe ---
+function toast(msg){
+  const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 2000);
+}
+
+// Listener setzen
+document.getElementById('change-password-link')?.addEventListener('click', openPwModal);
+document.getElementById('pw-save')?.addEventListener('click', handleSavePassword);
+document.getElementById('pw-cancel')?.addEventListener('click', closePwModal);
+
+// --- Delete Account (Bestätigung ein-/ausblenden) ---
 document.getElementById('delete-account-link')?.addEventListener('click', (e) => {
   e.preventDefault();
   document.getElementById('delete-confirm').style.display = 'block';
 });
+document.getElementById('cancel-delete')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('delete-confirm').style.display = 'none';
+});
+
 
   initTicklistTable(user.id);
 
