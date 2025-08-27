@@ -133,15 +133,32 @@ document.getElementById('change-password-link')?.addEventListener('click', openP
 document.getElementById('pw-save')?.addEventListener('click', handleSavePassword);
 document.getElementById('pw-cancel')?.addEventListener('click', closePwModal);
 
-// --- Delete Account (Bestätigung ein-/ausblenden) ---
-document.getElementById('delete-account-link')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('delete-confirm').style.display = 'block';
+// --- Delete Account (Modal öffnen/schließen) ---
+function openDeleteModal(e){
+  e?.preventDefault?.();
+  document.getElementById('delete-error').textContent = '';
+  document.getElementById('delete-modal').classList.remove('hidden');
+}
+function closeDeleteModal(e){
+  e?.preventDefault?.();
+  document.getElementById('delete-modal').classList.add('hidden');
+}
+
+// Öffnen über den Link
+document.getElementById('delete-account-link')?.addEventListener('click', openDeleteModal);
+// Cancel schließt
+document.getElementById('cancel-delete')?.addEventListener('click', closeDeleteModal);
+
+// ESC & Outside-Click schließen
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !document.getElementById('delete-modal').classList.contains('hidden')) {
+    closeDeleteModal();
+  }
 });
-document.getElementById('cancel-delete')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('delete-confirm').style.display = 'none';
+document.getElementById('delete-modal')?.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('delete-modal')) closeDeleteModal();
 });
+
 
 // Confirm -> call Edge Function and sign out
 async function handleConfirmDelete(){
