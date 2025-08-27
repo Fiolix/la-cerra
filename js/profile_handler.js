@@ -27,6 +27,8 @@ export async function initProfile() {
   document.getElementById("profile-email").textContent = user.email || "-";
   document.getElementById("profile-since").textContent = new Date(user.created_at).toLocaleDateString();
 
+window._profileUserEmail = user.email || "";
+
   // Ticklist auslesen inkl. zugehöriger Route-Info
   const { data: ticks, error } = await supabase
     .from("ticklist")
