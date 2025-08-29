@@ -166,7 +166,14 @@ function toast(msg){
 }
 
 // Listener setzen
-document.getElementById('change-password-link')?.addEventListener('click', openPwModal);
+if (!window._pwModalListenersBound) {
+  window._pwModalListenersBound = true;
+
+document.getElementById('change-password-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  openPwModal();
+});
+
 document.getElementById('pw-save')?.addEventListener('click', handleSavePassword);
 document.getElementById('pw-cancel')?.addEventListener('click', closePwModal);
 
