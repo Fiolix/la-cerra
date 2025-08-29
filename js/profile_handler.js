@@ -160,14 +160,37 @@ document.getElementById('delete-modal')?.addEventListener('click', (e) => {
 });
 
 
-// Confirm -> call Edge Function and sign out
+// Confirm -> re-auth with password, then call Edge Function and sign out
 async function handleConfirmDelete(){
   const errEl = document.getElementById('delete-error');
   const btn = document.getElementById('confirm-delete');
+  const pw = document.getElementById('delete-password')?.value?.trim() || '';
   errEl.textContent = '';
-  btn.disabled = true; btn.textContent = 'Deleting…';
 
-  // Call Supabase Edge Function "delete-user"
+  if (!pw) {
+    errEl.textContent = 'Please enter your password.';
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Checking password…';
+
+  // 1) Re-authenticate with current password
+  try {
+    const email = window._profileUserEmail || '';
+    const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: pw });
+    if (reauthError) {
+      btn.disabled = false; btn.textContent = 'Yes, delete my account';
+      errEl.textContent = 'Password is incorrect.';
+      return;
+    }
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Yes, delete my account';
+    errEl.textContent = 'Error while checking password.';
+    return;
+  }
+
+  // 2) Call Supabase Edge Function "delete-user"
+  btn.textContent = 'Deleting…';
   const { error } = await supabase.functions.invoke('delete-user', { body: {} });
 
   btn.disabled = false; btn.textContent = 'Yes, delete my account';
@@ -177,10 +200,11 @@ async function handleConfirmDelete(){
     return;
   }
 
-  // End session and redirect
+  // 3) End session and redirect
   await supabase.auth.signOut();
   window.location.href = 'index.html';
 }
+
 
 document.getElementById('confirm-delete')?.addEventListener('click', handleConfirmDelete);
 
