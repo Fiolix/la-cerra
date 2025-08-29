@@ -170,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const params = new URLSearchParams(location.search);
   const p = params.get('p');
-  const initial = p ? decodeURIComponent(p) : (localStorage.getItem("lastPage") || "start.html");
-  loadPage(initial);
+const initial = p ? decodeURIComponent(p) : "start.html";
+loadPage(initial);
+
 });
