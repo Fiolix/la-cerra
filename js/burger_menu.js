@@ -196,10 +196,6 @@ navMenu.querySelectorAll("a[data-page]").forEach(link => {
   }
 });
 
-      link.dataset.bound = "true"; // ✅ Markiere diesen Link als \"gebunden\"
-    }
-  });
-
   menuIcon.addEventListener("click", function () {
     navMenu.classList.toggle("open");
   });
