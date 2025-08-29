@@ -21,8 +21,59 @@
   </div>
 </section>
 
-<section class="login">
+<section class="login start-login">
   <h2>Login</h2>
-  <button>Login</button>
-  <button>Register</button>
+
+  <div class="login-card">
+    <label>
+      Email<br>
+      <input type="email" id="start-user" placeholder="you@example.com" autocomplete="username" />
+    </label>
+    <label>
+      Password<br>
+      <input type="password" id="start-password" placeholder="••••••••" autocomplete="current-password" />
+    </label>
+    <button id="start-login-button" type="button">Log in</button>
+    <p id="start-login-error" class="error" aria-live="polite"></p>
+  </div>
+
+  <p class="register-teaser">
+    Don’t have an account yet? Join the La Cerra family and track your ascents in your personal tick list.
+  </p>
+
+  <a class="btn-secondary" href="register.html">Register</a>
 </section>
+
+<script type="module">
+  import { supabase } from './supabase.js';
+
+  async function handleStartLogin(){
+    const email = document.getElementById('start-user').value.trim();
+    const pw    = document.getElementById('start-password').value;
+    const errEl = document.getElementById('start-login-error');
+
+    errEl.textContent = '';
+    if (!email || !pw){ errEl.textContent = 'Please enter email and password.'; return; }
+
+    const btn = document.getElementById('start-login-button');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
+
+    btn.disabled = false; btn.textContent = 'Log in';
+
+    if (error){
+      errEl.textContent = 'Login failed: ' + (error.message || 'Unknown error');
+      return;
+    }
+    // Erfolg: weiter zum Profil
+    window.location.href = 'profile.html';
+  }
+
+  document.getElementById('start-login-button')?.addEventListener('click', handleStartLogin);
+  // Optional: Enter-Taste im Passwortfeld
+  document.getElementById('start-password')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleStartLogin();
+  });
+</script>
+

@@ -673,4 +673,56 @@ button#register-button:hover {
 
 .modal.hidden { display: none !important; }
 
+/* ===== Start page: inline login card ===== */
+.start-login {
+  margin-top: 1rem;
+}
+
+.start-login .login-card {
+  max-width: 420px;
+  padding: 12px 14px;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.start-login label {
+  display: block;
+  font-size: 0.95rem;
+  color: #333;
+  margin: 8px 0;
+}
+
+.start-login input[type="email"],
+.start-login input[type="password"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1px solid #d6d6d6;
+  border-radius: 6px;
+}
+
+.start-login #start-login-button {
+  margin-top: 10px;
+}
+
+.start-login .register-teaser {
+  max-width: 520px;
+  margin: 10px 0 8px;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.btn-secondary:hover { background: #f3f3f3; }
 
