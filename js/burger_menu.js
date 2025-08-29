@@ -73,24 +73,6 @@ async function renderBurgerAuth() {
       <button id="logout-button" type="button">Log out</button>
     `;
 
-    // SPA-Navigation für den Profil-Link
-loginBlock.querySelectorAll('a[data-page]').forEach(a => {
-  a.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation(); // verhindert 2. Handler am <body>
-    const page = a.getAttribute('data-page');
-    if (page) {
-      if (window.__pageLoading) return;
-      window.__pageLoading = true;
-      history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
-      document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
-      navMenu.classList.remove('open');
-    }
-  });
-  // Wichtig: markieren, damit der allgemeine Handler unten NICHT zusätzlich bindet
-  a.dataset.bound = '1';
-});
-
     // Logout
     loginBlock.querySelector('#logout-button')?.addEventListener('click', async () => {
       await supabase.auth.signOut();
@@ -99,24 +81,6 @@ loginBlock.querySelectorAll('a[data-page]').forEach(a => {
  } else {
   // Ausgeloggt-Ansicht wiederherstellen (Original-HTML)
   loginBlock.innerHTML = originalLoginHTML;
-
-  // SPA-Navigation im wiederhergestellten HTML binden
-loginBlock.querySelectorAll('a[data-page]').forEach(link => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation(); // wichtig: sonst doppelte Navigation
-    const page = link.getAttribute('data-page');
-    if (page && page !== '#') {
-      if (window.__pageLoading) return;
-      window.__pageLoading = true;
-      history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
-      document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
-      navMenu.classList.remove('open');
-    }
-  });
-  // Wichtig: markieren, damit der allgemeine Handler unten NICHT zusätzlich bindet
-  link.dataset.bound = '1';
-});
 
   // Login-Handler neu aktivieren (auth_handler.js) – nach DOM-Repaint
   setTimeout(() => {
@@ -180,24 +144,6 @@ if (menuBg) {
       parentLi.classList.toggle("open");
     });
   });
-
-navMenu.querySelectorAll("a[data-page]").forEach(link => {
-  if (!link.dataset.bound) {
-    link.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation(); // verhindert den Body-Handler
-      const page = this.getAttribute("data-page");
-      if (page && page !== "#") {
-        if (window.__pageLoading) return;
-        window.__pageLoading = true;
-        history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
-        document.dispatchEvent(new CustomEvent("loadPage", { detail: page }));
-        navMenu.classList.remove("open");
-      }
-    });
-    link.dataset.bound = "true";
-  }
-});
 
   menuIcon.addEventListener("click", function () {
     navMenu.classList.toggle("open");
