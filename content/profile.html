@@ -41,11 +41,17 @@
   <div class="modal-box" role="document">
     <h3>Delete account</h3>
     <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+
+    <label>Confirm with your password<br>
+      <input type="password" id="delete-password" autocomplete="current-password" />
+    </label>
+
+    <p id="delete-error" class="error" aria-live="polite"></p>
+
     <div class="actions">
       <button id="confirm-delete">Yes, delete my account</button>
       <button id="cancel-delete">Cancel</button>
     </div>
-    <p id="delete-error" class="error" aria-live="polite"></p>
   </div>
 </div>
 
