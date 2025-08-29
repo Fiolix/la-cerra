@@ -12,6 +12,8 @@ async function loadPage(page) {
   }
   loadPage.isLoading = true;
 
+window.__pageLoading = true;
+
   const contentElement = document.getElementById("content");
   if (!contentElement) {
     console.error("❌ Kein #content-Element gefunden!");
@@ -103,17 +105,20 @@ if (anchor) {
 
     if (!handledScroll) restoreScrollPosition();
 
-    // 🔓 Ladevorgang abgeschlossen
-    loadPage.isLoading = false;
+// 🔓 Ladevorgang abgeschlossen
+loadPage.isLoading = false;
+window.__pageLoading = false;
 
-    // 🔍 Fokus entfernen, damit z. B. Dropdown kein scrollIntoView auslöst
-    document.activeElement?.blur();
+// 🔍 Fokus entfernen, damit z. B. Dropdown kein scrollIntoView auslöst
+document.activeElement?.blur();
 
-  } catch (err) {
-    console.error("❌ Fehler beim Laden der Seite:", err);
-    loadPage.isLoading = false;
-    contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
-  }
+} catch (err) {
+  console.error("❌ Fehler beim Laden der Seite:", err);
+  loadPage.isLoading = false;
+  window.__pageLoading = false;
+  contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
+}
+
 }
 
 function restoreScrollPosition() {
