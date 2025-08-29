@@ -87,8 +87,9 @@ loginBlock.querySelectorAll('a[data-page]').forEach(a => {
       navMenu.classList.remove('open');
     }
   });
+  // Wichtig: markieren, damit der allgemeine Handler unten NICHT zusätzlich bindet
+  a.dataset.bound = '1';
 });
-
 
     // Logout
     loginBlock.querySelector('#logout-button')?.addEventListener('click', async () => {
@@ -100,20 +101,22 @@ loginBlock.querySelectorAll('a[data-page]').forEach(a => {
   loginBlock.innerHTML = originalLoginHTML;
 
   // SPA-Navigation im wiederhergestellten HTML binden
-  loginBlock.querySelectorAll('a[data-page]').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation(); // wichtig: sonst doppelte Navigation
-      const page = link.getAttribute('data-page');
-      if (page && page !== '#') {
-        if (window.__pageLoading) return;
-        window.__pageLoading = true;
-        history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
-        document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
-        navMenu.classList.remove('open');
-      }
-    });
+loginBlock.querySelectorAll('a[data-page]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // wichtig: sonst doppelte Navigation
+    const page = link.getAttribute('data-page');
+    if (page && page !== '#') {
+      if (window.__pageLoading) return;
+      window.__pageLoading = true;
+      history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
+      document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
+      navMenu.classList.remove('open');
+    }
   });
+  // Wichtig: markieren, damit der allgemeine Handler unten NICHT zusätzlich bindet
+  link.dataset.bound = '1';
+});
 
   // Login-Handler neu aktivieren (auth_handler.js) – nach DOM-Repaint
   setTimeout(() => {
