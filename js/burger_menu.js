@@ -53,6 +53,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.insertBefore(navMenu, document.body.firstChild);
 
+// Menü bei Navigation (SPA) schließen – ohne eigene Page-Handler
+document.addEventListener('loadPage', () => {
+  navMenu.classList.remove('open');
+});
+
 // --- Auth-Status im Burger-Menü rendern ---
 const loginBlock = navMenu.querySelector('.login-block');
 const originalLoginHTML = loginBlock.innerHTML;
