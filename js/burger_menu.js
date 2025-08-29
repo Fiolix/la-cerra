@@ -74,42 +74,53 @@ async function renderBurgerAuth() {
     `;
 
     // SPA-Navigation für den Profil-Link
-    loginBlock.querySelectorAll('a[data-page]').forEach(a => {
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        const page = a.getAttribute('data-page');
-        if (page) {
-          document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
-          navMenu.classList.remove('open');
-        }
-      });
-    });
+loginBlock.querySelectorAll('a[data-page]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // verhindert 2. Handler am <body>
+    const page = a.getAttribute('data-page');
+    if (page) {
+      if (window.__pageLoading) return;
+      window.__pageLoading = true;
+      history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
+      document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
+      navMenu.classList.remove('open');
+    }
+  });
+});
+
 
     // Logout
     loginBlock.querySelector('#logout-button')?.addEventListener('click', async () => {
       await supabase.auth.signOut();
     });
 
-  } else {
-    // Ausgeloggt-Ansicht wiederherstellen (Original-HTML)
-    loginBlock.innerHTML = originalLoginHTML;
+ } else {
+  // Ausgeloggt-Ansicht wiederherstellen (Original-HTML)
+  loginBlock.innerHTML = originalLoginHTML;
 
-    // SPA-Navigation im wiederhergestellten HTML binden
-    loginBlock.querySelectorAll('a[data-page]').forEach(link => {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const page = this.getAttribute('data-page');
-        if (page && page !== '#') {
-          document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
-        }
-      });
+  // SPA-Navigation im wiederhergestellten HTML binden
+  loginBlock.querySelectorAll('a[data-page]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // wichtig: sonst doppelte Navigation
+      const page = link.getAttribute('data-page');
+      if (page && page !== '#') {
+        if (window.__pageLoading) return;
+        window.__pageLoading = true;
+        history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
+        document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
+        navMenu.classList.remove('open');
+      }
     });
+  });
 
-    // Login-Handler neu aktivieren (auth_handler.js) – nach DOM-Repaint
-    setTimeout(() => {
-      document.dispatchEvent(new CustomEvent('loginBlockReady'));
-    }, 0);
-  }
+  // Login-Handler neu aktivieren (auth_handler.js) – nach DOM-Repaint
+  setTimeout(() => {
+    document.dispatchEvent(new CustomEvent('loginBlockReady'));
+  }, 0);
+}
+
 }
 
 // Initial prüfen
@@ -167,17 +178,21 @@ if (menuBg) {
     });
   });
 
-  navMenu.querySelectorAll("a[data-page]").forEach(link => {
-    if (!link.dataset.bound) {
-link.addEventListener("click", function (e) {
-  e.preventDefault();
-  const page = this.getAttribute("data-page");
-  if (page && page !== "#") {
-    // Doppelaufrufe während eines laufenden Loads verhindern
-    if (window.__pageLoading) return;
-    window.__pageLoading = true;
-    document.dispatchEvent(new CustomEvent("loadPage", { detail: page }));
-    // Marker wird vom content_loader nach Abschluss wieder gelöscht (siehe unten)
+navMenu.querySelectorAll("a[data-page]").forEach(link => {
+  if (!link.dataset.bound) {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation(); // verhindert den Body-Handler
+      const page = this.getAttribute("data-page");
+      if (page && page !== "#") {
+        if (window.__pageLoading) return;
+        window.__pageLoading = true;
+        history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
+        document.dispatchEvent(new CustomEvent("loadPage", { detail: page }));
+        navMenu.classList.remove("open");
+      }
+    });
+    link.dataset.bound = "true";
   }
 });
 
