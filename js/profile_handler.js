@@ -2,6 +2,10 @@
 
 import { supabase } from './supabase.js';
 
+let isRecovery = false;
+function openPwModal(){ document.getElementById('pw-modal')?.classList.remove('hidden'); }
+function closePwModal(){ document.getElementById('pw-modal')?.classList.add('hidden'); }
+
 import { initTicklistTable } from './ticklist_table.js';
 
 export async function initProfile() {
@@ -66,60 +70,61 @@ window._profileUserEmail = user.email || "";
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
 
 // --- Change Password (Modal + Save) ---
-function openPwModal(e){
-  e?.preventDefault?.();
-  document.getElementById('pw-error').textContent = '';
-  document.getElementById('pw-new').value = '';
-  document.getElementById('pw-repeat').value = '';
-  document.getElementById('pw-modal').classList.remove('hidden');
-  document.getElementById('pw-new').focus();
-}
-function closePwModal(){
-  document.getElementById('pw-modal').classList.add('hidden');
-}
+// (openPwModal/closePwModal kommen jetzt von oben – nicht nochmal definieren)
+
 async function handleSavePassword(){
   const errEl = document.getElementById('pw-error');
-  const btn = document.getElementById('pw-save');
-  const currentPw = document.getElementById('pw-current').value.trim();
-  const newPw = document.getElementById('pw-new').value.trim();
-  const repPw = document.getElementById('pw-repeat').value.trim();
-
-  // Basic checks
-  if (!currentPw){ errEl.textContent = 'Please enter your current password.'; return; }
-  if (newPw.length < 8){ errEl.textContent = 'New password must be at least 8 characters.'; return; }
-  if (newPw !== repPw){ errEl.textContent = 'New passwords do not match.'; return; }
+  const cur   = document.getElementById('pw-current')?.value?.trim() || '';
+  const neu   = document.getElementById('pw-new')?.value?.trim() || '';
+  const rep   = document.getElementById('pw-repeat')?.value?.trim() || '';
+  const btn   = document.getElementById('pw-save');
 
   errEl.textContent = '';
+
+  if (!neu || !rep) { errEl.textContent = 'Please fill in all fields.'; return; }
+  if (neu !== rep)  { errEl.textContent = 'Passwords do not match.';    return; }
+
   btn.disabled = true; btn.textContent = 'Saving…';
 
-  // 1) Re-authenticate with current password
+  if (isRecovery) {
+    // Recovery-Flow: altes Passwort nicht nötig
+    const { error } = await supabase.auth.updateUser({ password: neu });
+    btn.disabled = false; btn.textContent = 'Save';
+
+    if (error) {
+      errEl.textContent = 'Could not set new password: ' + (error.message || 'Unknown error');
+      return;
+    }
+
+    isRecovery = false;
+    closePwModal();
+    return;
+  }
+
+  // Normaler Wechsel: re-auth mit aktuellem Passwort, dann Update
   try {
-    const email = window._profileUserEmail || '';
-    const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: currentPw });
-    if (reauthError) {
+    const email = window._profileUserEmail || (await supabase.auth.getUser()).data?.user?.email;
+    const { error: reErr } = await supabase.auth.signInWithPassword({ email, password: cur });
+    if (reErr){
       btn.disabled = false; btn.textContent = 'Save';
       errEl.textContent = 'Current password is incorrect.';
       return;
     }
-  } catch (e) {
+
+    const { error: upErr } = await supabase.auth.updateUser({ password: neu });
     btn.disabled = false; btn.textContent = 'Save';
-    errEl.textContent = 'Error while checking current password.';
-    return;
+
+    if (upErr){
+      errEl.textContent = 'Could not set new password: ' + (upErr.message || 'Unknown error');
+      return;
+    }
+
+    closePwModal();
+    toast('Password changed');
+  } catch (e){
+    btn.disabled = false; btn.textContent = 'Save';
+    errEl.textContent = 'Error while changing password.';
   }
-
-  // 2) Update password
-  const { error } = await supabase.auth.updateUser({ password: newPw });
-
-  btn.disabled = false; btn.textContent = 'Save';
-
-  if (error){
-    errEl.textContent = 'Password update failed: ' + (error.message || 'Unknown error');
-    return;
-  }
-
-  // Success
-  closePwModal();
-  toast('Password changed');
 }
 
 // --- kleine Toast-Hilfe ---
@@ -133,6 +138,7 @@ document.getElementById('change-password-link')?.addEventListener('click', openP
 document.getElementById('pw-save')?.addEventListener('click', handleSavePassword);
 document.getElementById('pw-cancel')?.addEventListener('click', closePwModal);
 
+
 // --- Delete Account (Modal öffnen/schließen) ---
 function openDeleteModal(e){
   e?.preventDefault?.();
@@ -143,6 +149,22 @@ function closeDeleteModal(e){
   e?.preventDefault?.();
   document.getElementById('delete-modal').classList.add('hidden');
 }
+
+// Passwort-Recovery erkennen → Modal öffnen (ohne "Current password")
+supabase.auth.onAuthStateChange(async (event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    isRecovery = true;
+
+    // "Current password"-Feld ausblenden
+    const currentWrap = document.querySelector('#pw-modal label:nth-of-type(1)');
+    currentWrap?.classList.add('hidden');
+    document.getElementById('pw-error').textContent = '';
+
+    openPwModal();
+    setTimeout(() => document.getElementById('pw-new')?.focus(), 0);
+  }
+});
+
 
 // Öffnen über den Link
 document.getElementById('delete-account-link')?.addEventListener('click', openDeleteModal);
