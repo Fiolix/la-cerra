@@ -59,7 +59,7 @@ supabase.auth.getSession().then(async ({ data }) => {
     document.getElementById('start-register-teaser')?.classList.add('hidden');
     document.getElementById('start-register-button')?.classList.add('hidden');
     document.getElementById('already-logged-in')?.classList.remove('hidden');
-    document.querySelector('#start-login-section h2').classList.add('hidden');
+    document.querySelector('#start-login-section h2')?.classList.add('hidden');
 
     await loadStartStatsAndGreeting();
   }

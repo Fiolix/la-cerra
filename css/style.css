@@ -733,3 +733,6 @@ button#register-button:hover {
   font-size: 0.95rem;
   text-align: center;
 }
+
+/* global helper */
+.hidden { display: none !important; }
