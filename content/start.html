@@ -49,8 +49,25 @@
     <a id="start-register-button" class="primary-btn" href="?p=register.html" data-page="register.html">Register</a>
   </div>
 
-  <div id="already-logged-in" class="hidden" style="text-align:center;">
-    <p>You are already logged in.</p>
-    <a class="primary-btn" href="profile.html">Go to profile</a>
+<div id="already-logged-in" class="hidden start-logged-in" style="text-align:center;">
+  <h2 id="start-greeting">Ciao, –</h2>
+
+  <div class="stats-grid" style="max-width:520px; margin:10px auto 12px;">
+    <div class="stat-card">
+      <div class="stat-number" id="start-tick-count">-</div>
+      <div class="stat-label">Ascents</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="start-highest-grade">-</div>
+      <div class="stat-label">Highest grade</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="start-highest-flash">-</div>
+      <div class="stat-label">Best flash</div>
+    </div>
   </div>
-</section>
+
+  <div class="start-actions">
+    <a class="primary-btn" href="?p=profile.html" data-page="profile.html">Go to profile</a>
+  </div>
+</div>
