@@ -91,22 +91,12 @@ async function renderBurgerAuth() {
     });
 
   } else {
-    // Ausgeloggt-Ansicht wiederherstellen (Original-HTML)
-    loginBlock.innerHTML = originalLoginHTML;
 
-    // SPA-Navigation im wiederhergestellten HTML binden
-    loginBlock.querySelectorAll('a[data-page]').forEach(link => {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const page = this.getAttribute('data-page');
-        if (page && page !== '#') {
-          document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
-        }
-      });
-    });
+// Login-Handler neu aktivieren (auth_handler.js) – mit kleinem Tick
+setTimeout(() => {
+  document.dispatchEvent(new CustomEvent('loginBlockReady'));
+}, 0);
 
-    // Login-Handler neu aktivieren (auth_handler.js)
-    document.dispatchEvent(new CustomEvent('loginBlockReady'));
   }
 }
 
