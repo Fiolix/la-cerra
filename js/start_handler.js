@@ -38,10 +38,39 @@ function bindStartLoginOnce(root = document) {
     });
     btn.disabled = false; btn.textContent = 'Log in';
 
-    if (loginErr){
-      errEl.textContent = 'Login failed: ' + (loginErr.message || 'Unknown error');
-      return;
-    }
+if (loginErr){
+  // dezenter Hinweis + Link zum Reset anbieten
+  errEl.textContent = 'Login failed: Invalid login credentials';
+  document.getElementById('start-pw-reset-offer')?.classList.remove('hidden');
+
+  // einmaliger Click-Handler für den Reset-Link
+  const link = document.getElementById('start-pw-reset-link');
+  if (link && !link.dataset.bound) {
+    link.dataset.bound = '1';
+    link.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      // Username -> Email auflösen (wie beim Login)
+      const username = document.getElementById('start-username')?.value?.trim();
+      const { data: prof } = await supabase
+        .from('profiles').select('email').eq('username', username).single();
+
+      const email = prof?.email;
+      if (!email){ errEl.textContent = 'Cannot find your email for password reset.'; return; }
+
+      // Reset-Mail schicken, Redirect zurück auf Profil (Recovery-Flow)
+      const redirectTo = `${location.origin}${location.pathname}?p=profile`;
+      const { error: rErr } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+
+      if (rErr){ errEl.textContent = 'Reset failed: ' + (rErr.message || 'Unknown error'); return; }
+
+      document.getElementById('start-pw-reset-offer')?.classList.add('hidden');
+      document.getElementById('start-pw-reset-done')?.classList.remove('hidden');
+    });
+  }
+  return;
+}
+
 
     // 3) Weiter zur Profil-Seite über den bestehenden Loader
     document.querySelector('[data-page="profile.html"]')
