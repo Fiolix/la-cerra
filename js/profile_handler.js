@@ -33,6 +33,16 @@ export async function initProfile() {
 
 window._profileUserEmail = user.email || "";
 
+// Recovery via email link? (URL-Hash enthält type=recovery)
+if (location.hash && location.hash.includes('type=recovery')) {
+  isRecovery = true;
+  const currentWrap = document.querySelector('#pw-modal label:nth-of-type(1)');
+  currentWrap?.classList.add('hidden');
+  document.getElementById('pw-error').textContent = '';
+  openPwModal();
+  setTimeout(() => document.getElementById('pw-new')?.focus(), 0);
+}
+
   // Ticklist auslesen inkl. zugehöriger Route-Info
   const { data: ticks, error } = await supabase
     .from("ticklist")
@@ -151,19 +161,17 @@ function closeDeleteModal(e){
 }
 
 // Passwort-Recovery erkennen → Modal öffnen (ohne "Current password")
-supabase.auth.onAuthStateChange(async (event) => {
+supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'PASSWORD_RECOVERY') {
     isRecovery = true;
-
-    // "Current password"-Feld ausblenden
     const currentWrap = document.querySelector('#pw-modal label:nth-of-type(1)');
     currentWrap?.classList.add('hidden');
     document.getElementById('pw-error').textContent = '';
-
     openPwModal();
     setTimeout(() => document.getElementById('pw-new')?.focus(), 0);
   }
 });
+
 
 
 // Öffnen über den Link
