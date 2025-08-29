@@ -156,14 +156,18 @@ if (menuBg) {
 
   navMenu.querySelectorAll("a[data-page]").forEach(link => {
     if (!link.dataset.bound) {
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const page = this.getAttribute("data-page");
-        if (page && page !== "#") {
-          const event = new CustomEvent("loadPage", { detail: page });
-          document.dispatchEvent(event);
-        }
-      });
+link.addEventListener("click", function (e) {
+  e.preventDefault();
+  const page = this.getAttribute("data-page");
+  if (page && page !== "#") {
+    // Doppelaufrufe während eines laufenden Loads verhindern
+    if (window.__pageLoading) return;
+    window.__pageLoading = true;
+    document.dispatchEvent(new CustomEvent("loadPage", { detail: page }));
+    // Marker wird vom content_loader nach Abschluss wieder gelöscht (siehe unten)
+  }
+});
+
       link.dataset.bound = "true"; // ✅ Markiere diesen Link als \"gebunden\"
     }
   });
