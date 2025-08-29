@@ -53,6 +53,72 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.insertBefore(navMenu, document.body.firstChild);
 
+// --- Auth-Status im Burger-Menü rendern ---
+const loginBlock = navMenu.querySelector('.login-block');
+const originalLoginHTML = loginBlock.innerHTML;
+
+async function renderBurgerAuth() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    // Username aus profiles holen
+    const { data: profileData } = await supabase
+      .from('profiles').select('username').eq('user_id', user.id).single();
+    const username = profileData?.username || (user.email?.split('@')[0]) || 'you';
+
+    // Eingeloggt-Ansicht
+    loginBlock.innerHTML = `
+      <h3>Ciao, ${username}</h3>
+      <p style="font-size:0.9rem; opacity:.85;">${user.email || ''}</p>
+      <p><a href="#" data-page="profile" style="text-decoration: none; color: inherit;">Go to profile</a></p>
+      <button id="logout-button" type="button">Log out</button>
+    `;
+
+    // SPA-Navigation für den Profil-Link
+    loginBlock.querySelectorAll('a[data-page]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const page = a.getAttribute('data-page');
+        if (page) {
+          document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
+          navMenu.classList.remove('open');
+        }
+      });
+    });
+
+    // Logout
+    loginBlock.querySelector('#logout-button')?.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+    });
+
+  } else {
+    // Ausgeloggt-Ansicht wiederherstellen (Original-HTML)
+    loginBlock.innerHTML = originalLoginHTML;
+
+    // SPA-Navigation im wiederhergestellten HTML binden
+    loginBlock.querySelectorAll('a[data-page]').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const page = this.getAttribute('data-page');
+        if (page && page !== '#') {
+          document.dispatchEvent(new CustomEvent('loadPage', { detail: page }));
+        }
+      });
+    });
+
+    // Login-Handler neu aktivieren (auth_handler.js)
+    document.dispatchEvent(new CustomEvent('loginBlockReady'));
+  }
+}
+
+// Initial prüfen
+renderBurgerAuth();
+
+// Bei Änderungen (SIGNED_IN, SIGNED_OUT, etc.) neu rendern
+supabase.auth.onAuthStateChange((_event) => {
+  renderBurgerAuth();
+});
+
+
 // Rechte "Map"-Kachel anlegen (zunächst versteckt)
 const mapFab = document.createElement('div');
 mapFab.className = 'map-fab';
