@@ -21,15 +21,22 @@ function bindStartLoginOnce(root = document) {
     if (!username || !pw){ errEl.textContent = 'Please enter username and password.'; return; }
 
     // 1) Username -> Email aus profiles
-    btn.disabled = true; btn.textContent = 'Checking…';
-    const { data: prof, error: profErr } = await supabase
-      .from('profiles').select('email').eq('username', username).single();
+btn.disabled = true; btn.textContent = 'Checking…';
+let prof, profErr;
+try {
+  const res = await supabase
+    .from('profiles').select('email').eq('username', username).single();
+  prof = res.data; profErr = res.error;
+} catch (e) {
+  profErr = e;
+}
 
-    if (profErr || !prof?.email){
-      btn.disabled = false; btn.textContent = 'Log in';
-      errEl.textContent = 'User not found.';
-      return;
-    }
+if (profErr || !prof?.email){
+  btn.disabled = false; btn.textContent = 'Log in';
+  errEl.textContent = 'User not found.';
+  return;
+}
+
 
     // 2) Login
     btn.textContent = 'Signing in…';
