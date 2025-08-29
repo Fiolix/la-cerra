@@ -21,10 +21,10 @@
   </div>
 </section>
 
-<section class="login start-login">
+<section class="login start-login" id="start-login-section">
   <h2>Login</h2>
 
-  <div class="login-card">
+  <div class="login-card" id="start-login-card">
     <label>
       Email<br>
       <input type="email" id="start-user" placeholder="you@example.com" autocomplete="username" />
@@ -37,11 +37,16 @@
     <p id="start-login-error" class="error" aria-live="polite"></p>
   </div>
 
-  <p class="register-teaser">
+  <p class="register-teaser" id="start-register-teaser">
     Don’t have an account yet? Join the La Cerra family and track your ascents in your personal tick list.
   </p>
 
-  <a class="btn-secondary" href="register.html">Register</a>
+  <a class="btn-secondary" id="start-register-link" href="register.html">Register</a>
+
+  <div id="already-logged-in" class="hidden">
+    <p>You are already logged in.</p>
+    <a class="btn-secondary" href="profile.html">Go to profile</a>
+  </div>
 </section>
 
 <script type="module">
@@ -66,14 +71,66 @@
       errEl.textContent = 'Login failed: ' + (error.message || 'Unknown error');
       return;
     }
-    // Erfolg: weiter zum Profil
+    // Erfolg → Profil
     window.location.href = 'profile.html';
   }
 
   document.getElementById('start-login-button')?.addEventListener('click', handleStartLogin);
-  // Optional: Enter-Taste im Passwortfeld
   document.getElementById('start-password')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleStartLogin();
   });
+
+  // Session prüfen → Login-Block ausblenden, Profil-Link zeigen
+  supabase.auth.getSession().then(({ data }) => {
+    if (data?.session?.user) {
+      document.getElementById('start-login-card').classList.add('hidden');
+      document.getElementById('start-register-teaser').classList.add('hidden');
+      document.getElementById('start-register-link').classList.add('hidden');
+      document.getElementById('already-logged-in').classList.remove('hidden');
+    }
+  });
 </script>
+
+<script type="module">
+  import { supabase } from './supabase.js';
+
+  async function handleStartLogin(){
+    const email = document.getElementById('start-user').value.trim();
+    const pw    = document.getElementById('start-password').value;
+    const errEl = document.getElementById('start-login-error');
+
+    errEl.textContent = '';
+    if (!email || !pw){ errEl.textContent = 'Please enter email and password.'; return; }
+
+    const btn = document.getElementById('start-login-button');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
+
+    btn.disabled = false; btn.textContent = 'Log in';
+
+    if (error){
+      errEl.textContent = 'Login failed: ' + (error.message || 'Unknown error');
+      return;
+    }
+    // Erfolg → Profil
+    window.location.href = 'profile.html';
+  }
+
+  document.getElementById('start-login-button')?.addEventListener('click', handleStartLogin);
+  document.getElementById('start-password')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleStartLogin();
+  });
+
+  // Session prüfen → Login-Block ausblenden, Profil-Link zeigen
+  supabase.auth.getSession().then(({ data }) => {
+    if (data?.session?.user) {
+      document.getElementById('start-login-card').classList.add('hidden');
+      document.getElementById('start-register-teaser').classList.add('hidden');
+      document.getElementById('start-register-link').classList.add('hidden');
+      document.getElementById('already-logged-in').classList.remove('hidden');
+    }
+  });
+</script>
+
 
