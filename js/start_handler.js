@@ -130,6 +130,18 @@ if (content) {
   mo.observe(content, { childList: true, subtree: true });
 }
 
+// Auch reagieren, wenn der Login an anderer Stelle passiert (z. B. Burger-Menü)
+supabase.auth.onAuthStateChange(async (event) => {
+  if (event === 'SIGNED_IN') {
+    document.getElementById('start-login-card')?.classList.add('hidden');
+    document.getElementById('start-register-teaser')?.classList.add('hidden');
+    document.getElementById('start-register-button')?.classList.add('hidden');
+    document.querySelector('#start-login-section h2')?.classList.add('hidden');
+    document.getElementById('already-logged-in')?.classList.remove('hidden');
+    await loadStartStatsAndGreeting();
+  }
+});
+
 async function loadStartStatsAndGreeting(){
   // User laden
   const { data: { user }, error: userErr } = await supabase.auth.getUser();
