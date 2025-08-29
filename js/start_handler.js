@@ -1,12 +1,16 @@
 // js/start_handler.js
 import { supabase } from './supabase.js';
 
-function initStartNow() {
-  const card = document.getElementById('start-login-card');
-  if (!card) return; // nicht auf der Start-Seite
+function bindStartLoginOnce(root = document) {
+  const card = root.getElementById?.('start-login-card') || document.getElementById('start-login-card');
+  if (!card) return false;
 
-  const btn = document.getElementById('start-login-button');
-  const pass = document.getElementById('start-password');
+  // Mehrfach-Bindung verhindern
+  if (card.dataset.bound === '1') return true;
+  card.dataset.bound = '1';
+
+  const btn   = document.getElementById('start-login-button');
+  const pass  = document.getElementById('start-password');
   const errEl = document.getElementById('start-login-error');
 
   async function handleStartLogin(){
@@ -34,10 +38,15 @@ function initStartNow() {
     });
     btn.disabled = false; btn.textContent = 'Log in';
 
-    if (loginErr){ errEl.textContent = 'Login failed: ' + (loginErr.message || 'Unknown error'); return; }
+    if (loginErr){
+      errEl.textContent = 'Login failed: ' + (loginErr.message || 'Unknown error');
+      return;
+    }
 
     // 3) Weiter zur Profil-Seite über den bestehenden Loader
-    document.dispatchEvent(new CustomEvent('loadPage', { detail: 'profile.html' }));
+    document.querySelector('[data-page="profile.html"]')
+      ? document.querySelector('[data-page="profile.html"]').click()
+      : document.dispatchEvent(new CustomEvent('loadPage', { detail: 'profile.html' }));
   }
 
   btn?.addEventListener('click', handleStartLogin);
@@ -52,16 +61,21 @@ function initStartNow() {
       document.getElementById('already-logged-in')?.classList.remove('hidden');
     }
   });
+
+  return true;
 }
 
-// einmal direkt (falls Start schon angezeigt ist) …
-initStartNow();
+// 1) Sofort versuchen (falls Start schon im DOM ist)
+bindStartLoginOnce();
 
-// … und jedes Mal, wenn der Loader eine Seite lädt:
-document.addEventListener('loadPage', (e) => {
-  const page = e.detail || '';
-  // der Loader feuert dieses Event bereits; er lädt Inhalte nach /la-cerra/content/<page> …
-  // wir interessieren uns nur für start.html/start
-  const base = String(page).replace(/\.html$/,'');
-  if (base === 'start') setTimeout(initStartNow, 0);
-});
+// 2) Änderungen in #content beobachten und beim Einfügen der Start-Sektion binden
+const content = document.getElementById('content');
+if (content) {
+  const mo = new MutationObserver(() => {
+    if (bindStartLoginOnce()) {
+      // Sobald gebunden, können wir (optional) stoppen
+      // mo.disconnect();
+    }
+  });
+  mo.observe(content, { childList: true, subtree: true });
+}
