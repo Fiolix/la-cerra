@@ -736,3 +736,7 @@ button#register-button:hover {
 
 /* global helper */
 .hidden { display: none !important; }
+
+.hint { color: #555; font-size: 0.95rem; }
+.success { color: #2a7; font-size: 0.95rem; }
+
