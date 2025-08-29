@@ -674,12 +674,11 @@ button#register-button:hover {
 .modal.hidden { display: none !important; }
 
 /* ===== Start page: inline login card ===== */
-.start-login {
-  margin-top: 1rem;
-}
+.start-login { margin-top: 1rem; }
 
 .start-login .login-card {
   max-width: 420px;
+  margin: 0 auto;                /* zentriert die Karte */
   padding: 12px 14px;
   border: 1px solid #e6e6e6;
   border-radius: 8px;
@@ -693,8 +692,9 @@ button#register-button:hover {
   margin: 8px 0;
 }
 
-.start-login input[type="email"],
-.start-login input[type="password"] {
+.start-login input[type="text"],
+.start-login input[type="password"],
+.start-login input[type="email"] {
   width: 100%;
   box-sizing: border-box;
   padding: 8px 10px;
@@ -703,26 +703,33 @@ button#register-button:hover {
   border-radius: 6px;
 }
 
-.start-login #start-login-button {
+.start-actions {
+  display: flex;
+  justify-content: center;       /* Buttons zentrieren */
+  gap: 10px;
   margin-top: 10px;
 }
 
-.start-login .register-teaser {
-  max-width: 520px;
-  margin: 10px 0 8px;
-  color: #444;
-  font-size: 0.95rem;
-}
-
-.btn-secondary {
+/* Button-Optik (für <button> und <a>) */
+.primary-btn {
   display: inline-block;
-  padding: 8px 12px;
-  border: 1px solid #bbb;
+  text-align: center;
+  padding: 8px 14px;
   border-radius: 6px;
+  border: 1px solid #999;
   background: #fff;
-  color: #333;
+  color: #222;
   text-decoration: none;
   font-size: 0.95rem;
+  cursor: pointer;
 }
-.btn-secondary:hover { background: #f3f3f3; }
+.primary-btn:hover { background: #f3f3f3; }
+.primary-btn:disabled { opacity: .6; cursor: default; }
 
+.start-login .register-teaser {
+  max-width: 520px;
+  margin: 12px auto 8px;         /* zentriert den Teaser-Text */
+  color: #444;
+  font-size: 0.95rem;
+  text-align: center;
+}
