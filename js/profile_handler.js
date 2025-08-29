@@ -11,10 +11,32 @@ import { initTicklistTable } from './ticklist_table.js';
 export async function initProfile() {
   console.log("🧾 Lade Profildaten...");
 
+  // --- Recovery-Redirect: Session aus URL-Hash übernehmen ---
+  if (location.hash && /access_token=/.test(location.hash) && /refresh_token=/.test(location.hash)) {
+    const params = new URLSearchParams(location.hash.substring(1));
+    const access_token  = params.get('access_token');
+    const refresh_token = params.get('refresh_token');
+    if (access_token && refresh_token) {
+      await supabase.auth.setSession({ access_token, refresh_token });
+      // Hash aufräumen (optional, verhindert erneutes Parsen bei Reload)
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  }
+
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
     alert("Not logged in");
     return;
+  }
+
+  // Falls vom Reset-Link gekommen: Modal sofort öffnen, ohne "Current password"
+  if (location.hash && location.hash.includes('type=recovery')) {
+    isRecovery = true;
+    const currentWrap = document.querySelector('#pw-modal label:nth-of-type(1)');
+    currentWrap?.classList.add('hidden');
+    document.getElementById('pw-error').textContent = '';
+    openPwModal();
+    setTimeout(() => document.getElementById('pw-new')?.focus(), 0);
   }
 
   // Zusätzliche Abfrage aus 'profiles'
