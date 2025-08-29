@@ -174,9 +174,20 @@ async function handleConfirmDelete(){
 
   btn.disabled = true; btn.textContent = 'Checking password…';
 
+  // E-Mail sicherstellen
+  let email = window._profileUserEmail || '';
+  if (!email) {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error && data?.user?.email) email = data.user.email;
+  }
+  if (!email) {
+    btn.disabled = false; btn.textContent = 'Yes, delete my account';
+    errEl.textContent = 'Cannot read your email. Please reload the page and try again.';
+    return;
+  }
+
   // 1) Re-authenticate with current password
   try {
-    const email = window._profileUserEmail || '';
     const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: pw });
     if (reauthError) {
       btn.disabled = false; btn.textContent = 'Yes, delete my account';
@@ -189,10 +200,9 @@ async function handleConfirmDelete(){
     return;
   }
 
-  // 2) Call Supabase Edge Function "delete-user"
+  // 2) Call Edge Function
   btn.textContent = 'Deleting…';
   const { error } = await supabase.functions.invoke('delete-user', { body: {} });
-
   btn.disabled = false; btn.textContent = 'Yes, delete my account';
 
   if (error) {
@@ -204,6 +214,7 @@ async function handleConfirmDelete(){
   await supabase.auth.signOut();
   window.location.href = 'index.html';
 }
+
 
 
 document.getElementById('confirm-delete')?.addEventListener('click', handleConfirmDelete);
