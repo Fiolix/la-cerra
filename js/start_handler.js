@@ -72,10 +72,27 @@ if (loginErr){
 }
 
 
-    // 3) Weiter zur Profil-Seite über den bestehenden Loader
-    document.querySelector('[data-page="profile.html"]')
-  ? document.querySelector('[data-page="profile.html"]').click()
-  : document.dispatchEvent(new CustomEvent('loadPage', { detail: 'profile.html' }));
+// 3) Erst navigieren, wenn die Session 100% gesetzt ist
+const goProfile = () => {
+  const link = document.querySelector('[data-page="profile"]');
+  if (link) link.click();
+  else document.dispatchEvent(new CustomEvent('loadPage', { detail: 'profile' }));
+};
+
+const { data: now } = await supabase.auth.getSession();
+if (now?.session) {
+  goProfile();
+} else {
+  const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN') {
+      sub.subscription?.unsubscribe?.();
+      goProfile();
+    }
+  });
+  // Fallback falls Event ausbleibt
+  setTimeout(goProfile, 300);
+}
+
 
   }
 
