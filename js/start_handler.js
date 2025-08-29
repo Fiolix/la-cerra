@@ -59,7 +59,7 @@ if (loginErr){
       if (!email){ errEl.textContent = 'Cannot find your email for password reset.'; return; }
 
       // Reset-Mail schicken, Redirect zurück auf Profil (Recovery-Flow)
-      const redirectTo = `${location.origin}${location.pathname}?p=profile`;
+      const redirectTo = 'https://fiolix.github.io/la-cerra/?p=profile';
       const { error: rErr } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
 
       if (rErr){ errEl.textContent = 'Reset failed: ' + (rErr.message || 'Unknown error'); return; }
