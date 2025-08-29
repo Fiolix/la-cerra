@@ -45,8 +45,9 @@ function bindStartLoginOnce(root = document) {
 
     // 3) Weiter zur Profil-Seite über den bestehenden Loader
     document.querySelector('[data-page="profile.html"]')
-      ? document.querySelector('[data-page="profile.html"]').click()
-      : document.dispatchEvent(new CustomEvent('loadPage', { detail: 'profile.html' }));
+  ? document.querySelector('[data-page="profile.html"]').click()
+  : document.dispatchEvent(new CustomEvent('loadPage', { detail: 'profile.html' }));
+
   }
 
   btn?.addEventListener('click', handleStartLogin);
