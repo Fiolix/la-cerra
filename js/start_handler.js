@@ -52,15 +52,17 @@ function bindStartLoginOnce(root = document) {
   btn?.addEventListener('click', handleStartLogin);
   pass?.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleStartLogin(); });
 
-  // Eingeloggt? – UI umschalten
-  supabase.auth.getSession().then(({ data }) => {
-    if (data?.session?.user) {
-      document.getElementById('start-login-card')?.classList.add('hidden');
-      document.getElementById('start-register-teaser')?.classList.add('hidden');
-      document.getElementById('start-register-button')?.classList.add('hidden');
-      document.getElementById('already-logged-in')?.classList.remove('hidden');
-    }
-  });
+// Eingeloggt? – UI umschalten + Stats/Gruß laden
+supabase.auth.getSession().then(async ({ data }) => {
+  if (data?.session?.user) {
+    document.getElementById('start-login-card')?.classList.add('hidden');
+    document.getElementById('start-register-teaser')?.classList.add('hidden');
+    document.getElementById('start-register-button')?.classList.add('hidden');
+    document.getElementById('already-logged-in')?.classList.remove('hidden');
+
+    await loadStartStatsAndGreeting();
+  }
+});
 
   return true;
 }
@@ -78,4 +80,54 @@ if (content) {
     }
   });
   mo.observe(content, { childList: true, subtree: true });
+}
+
+async function loadStartStatsAndGreeting(){
+  // User laden
+  const { data: { user }, error: userErr } = await supabase.auth.getUser();
+  if (userErr || !user) return;
+
+  // Username aus 'profiles' holen
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("user_id", user.id)
+    .single();
+  const username = profileData?.username || user.email || "-";
+  const greetEl = document.getElementById("start-greeting");
+  if (greetEl) greetEl.textContent = `Ciao, ${username}`;
+
+  // Ticklist + Route-Grade laden
+  const { data: ticks, error } = await supabase
+    .from("ticklist")
+    .select("flash, route:route_id(grad)")
+    .eq("user_id", user.id);
+  if (error) return;
+
+  // Fb ↔︎ Zahl Mapping (wie im Profil)
+  const fbToValue = {
+    '2a': 1, '2b': 2, '2c': 3,
+    '3a': 4, '3b': 5, '3c': 6,
+    '4a': 7, '4b': 8, '4c': 9,
+    '5a': 10, '5b': 11, '5c': 12,
+    '6a': 13, '6a+': 14, '6b': 15, '6b+': 16, '6c': 17, '6c+': 18,
+    '7a': 19, '7a+': 20, '7b': 21, '7b+': 22, '7c': 23, '7c+': 24,
+    '8a': 25, '8a+': 26, '8b': 27, '8b+': 28, '8c': 29, '8c+': 30,
+    '9a': 31
+  };
+  const valueToFb = Object.fromEntries(Object.entries(fbToValue).map(([k, v]) => [v, k]));
+  const toVal = g => fbToValue[g] || null;
+
+  const allVals   = ticks.map(t => toVal(t.route?.grad)).filter(Boolean);
+  const flashVals = ticks.filter(t => t.flash).map(t => toVal(t.route?.grad)).filter(Boolean);
+  const max = arr => arr.length ? Math.max(...arr) : null;
+
+  // In UI schreiben
+  const tickCountEl = document.getElementById("start-tick-count");
+  const highestEl   = document.getElementById("start-highest-grade");
+  const flashEl     = document.getElementById("start-highest-flash");
+
+  if (tickCountEl) tickCountEl.textContent = String(ticks.length);
+  if (highestEl)   highestEl.textContent   = (max(allVals)   ? valueToFb[max(allVals)]   : "-");
+  if (flashEl)     flashEl.textContent     = (max(flashVals) ? valueToFb[max(flashVals)] : "-");
 }
