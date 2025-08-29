@@ -46,7 +46,7 @@
   </p>
 
   <div class="start-actions">
-    <a id="start-register-button" class="primary-btn" href="register.html">Register</a>
+    <a id="start-register-button" class="primary-btn" href="?p=register.html" data-page="register.html">Register</a>
   </div>
 
   <div id="already-logged-in" class="hidden" style="text-align:center;">
@@ -54,70 +54,3 @@
     <a class="primary-btn" href="profile.html">Go to profile</a>
   </div>
 </section>
-
-<script type="module">
-  import { supabase } from './supabase.js';
-
-  async function handleStartLogin(){
-    const username = document.getElementById('start-username').value.trim();
-    const pw       = document.getElementById('start-password').value;
-    const errEl    = document.getElementById('start-login-error');
-    const btn      = document.getElementById('start-login-button');
-
-    errEl.textContent = '';
-
-    if (!username || !pw){
-      errEl.textContent = 'Please enter username and password.';
-      return;
-    }
-
-    // 1) Username -> Email aus profiles holen
-    btn.disabled = true; btn.textContent = 'Checking…';
-    const { data: prof, error: profErr } = await supabase
-      .from('profiles')
-      .select('email')
-      .eq('username', username)
-      .single();
-
-    if (profErr || !prof?.email){
-      btn.disabled = false; btn.textContent = 'Log in';
-      errEl.textContent = 'User not found.';
-      return;
-    }
-
-    // 2) Login per Email + Passwort
-    btn.textContent = 'Signing in…';
-    const { error: loginErr } = await supabase.auth.signInWithPassword({
-      email: prof.email,
-      password: pw
-    });
-
-    btn.disabled = false; btn.textContent = 'Log in';
-
-    if (loginErr){
-      errEl.textContent = 'Login failed: ' + (loginErr.message || 'Unknown error');
-      return;
-    }
-
-    // Erfolg → Profil
-    window.location.href = 'profile.html';
-  }
-
-  // Buttons/Enter binden
-  document.getElementById('start-login-button')?.addEventListener('click', handleStartLogin);
-  document.getElementById('start-password')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') handleStartLogin();
-  });
-
-  // Session prüfen → Login-Block ausblenden, Profil-Link zeigen
-  supabase.auth.getSession().then(({ data }) => {
-    if (data?.session?.user) {
-      document.getElementById('start-login-card').classList.add('hidden');
-      document.getElementById('start-register-teaser').classList.add('hidden');
-      document.getElementById('start-register-button').classList.add('hidden');
-      document.getElementById('already-logged-in').classList.remove('hidden');
-    }
-  });
-</script>
-
-
