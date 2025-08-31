@@ -175,7 +175,9 @@ if (mode === 'edit') {
     if (typeof onSuccess === 'function') {
       onSuccess();
     } else {
-      location.reload();
+      document.dispatchEvent(
+  new CustomEvent('loadPage', { detail: localStorage.getItem('lastPage') || 'start.html' })
+);
     }
     popup.remove();
   });
