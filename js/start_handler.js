@@ -23,28 +23,33 @@ function bindStartLoginOnce(root = document) {
     // 1) Username -> Email aus profiles
 btn.disabled = true; btn.textContent = 'Checking…';
 
-const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000));
 let profEmail = null, lookupErr = null;
 
-try {
-  const { data } = await Promise.race([
-    supabase.from('profiles').select('email').eq('username', username).single(),
-    timeout
-  ]);
-  profEmail = data?.email || null;
-} catch (e) {
-  lookupErr = e;
-} finally {
-  // falls vorher abgebrochen/gehangen hätte: UI zurücksetzen
-  if (!profEmail) { btn.disabled = false; btn.textContent = 'Log in'; }
+if (username.includes('@')) {
+  // Nutzer hat direkt eine E-Mail eingegeben -> kein DB-Lookup nötig
+  profEmail = username;
+} else {
+  // Case-insensitiver Username-Lookup
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000));
+  try {
+    const { data } = await Promise.race([
+      supabase.from('profiles').select('email').ilike('username', username).single(),
+      timeout
+    ]);
+    profEmail = data?.email || null;
+  } catch (e) {
+    lookupErr = e;
+  }
 }
 
 if (!profEmail){
+  btn.disabled = false; btn.textContent = 'Log in';
   errEl.textContent = (lookupErr && lookupErr.message === 'timeout')
     ? 'Login check took too long. Please try again.'
     : 'User not found.';
   return;
 }
+
 
     // 2) Login
     btn.textContent = 'Signing in…';
@@ -68,7 +73,7 @@ if (loginErr){
       // Username -> Email auflösen (wie beim Login)
       const username = document.getElementById('start-username')?.value?.trim();
       const { data: prof } = await supabase
-        .from('profiles').select('email').eq('username', username).single();
+        .from('profiles').select('email').ilike('username', username).single();
 
       const email = prof?.email;
       if (!email){ errEl.textContent = 'Cannot find your email for password reset.'; return; }
