@@ -54,20 +54,25 @@ if (isProfile) {
         const mod = await import("/la-cerra/js/boulder_loader.js");
         await mod.loadBlocks();
 
-const images = document.querySelectorAll("#boulder-blocks img");
-await Promise.all(Array.from(images).map(img => {
-  if (img.complete) return Promise.resolve();
-  return new Promise(res => {
-    const done = () => {
-      img.removeEventListener('load', done);
-      img.removeEventListener('error', done);
-      res();
-    };
-    img.addEventListener('load', done, { once: true });
-    img.addEventListener('error', done, { once: true });
-    setTimeout(done, 3000); // Safety: nie dauerhaft hängen
-  });
-}));
+// Bilder im Hintergrund fertigladen – nicht blockieren
+{
+  const images = document.querySelectorAll("#boulder-blocks img");
+  const waitImages = Promise.all(Array.from(images).map(img => {
+    if (img.complete) return Promise.resolve();
+    return new Promise(res => {
+      const done = () => {
+        img.removeEventListener('load', done);
+        img.removeEventListener('error', done);
+        res();
+      };
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+      setTimeout(done, 3000);
+    });
+  }));
+  // optional: nur für Diagnose
+  waitImages.then(() => console.log("🖼️ Bilder in #boulder-blocks fertig (ok/fehler)"));
+}
 
 if (anchor) {
   // 🔎 Warte kurz, bis der Ziel-Block existiert, dann scrolle dorthin
