@@ -49,6 +49,12 @@ if (dropdown) {
   }
 
   const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').ilike('sektor', sektor).order('nummer');
+
+if (!blockError && Array.isArray(blocks) && blocks.length === 0) {
+  console.warn(`Keine Blöcke für Sektor "${sektor}" gefunden.`);
+  return;
+}
+
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
 if (blockError) {
