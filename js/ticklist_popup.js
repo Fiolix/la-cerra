@@ -219,10 +219,15 @@ if (mode === 'edit') {
       }
 
       if (result.error) {
-        alert('❌ Fehler beim Speichern');
-        console.error(result.error);
-        return;
+        console.error('❌ Fehler beim Speichern', result.error);
+        if (result.error.status === 401 || result.error.status === 403) {
+          alert('Please (re)login to save ticks.');
+          return;
       }
+  alert('❌ Fehler beim Speichern');
+  return;
+}
+
     }
 
     // ✅ Erfolg: Seite neu laden
