@@ -182,9 +182,11 @@ if (mode === 'edit') {
 }
 
 
-  submitBtn.onclick = async () => {
-    const items = popup.querySelectorAll('li');
-    let hadAuthError = false;
+submitBtn.onclick = async () => {
+  const items = popup.querySelectorAll('li');
+  let hadAuthError = false;
+  let hadAnyError = false;   // <— NEU: irgendein Fehler (auch kein 401/403)
+  let saved = 0;             // <— NEU: wie viele Einträge wurden gespeichert
 
     for (const li of items) {
       const route_id = li.querySelector('[data-route-id-hidden]')?.getAttribute('data-route-id-hidden');
@@ -222,30 +224,40 @@ if (mode === 'edit') {
 if (result.error) {
   console.error('❌ Fehler beim Speichern', result.error);
   if (result.error.status === 401 || result.error.status === 403) {
-    hadAuthError = true; // <— NEU
+    hadAuthError = true;
     alert('Please (re)login to save ticks.');
-    break; // <— NEU: restliche Items nicht mehr speichern
+    break;
   }
+  hadAnyError = true;          // <— NEU
   alert('❌ Fehler beim Speichern');
-  break; // <— NEU
+  break;
+} else {
+  saved++;                     // <— NEU: Erfolg zählen
 }
-
 
     }
 
 // ✅ Abschluss
 sessionStorage.setItem('scrollY', window.scrollY);
 
+// Auth-Fehler: Popup schließen, aber NICHT reloaden
 if (hadAuthError) {
-  // bei 401/403: kein Reload – Nutzer soll sich erst einloggen
   popup.remove();
   return;
 }
 
+// Irgendein anderer Fehler: Popup schließen, KEIN Reload
+if (hadAnyError) {
+  popup.remove();
+  return;
+}
+
+// Erfolg: sanft die aktuelle Seite neu laden (SPA), KEIN harter Reload
+const last = localStorage.getItem('lastPage') || 'start.html';
 if (typeof onSuccess === 'function') {
   onSuccess();
 } else {
-  location.reload();
+  document.dispatchEvent(new CustomEvent('loadPage', { detail: last }));
 }
 
 popup.remove();
