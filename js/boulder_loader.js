@@ -227,6 +227,17 @@ const ratingDisplay = ratingCount > 0
         .eq('user_id', userId)
         .in('route_id', selectedRouteIds);
 
+if (checkError) {
+  console.error('❌ Ticklist check failed:', checkError);
+  if (checkError.status === 401 || checkError.status === 403) {
+    alert('Please (re)login to use your personal ticklist.');
+    // NICHT signOut, NICHT reload – nur UI-Hinweis
+    return;
+  }
+  alert('An error occurred while checking your ticklist.');
+  return;
+}
+
       if (checkError) {
         console.error('❌ Fehler beim Prüfen der bestehenden Ticklist:', checkError);
         alert('An error occurred while checking your ticklist.');
