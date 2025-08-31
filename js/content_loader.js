@@ -101,12 +101,6 @@ if (anchor) {
   handledScroll = true;
 }
 
-
-      } catch (err) {
-        console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
-      }
-    }
-
     if (html.includes("sector-summary")) {
       import("/la-cerra/js/summary_toggle.js")
         .then(m => m.setupSummaryToggle())
