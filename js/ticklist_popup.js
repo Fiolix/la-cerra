@@ -184,6 +184,7 @@ if (mode === 'edit') {
 
   submitBtn.onclick = async () => {
     const items = popup.querySelectorAll('li');
+    let hadAuthError = false;
 
     for (const li of items) {
       const route_id = li.querySelector('[data-route-id-hidden]')?.getAttribute('data-route-id-hidden');
@@ -218,27 +219,37 @@ if (mode === 'edit') {
         }, { onConflict: ['user_id', 'route_id'], returning: 'minimal' });
       }
 
-      if (result.error) {
-        console.error('❌ Fehler beim Speichern', result.error);
-        if (result.error.status === 401 || result.error.status === 403) {
-          alert('Please (re)login to save ticks.');
-          return;
-      }
+if (result.error) {
+  console.error('❌ Fehler beim Speichern', result.error);
+  if (result.error.status === 401 || result.error.status === 403) {
+    hadAuthError = true; // <— NEU
+    alert('Please (re)login to save ticks.');
+    break; // <— NEU: restliche Items nicht mehr speichern
+  }
   alert('❌ Fehler beim Speichern');
+  break; // <— NEU
+}
+
+
+    }
+
+// ✅ Abschluss
+sessionStorage.setItem('scrollY', window.scrollY);
+
+if (hadAuthError) {
+  // bei 401/403: kein Reload – Nutzer soll sich erst einloggen
+  popup.remove();
   return;
 }
 
-    }
+if (typeof onSuccess === 'function') {
+  onSuccess();
+} else {
+  location.reload();
+}
 
-    // ✅ Erfolg: Seite neu laden
-    sessionStorage.setItem('scrollY', window.scrollY);
-    if (typeof onSuccess === 'function') {
-      onSuccess();
-    } else {
-      location.reload();
-    }
+popup.remove();
 
-    popup.remove();
   };
 
   // Popup einfügen

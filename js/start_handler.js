@@ -49,7 +49,7 @@ if (!profEmail){
     // 2) Login
     btn.textContent = 'Signing in…';
     const { error: loginErr } = await supabase.auth.signInWithPassword({
-      email: prof.email, password: pw
+      email: profEmail, password: pw
     });
     btn.disabled = false; btn.textContent = 'Log in';
 
