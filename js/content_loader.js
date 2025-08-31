@@ -6,19 +6,20 @@ window.addEventListener("beforeunload", () => {
 });
 
 async function loadPage(page) {
-  if (loadPage.isLoading) {
-    console.warn(`⏳ Seite wird gerade geladen – Abbruch.`);
-    return;
-  }
-  loadPage.isLoading = true;
+if (loadPage.isLoading) {
+  console.warn(`⏳ Seite wird gerade geladen – Abbruch.`);
+  return;
+}
 
+const contentElement = document.getElementById("content");
+if (!contentElement) {
+  console.error("❌ Kein #content-Element gefunden!");
+  return;
+}
+
+// ✅ Busy-Flags NACH erfolgreicher #content-Prüfung setzen
+loadPage.isLoading = true;
 window.__pageLoading = true;
-
-  const contentElement = document.getElementById("content");
-  if (!contentElement) {
-    console.error("❌ Kein #content-Element gefunden!");
-    return;
-  }
 
 const [basePage, anchor] = page.split('#'); // z.B. "somewhere" oder "somewhere.html", "block-04-05"
 
@@ -120,9 +121,14 @@ document.activeElement?.blur();
 
 } catch (err) {
   console.error("❌ Fehler beim Laden der Seite:", err);
+  contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
+} finally {
+  // ✅ Egal was passiert – Flags sauber zurücksetzen
   loadPage.isLoading = false;
   window.__pageLoading = false;
-  contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
+
+  // Fokus wegnehmen (wie bisher)
+  document.activeElement?.blur();
 }
 
 }
