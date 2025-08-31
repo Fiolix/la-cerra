@@ -74,7 +74,7 @@ async function renderBurgerAuth() {
     loginBlock.innerHTML = `
       <h3>Ciao, ${username}</h3>
       <p style="font-size:0.9rem; opacity:.85;">${user.email || ''}</p>
-      <p><a href="#" data-page="profile" style="text-decoration: none; color: inherit;">Go to profile</a></p>
+      <p><a href="#" data-page="profile.html" style="text-decoration: none; color: inherit;">Go to profile</a></p>
       <button id="logout-button" type="button">Log out</button>
     `;
 
