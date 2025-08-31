@@ -4,6 +4,13 @@ import { getPublicTickStats } from './tick_stats_loader.js';
 
 import { showTicklistPopup } from './ticklist_popup.js';
 
+const showError = (msg) => {
+  const box = document.createElement('div');
+  box.className = 'error-box';
+  box.textContent = msg;
+  document.querySelector('#boulder-blocks')?.appendChild(box);
+};
+
 function toAnchorId(nr) {
   // aus "04/05" wird "04-05"
   return `block-${String(nr).replaceAll('/', '-')}`;
@@ -44,14 +51,16 @@ if (dropdown) {
   const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer');
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
-  if (blockError) {
-    console.error('❌ Fehler beim Laden der Blöcke:', blockError);
-    return;
-  }
-  if (routeError) {
-    console.error('❌ Fehler beim Laden der Routen:', routeError);
-    return;
-  }
+if (blockError) {
+  console.error('❌ Fehler beim Laden der Blöcke:', blockError);
+  showError('Blocks could not be loaded (network/policy).'); // <— NEU
+  return;
+}
+if (routeError) {
+  console.error('❌ Fehler beim Laden der Routen:', routeError);
+  showError('Routes could not be loaded (network/policy).'); // <— NEU
+  return;
+}
 
   console.log(`ℹ️ ${blocks.length} Blöcke geladen für Sektor '${sektor}'`);
 
