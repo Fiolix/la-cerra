@@ -54,10 +54,20 @@ if (isProfile) {
         const mod = await import("/la-cerra/js/boulder_loader.js");
         await mod.loadBlocks();
 
-        const images = document.querySelectorAll("#boulder-blocks img");
-        await Promise.all(Array.from(images).map(img =>
-          img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
-        ));
+const images = document.querySelectorAll("#boulder-blocks img");
+await Promise.all(Array.from(images).map(img => {
+  if (img.complete) return Promise.resolve();
+  return new Promise(res => {
+    const done = () => {
+      img.removeEventListener('load', done);
+      img.removeEventListener('error', done);
+      res();
+    };
+    img.addEventListener('load', done, { once: true });
+    img.addEventListener('error', done, { once: true });
+    setTimeout(done, 3000); // Safety: nie dauerhaft hängen
+  });
+}));
 
 if (anchor) {
   // 🔎 Warte kurz, bis der Ziel-Block existiert, dann scrolle dorthin
