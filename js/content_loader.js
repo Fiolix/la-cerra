@@ -100,6 +100,7 @@ if (anchor) {
   restoreScrollPosition();
   handledScroll = true;
 }
+}
 
     if (html.includes("sector-summary")) {
       import("/la-cerra/js/summary_toggle.js")
