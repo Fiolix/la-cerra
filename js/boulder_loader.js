@@ -48,8 +48,7 @@ if (dropdown) {
     return;
   }
 
-  const { data: blocks, error: blockError } = await supabase
-  .from('blocks').select('*').ilike('sektor', sektor).order('nummer');
+  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer');
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
 if (blockError) {
