@@ -22,21 +22,29 @@ function bindStartLoginOnce(root = document) {
 
     // 1) Username -> Email aus profiles
 btn.disabled = true; btn.textContent = 'Checking…';
-let prof, profErr;
+
+const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000));
+let profEmail = null, lookupErr = null;
+
 try {
-  const res = await supabase
-    .from('profiles').select('email').eq('username', username).single();
-  prof = res.data; profErr = res.error;
+  const { data } = await Promise.race([
+    supabase.from('profiles').select('email').eq('username', username).single(),
+    timeout
+  ]);
+  profEmail = data?.email || null;
 } catch (e) {
-  profErr = e;
+  lookupErr = e;
+} finally {
+  // falls vorher abgebrochen/gehangen hätte: UI zurücksetzen
+  if (!profEmail) { btn.disabled = false; btn.textContent = 'Log in'; }
 }
 
-if (profErr || !prof?.email){
-  btn.disabled = false; btn.textContent = 'Log in';
-  errEl.textContent = 'User not found.';
+if (!profEmail){
+  errEl.textContent = (lookupErr && lookupErr.message === 'timeout')
+    ? 'Login check took too long. Please try again.'
+    : 'User not found.';
   return;
 }
-
 
     // 2) Login
     btn.textContent = 'Signing in…';
