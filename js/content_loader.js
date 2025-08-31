@@ -6,10 +6,12 @@ window.addEventListener("beforeunload", () => {
 });
 
 async function loadPage(page) {
-if (loadPage.isLoading) {
-  console.warn(`⏳ Seite wird gerade geladen – Abbruch.`);
-  return;
-}
+  if (loadPage.isLoading) {
+    // statt Abbruch: die gewünschte Seite vormerken
+    loadPage.nextPage = page;
+    console.warn("⏳ Lädt noch – nächste Seite vorgemerkt:", page);
+    return;
+  }
 
 const contentElement = document.getElementById("content");
 if (!contentElement) {
@@ -49,10 +51,10 @@ if (isProfile) {
     .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
 }
 
-    if (html.includes('id="boulder-blocks"')) {
-      try {
-        const mod = await import("/la-cerra/js/boulder_loader.js");
-        await mod.loadBlocks();
+if (html.includes('id="boulder-blocks"')) {
+  import("/la-cerra/js/boulder_loader.js")
+    .then(mod => mod.loadBlocks())
+    .catch(err => console.error("❌ Fehler beim Laden von boulder_loader.js:", err));
 
 // Bilder im Hintergrund fertigladen – nicht blockieren
 {
@@ -70,7 +72,6 @@ if (isProfile) {
       setTimeout(done, 3000);
     });
   }));
-  // optional: nur für Diagnose
   waitImages.then(() => console.log("🖼️ Bilder in #boulder-blocks fertig (ok/fehler)"));
 }
 
@@ -144,6 +145,14 @@ document.activeElement?.blur();
 
   // Fokus wegnehmen (wie bisher)
   document.activeElement?.blur();
+
+  // Falls während des Ladens ein neuer Wunsch kam: jetzt sofort nachziehen
+  const next = loadPage.nextPage;
+  loadPage.nextPage = null;
+  if (next) {
+    // Flags sind ja gerade freigegeben – direkt neuer Start
+    loadPage(next);
+  }
 }
 
 }
