@@ -20,10 +20,14 @@ window.__pageLoading = true;
     return;
   }
 
-const [basePage, anchor] = page.split('#'); // z.B. "somewhere.html", "block-04-05"
+const [basePage, anchor] = page.split('#'); // z.B. "somewhere" oder "somewhere.html", "block-04-05"
 
-localStorage.setItem("lastPage", basePage);
-const url = `/la-cerra/content/${basePage}`;
+// 🔧 NEU: .html-Endung automatisch ergänzen
+let base = basePage;
+if (!base.endsWith('.html')) base = `${base}.html`;
+
+localStorage.setItem("lastPage", base);
+const url = `/la-cerra/content/${base}`;
 console.log(`📥 Versuche zu laden: ${url}`);
 
   try {
@@ -36,11 +40,13 @@ console.log(`📥 Versuche zu laden: ${url}`);
 
     let handledScroll = false;
 
-    if (basePage === "profile") {
-      import("/la-cerra/js/profile_handler.js")
-        .then(m => m.initProfile())
-        .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
-    }
+// 🔧 NEU: "profile" und "profile.html" gleich behandeln
+const isProfile = (base === "profile.html" || basePage === "profile");
+if (isProfile) {
+  import("/la-cerra/js/profile_handler.js")
+    .then(m => m.initProfile())
+    .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
+}
 
     if (html.includes('id="boulder-blocks"')) {
       try {
@@ -90,12 +96,12 @@ if (anchor) {
         .catch(err => console.error("❌ Fehler beim Diagramm-Toggle:", err));
     }
 
-    if (html.includes('id="routen-diagramm"')) {
-      const sektorName = basePage.replace(".html", "");
-      import("/la-cerra/js/routen_diagram_loader.js")
-        .then(m => m.loadRoutenDiagramm(sektorName))
-        .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
-    }
+if (html.includes('id="routen-diagramm"')) {
+  const sektorName = base.replace(".html", ""); // 🔧 NEU: die normalisierte Basis verwenden
+  import("/la-cerra/js/routen_diagram_loader.js")
+    .then(m => m.loadRoutenDiagramm(sektorName))
+    .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
+}
 
     if (basePage === "register") {
       import("/la-cerra/js/register_handler.js")
