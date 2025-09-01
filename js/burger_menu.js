@@ -72,7 +72,8 @@ async function waitForSupabaseReady() {
 }
 
 async function renderBurgerAuth() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user || null;
   if (user) {
     // Username aus profiles holen
 let username = (user.email?.split('@')[0]) || 'you';
@@ -123,13 +124,20 @@ waitForSupabaseReady().then(() => {
 
 
 // Bei Änderungen (SIGNED_IN, SIGNED_OUT, etc.) neu rendern
-supabase.auth.onAuthStateChange((event) => {
+supabase.auth.onAuthStateChange(async (event, session) => {
   console.log('🔔 AuthStateChange:', event);
-  renderBurgerAuth();
-  setTimeout(renderBurgerAuth, 50);   // Fallback knapp nach Repaint
+
+  // Wenn Supabase uns die Session schon liefert, kurz warten und dann rendern
+  if (session?.user) {
+    setTimeout(renderBurgerAuth, 0);
+    setTimeout(renderBurgerAuth, 120);
+    return;
+  }
+
+  // Fallback: Session aktiv abfragen und dann rendern
+  await renderBurgerAuth();
+  setTimeout(renderBurgerAuth, 120);
 });
-
-
 
 // Rechte "Map"-Kachel anlegen (zunächst versteckt)
 const mapFab = document.createElement('div');
