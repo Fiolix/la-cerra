@@ -7,3 +7,5 @@ export const supabase = createClient(
 );
 
 console.log('✅ Supabase SDK geladen & Client erstellt');
+window.supabase = supabase;                        // ⬅︎ NEU: weltweit sichtbar (Diagnose)
+document.dispatchEvent(new Event('supabaseReady')); // ⬅︎ NEU: Ready-Event feuern

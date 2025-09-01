@@ -62,6 +62,15 @@ document.addEventListener('loadPage', () => {
 const loginBlock = navMenu.querySelector('.login-block');
 const originalLoginHTML = loginBlock.innerHTML;
 
+// ⬇︎ Warten bis Supabase sicher bereit ist (einmalig, mit Fallback)
+async function waitForSupabaseReady() {
+  if (window.supabase?.auth) return; // schon da
+  await new Promise((resolve) => {
+    const t = setTimeout(resolve, 800); // Fallback, falls Event ausbleibt
+    document.addEventListener('supabaseReady', () => { clearTimeout(t); resolve(); }, { once: true });
+  });
+}
+
 async function renderBurgerAuth() {
   const { data: { user } } = await supabase.auth.getUser();
   if (user) {
@@ -106,9 +115,12 @@ console.log('🍝 Burger-Login gerendert als:', username);
 
 }
 
-// Initial prüfen
-renderBurgerAuth();
-setTimeout(renderBurgerAuth, 150); 
+// Initial prüfen – aber erst wenn Supabase wirklich bereit ist
+waitForSupabaseReady().then(() => {
+  renderBurgerAuth();
+  setTimeout(renderBurgerAuth, 150); // kleiner Fallback
+});
+
 
 // Bei Änderungen (SIGNED_IN, SIGNED_OUT, etc.) neu rendern
 supabase.auth.onAuthStateChange((event) => {
