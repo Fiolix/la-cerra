@@ -7,8 +7,6 @@ export async function initAuth() {
     const emailInput = document.getElementById("user");
     const passwordInput = document.getElementById("password");
     const loginButton = document.getElementById("login-button");
-    const loginBlock = document.querySelector(".login-block");
-console.log("📣 loginBlock:", loginBlock);
 
     loginButton?.addEventListener("click", async () => {
       let identifier = emailInput.value.trim();
@@ -65,15 +63,5 @@ console.log("📣 loginBlock:", loginBlock);
         alert("❌ Username oder Passwort falsch.");
         return;
       }
-
-      const { data: userData } = await supabase.auth.getUser();
-      const userId = userData?.user?.id;
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      const username = profileData?.username || "Nutzer";
     });
 }
