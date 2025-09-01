@@ -1,10 +1,5 @@
-let createClient;
-try {
-  ({ createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'));
-} catch (e1) {
-  console.warn('⚠️ jsDelivr down, Fallback auf esm.sh:', e1);
-  ({ createClient } = await import('https://esm.sh/@supabase/supabase-js@2'));
-}
+// js/supabase.js — stabile Variante ohne Top-Level-await
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 export const supabase = createClient(
   'https://ymeumqnmcumgqlffwwjb.supabase.co',
