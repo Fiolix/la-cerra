@@ -10,14 +10,6 @@ export async function initAuth() {
     const loginBlock = document.querySelector(".login-block");
 console.log("📣 loginBlock:", loginBlock);
 
-    const createLink = document.querySelector('[data-page="register"]')?.closest('li');
-
-    // ✅ Session-Erkennung beim Laden
-    const { data: sessionData } = await supabase.auth.getSession();
-    const currentUserId = sessionData?.session?.user?.id;
-
-console.log("🔎 Aktuelle user_id:", currentUserId);
-
     loginButton?.addEventListener("click", async () => {
       let identifier = emailInput.value.trim();
       const password = passwordInput.value;
