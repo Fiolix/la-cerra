@@ -4,7 +4,7 @@ supabase.auth.getUser().then(({ data }) => {
   console.log("👤 Eingeloggt als:", data?.user?.email);
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+function initBurgerMenu() {
   // ✅ Menü existiert schon? → nicht erneut einfügen
   if (document.querySelector("nav.slide-menu")) return;
 
@@ -66,9 +66,19 @@ async function renderBurgerAuth() {
   const { data: { user } } = await supabase.auth.getUser();
   if (user) {
     // Username aus profiles holen
-    const { data: profileData } = await supabase
-      .from('profiles').select('username').eq('user_id', user.id).single();
-    const username = profileData?.username || (user.email?.split('@')[0]) || 'you';
+let username = (user.email?.split('@')[0]) || 'you';
+try {
+  const { data: profileData, error: profErr } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (profErr) console.warn('profiles lookup error:', profErr);
+  if (profileData?.username) username = profileData.username;
+} catch (e) {
+  console.warn('profiles lookup threw:', e);
+}
 
     // Eingeloggt-Ansicht
 loginBlock.innerHTML = `
@@ -76,6 +86,8 @@ loginBlock.innerHTML = `
   <p><a href="#" data-page="profile" style="text-decoration:none;color:inherit;">My Profile</a></p>
   <button id="logout-button" type="button">Logout</button>
 `;
+
+console.log('🍝 Burger-Login gerendert als:', username);
 
     // Logout
     loginBlock.querySelector('#logout-button')?.addEventListener('click', async () => {
@@ -96,10 +108,13 @@ loginBlock.innerHTML = `
 
 // Initial prüfen
 renderBurgerAuth();
+setTimeout(renderBurgerAuth, 150); 
 
 // Bei Änderungen (SIGNED_IN, SIGNED_OUT, etc.) neu rendern
-supabase.auth.onAuthStateChange((_event) => {
+supabase.auth.onAuthStateChange((event) => {
+  console.log('🔔 AuthStateChange:', event);
   renderBurgerAuth();
+  setTimeout(renderBurgerAuth, 50);   // Fallback knapp nach Repaint
 });
 
 
@@ -204,7 +219,14 @@ mapFab.addEventListener('click', () => {
   window.scrollTo({ top: y, behavior: 'smooth' });
 });
 
-});
+} //  ⬅️ schließende Klammer von function initBurgerMenu()
+
+// Ready-State-Guard: init immer sicher starten
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBurgerMenu);
+} else {
+  initBurgerMenu();
+}
 
 function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
