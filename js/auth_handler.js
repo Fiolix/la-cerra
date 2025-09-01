@@ -18,35 +18,6 @@ console.log("📣 loginBlock:", loginBlock);
 
 console.log("🔎 Aktuelle user_id:", currentUserId);
 
-    if (currentUserId && loginBlock) {
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("user_id", currentUserId)
-        .maybeSingle();
-
-console.log("🧠 Ergebnis der Profile-Abfrage:", profileData);
-console.log("❗ Fehler bei Profile-Abfrage:", profileError);
-
-      const username = profileData?.username || "Nutzer";
-
-      loginBlock.innerHTML = `
-        <p style="margin-bottom: 0.5rem">Ciao <strong>${username}</strong></p>
-        <p><a href="#" data-page="profile">My Profile</a></p>
-        <button id="logout-button">Logout</button>
-      `;
-
-      const logoutButton = document.getElementById("logout-button");
-      logoutButton?.addEventListener("click", async () => {
-        await supabase.auth.signOut();
-        window.location.reload();
-      });
-
-      // 🔒 Verstecke Link zu "Create Account" wenn eingeloggt
-      if (createLink) createLink.style.display = "none";
-      return;
-    }
-
     loginButton?.addEventListener("click", async () => {
       let identifier = emailInput.value.trim();
       const password = passwordInput.value;
@@ -112,22 +83,5 @@ console.log("❗ Fehler bei Profile-Abfrage:", profileError);
         .maybeSingle();
 
       const username = profileData?.username || "Nutzer";
-
-      if (loginBlock) {
-        loginBlock.innerHTML = `
-          <p style="margin-bottom: 0.5rem">Ciao <strong>${username}</strong></p>
-          <p><a href="#" data-page="profile">My Profile</a></p>
-          <button id="logout-button">Logout</button>
-        `;
-
-        const logoutButton = document.getElementById("logout-button");
-        logoutButton?.addEventListener("click", async () => {
-          await supabase.auth.signOut();
-          window.location.reload();
-        });
-      }
-
-      // 🔒 Verstecke Link zu "Create Account" nach erfolgreichem Login
-      if (createLink) createLink.style.display = "none";
     });
 }
