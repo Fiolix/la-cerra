@@ -102,8 +102,7 @@ console.log("🔧 toggleStartLogin:", { isAuth: !!session?.user });
         } catch {}
         greet.textContent = `Ciao, ${name} –`;
       }
-    
-helloBox.style.display = "";     // ⇦ explizit einblenden (falls CSS woanders "display:none" setzt)
+    }
 
   } else {
     // Ausgeloggt: Login-Form zeigen, Hello-Box verstecken
