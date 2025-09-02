@@ -99,6 +99,8 @@ const toggleStartLogin = async (session) => {
         greet.textContent = `Ciao, ${name} –`;
       }
     }
+helloBox.style.display = "";     // ⇦ explizit einblenden (falls CSS woanders "display:none" setzt)
+
   } else {
     // Ausgeloggt: Login-Form zeigen, Hello-Box verstecken
     if (section) section.style.display = "";
@@ -124,14 +126,5 @@ if (contentRoot) {
     // Sichtbarkeit je nach Session toggeln
 const { data: { session } } = await supabase.auth.getSession();
 await toggleStartLogin(session); // <— NEU: sofort auch hier schalten
-const startPwd = document.getElementById("start-password");
-    if (startPwd) {
-      const card = startPwd.closest(".login-card") || document.getElementById("start-login-card") || startPwd.parentElement;
-      if (card) card.style.display = session?.user ? "none" : "";
-      const section = document.getElementById("start-login-section");
-      if (section) section.style.display = session?.user ? "none" : "";
-    }
-  });
-  mo.observe(contentRoot, { childList: true, subtree: true });
-}
+
 }
