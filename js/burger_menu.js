@@ -129,6 +129,7 @@ waitForSupabaseReady().then(async () => {
 
 // Bei Änderungen (SIGNED_IN, SIGNED_OUT, etc.) neu rendern
 supabase.auth.onAuthStateChange((event, session) => {
+  console.log('🔔 onAuthStateChange:', event, '→ user:', session?.user?.id || null);
   // direkte Verwendung der mitgelieferten Session – kein Re-Fetch
   renderBurgerAuth(session);
   // optionaler kurzer Fallback-Refresh mit derselben Session
