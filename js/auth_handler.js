@@ -69,7 +69,7 @@ export async function initAuth() {
   wireLogin({ userId: "user", passId: "password", btnId: "login-button" });
 
   // ❷ Startseiten-Login zusätzlich verdrahten (IDs bitte anpassen, falls bei dir anders)
-  wireLogin({ userId: "start-user", passId: "start-password", btnId: "start-login-button" });
+  wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
 
   // Start-Login automatisch ausblenden, wenn eingeloggt
   const toggleStartLogin = (isAuth) => {
@@ -86,4 +86,23 @@ export async function initAuth() {
   supabase.auth.onAuthStateChange((_e, s) => {
     toggleStartLogin(!!s?.user);
   });
+// Reagiere auf dynamisch nachgeladenen Content (#content)
+const contentRoot = document.getElementById('content');
+if (contentRoot) {
+  const mo = new MutationObserver(async () => {
+    // Start-Login (falls neu gerendert) verdrahten
+    wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
+
+    // Sichtbarkeit je nach Session toggeln
+    const { data: { session } } = await supabase.auth.getSession();
+    const startPwd = document.getElementById("start-password");
+    if (startPwd) {
+      const card = startPwd.closest(".login-card") || document.getElementById("start-login-card") || startPwd.parentElement;
+      if (card) card.style.display = session?.user ? "none" : "";
+      const section = document.getElementById("start-login-section");
+      if (section) section.style.display = session?.user ? "none" : "";
+    }
+  });
+  mo.observe(contentRoot, { childList: true, subtree: true });
+}
 }
