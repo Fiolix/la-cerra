@@ -91,7 +91,7 @@ console.log("🔧 toggleStartLogin:", { isAuth: !!session?.user });
     // "Already logged in"-Box anzeigen + Begrüßung setzen
     if (helloBox) {
       helloBox.classList.remove("hidden");
-      helloBox.style.display = ""; // ⇦ hier hinein!
+      
       if (greet) {
         let name = session.user.email?.split("@")[0] || "you";
         try {
