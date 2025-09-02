@@ -120,6 +120,7 @@ waitForSupabaseReady().then(async () => {
   const { data: { session } } = await supabase.auth.getSession();
   console.log('🔎 init session (burger_menu.js):', session?.user?.id, session?.user?.email);
   renderBurgerAuth(session);
+  document.dispatchEvent(new CustomEvent('loginBlockReady'));
   // kleiner Fallback, aber mit frischer Session:
   setTimeout(async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -128,12 +129,13 @@ waitForSupabaseReady().then(async () => {
 });
 
 // Bei Änderungen (SIGNED_IN, SIGNED_OUT, etc.) neu rendern
-supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange((_event, session) => {
   console.log('🔔 onAuthStateChange:', event, '→ user:', session?.user?.id || null);
   // direkte Verwendung der mitgelieferten Session – kein Re-Fetch
   renderBurgerAuth(session);
   // optionaler kurzer Fallback-Refresh mit derselben Session
   setTimeout(() => renderBurgerAuth(session), 120);
+  document.dispatchEvent(new CustomEvent('loginBlockReady'));
 });
 
 
