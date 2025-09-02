@@ -71,21 +71,49 @@ export async function initAuth() {
   // ❷ Startseiten-Login zusätzlich verdrahten (IDs bitte anpassen, falls bei dir anders)
   wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
 
-  // Start-Login automatisch ausblenden, wenn eingeloggt
-  const toggleStartLogin = (isAuth) => {
-    const startPwd = document.getElementById("start-password");
-    if (!startPwd) return; // Start-Login ist auf dieser Seite nicht vorhanden
-    // Versuche einen sinnvollen Container zu erwischen:
-    const card = startPwd.closest(".login-card") || document.getElementById("start-login") || startPwd.parentElement;
-    if (card) card.style.display = isAuth ? "none" : "";
-  };
+const toggleStartLogin = async (session) => {
+  const isAuth = !!session?.user;
 
-  const { data: { session } } = await supabase.auth.getSession();
-  toggleStartLogin(!!session?.user);
+  // Elemente der Startseite:
+  const section = document.getElementById("start-login-section"); // ganzer Abschnitt
+  const card = document.getElementById("start-login-card") || document.querySelector("#start-login-section .login-card");
+  const helloBox = document.getElementById("already-logged-in");
+  const greet = document.getElementById("start-greeting");
 
-  supabase.auth.onAuthStateChange((_e, s) => {
-    toggleStartLogin(!!s?.user);
-  });
+  if (isAuth) {
+    // Login-Form ausblenden
+    if (section) section.style.display = "none";
+    if (card) card.style.display = "none";
+
+    // "Already logged in"-Box anzeigen + Begrüßung setzen
+    if (helloBox) {
+      helloBox.classList.remove("hidden");
+      if (greet) {
+        let name = session.user.email?.split("@")[0] || "you";
+        try {
+          const { data, error } = await supabase
+            .from("profiles").select("username")
+            .eq("user_id", session.user.id).maybeSingle();
+          if (!error && data?.username) name = data.username;
+        } catch {}
+        greet.textContent = `Ciao, ${name} –`;
+      }
+    }
+  } else {
+    // Ausgeloggt: Login-Form zeigen, Hello-Box verstecken
+    if (section) section.style.display = "";
+    if (card) card.style.display = "";
+    if (helloBox) helloBox.classList.add("hidden");
+  }
+};
+
+const { data: { session } } = await supabase.auth.getSession();
+toggleStartLogin(session);
+
+supabase.auth.onAuthStateChange((_e, s) => {
+  toggleStartLogin(s);
+});
+
 // Reagiere auf dynamisch nachgeladenen Content (#content)
 const contentRoot = document.getElementById('content');
 if (contentRoot) {
@@ -94,8 +122,9 @@ if (contentRoot) {
     wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
 
     // Sichtbarkeit je nach Session toggeln
-    const { data: { session } } = await supabase.auth.getSession();
-    const startPwd = document.getElementById("start-password");
+const { data: { session } } = await supabase.auth.getSession();
+await toggleStartLogin(session); // <— NEU: sofort auch hier schalten
+const startPwd = document.getElementById("start-password");
     if (startPwd) {
       const card = startPwd.closest(".login-card") || document.getElementById("start-login-card") || startPwd.parentElement;
       if (card) card.style.display = session?.user ? "none" : "";
