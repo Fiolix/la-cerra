@@ -71,7 +71,7 @@ async function waitForSupabaseReady() {
   });
 }
 
-function renderBurgerAuth(session) {
+async function renderBurgerAuth(session) {
   const user = session?.user || null;
   if (user) {
     // Username aus profiles holen
