@@ -118,6 +118,7 @@ console.log('🍝 Burger-Login gerendert als:', username);
 // Initial prüfen – aber erst wenn Supabase wirklich bereit ist
 waitForSupabaseReady().then(async () => {
   const { data: { session } } = await supabase.auth.getSession();
+  console.log('🔎 init session (burger_menu.js):', session?.user?.id, session?.user?.email);
   renderBurgerAuth(session);
   // kleiner Fallback, aber mit frischer Session:
   setTimeout(async () => {
