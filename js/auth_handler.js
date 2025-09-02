@@ -119,17 +119,30 @@ supabase.auth.onAuthStateChange((_e, s) => {
   toggleStartLogin(s);
 });
 
+// kleiner Fallback, falls #start-login-section minimal später kommt
+setTimeout(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  await toggleStartLogin(session);
+}, 150);
+setTimeout(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  await toggleStartLogin(session);
+}, 600);
+
 // Reagiere auf dynamisch nachgeladenen Content (#content)
 const contentRoot = document.getElementById('content');
 if (contentRoot) {
   const mo = new MutationObserver(async () => {
-    // Start-Login (falls neu gerendert) verdrahten
-    wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
+  console.log("👀 content geändert → versuche Start-Login zu verdrahten/umschalten");
 
-    // Sichtbarkeit je nach Session toggeln
-    const { data: { session } } = await supabase.auth.getSession();
-    await toggleStartLogin(session);
-  });
+  // Start-Login (falls neu gerendert) verdrahten
+  wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
+
+  // Sichtbarkeit je nach Session toggeln
+  const { data: { session } } = await supabase.auth.getSession();
+  await toggleStartLogin(session);
+});
+
   mo.observe(contentRoot, { childList: true, subtree: true });
 }
 } // ⬅︎ schließt export async function initAuth()
