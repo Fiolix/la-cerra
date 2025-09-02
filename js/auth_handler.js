@@ -3,12 +3,17 @@ console.log("🚀 initAuth() gestartet");
 import { supabase } from './supabase.js';
 
 export async function initAuth() {
+  // Hilfsfunktion: jeweiligen Login-Block verdrahten (IDs können fehlen → dann no-op)
+  const wireLogin = ({ userId, passId, btnId }) => {
+    const emailInput = document.getElementById(userId);
+    const passwordInput = document.getElementById(passId);
+    const loginButton = document.getElementById(btnId);
 
-    const emailInput = document.getElementById("user");
-    const passwordInput = document.getElementById("password");
-    const loginButton = document.getElementById("login-button");
+    if (!emailInput || !passwordInput || !loginButton) return;     // Block existiert nicht
+    if (loginButton.dataset.bound === '1') return;                  // schon verdrahtet
+    loginButton.dataset.bound = '1';
 
-    loginButton?.addEventListener("click", async () => {
+    loginButton.addEventListener("click", async () => {
       let identifier = emailInput.value.trim();
       const password = passwordInput.value;
 
@@ -17,24 +22,18 @@ export async function initAuth() {
         return;
       }
 
+      // Username → E-Mail auflösen (dein bestehender Supabase-Flow)
       if (!identifier.includes("@")) {
-        console.log("⤵️ Loginversuch mit Username:", identifier);
-
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("user_id")
           .eq("username", identifier)
           .maybeSingle();
 
-        console.log("⤵️ Supabase-Ergebnis:", profile);
-        console.log("↪️ profile.user_id:", profile?.user_id);
-
         if (profileError) {
-          console.error("Supabase-Fehler beim Suchen nach Username:", profileError);
           alert("Fehler bei der Anmeldung. Bitte später erneut versuchen.");
           return;
         }
-
         if (!profile) {
           alert("Dieser Username wurde nicht gefunden. Achte auf die genaue Schreibweise.");
           return;
@@ -50,7 +49,6 @@ export async function initAuth() {
           alert("E-Mail konnte zu diesem Username nicht gefunden werden.");
           return;
         }
-
         identifier = userRecord.email;
       }
 
@@ -63,5 +61,29 @@ export async function initAuth() {
         alert("❌ Username oder Passwort falsch.");
         return;
       }
+      // kein reload nötig – burger_menu.js reagiert per onAuthStateChange
     });
+  };
+
+  // ❶ Burgermenü-Login verdrahten (wie bisher)
+  wireLogin({ userId: "user", passId: "password", btnId: "login-button" });
+
+  // ❷ Startseiten-Login zusätzlich verdrahten (IDs bitte anpassen, falls bei dir anders)
+  wireLogin({ userId: "start-user", passId: "start-password", btnId: "start-login-button" });
+
+  // Start-Login automatisch ausblenden, wenn eingeloggt
+  const toggleStartLogin = (isAuth) => {
+    const startPwd = document.getElementById("start-password");
+    if (!startPwd) return; // Start-Login ist auf dieser Seite nicht vorhanden
+    // Versuche einen sinnvollen Container zu erwischen:
+    const card = startPwd.closest(".login-card") || document.getElementById("start-login") || startPwd.parentElement;
+    if (card) card.style.display = isAuth ? "none" : "";
+  };
+
+  const { data: { session } } = await supabase.auth.getSession();
+  toggleStartLogin(!!session?.user);
+
+  supabase.auth.onAuthStateChange((_e, s) => {
+    toggleStartLogin(!!s?.user);
+  });
 }
