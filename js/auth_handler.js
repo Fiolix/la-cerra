@@ -72,6 +72,9 @@ export async function initAuth() {
   wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
 
 const toggleStartLogin = async (session) => {
+
+console.log("🔧 toggleStartLogin:", { isAuth: !!session?.user });
+
   const isAuth = !!session?.user;
 
   // Elemente der Startseite:
@@ -88,6 +91,7 @@ const toggleStartLogin = async (session) => {
     // "Already logged in"-Box anzeigen + Begrüßung setzen
     if (helloBox) {
       helloBox.classList.remove("hidden");
+      helloBox.style.display = ""; // ⇦ hier hinein!
       if (greet) {
         let name = session.user.email?.split("@")[0] || "you";
         try {
@@ -124,7 +128,9 @@ if (contentRoot) {
     wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
 
     // Sichtbarkeit je nach Session toggeln
-const { data: { session } } = await supabase.auth.getSession();
-await toggleStartLogin(session); // <— NEU: sofort auch hier schalten
-
+    const { data: { session } } = await supabase.auth.getSession();
+    await toggleStartLogin(session);
+  });
+  mo.observe(contentRoot, { childList: true, subtree: true });
 }
+} // ⬅︎ schließt export async function initAuth()
