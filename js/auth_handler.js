@@ -103,7 +103,6 @@ console.log("🔧 toggleStartLogin:", { isAuth: !!session?.user });
         greet.textContent = `Ciao, ${name} –`;
       }
    
-
   } else {
     // Ausgeloggt: Login-Form zeigen, Hello-Box verstecken
     if (section) section.style.display = "";
