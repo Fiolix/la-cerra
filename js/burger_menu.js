@@ -71,8 +71,7 @@ async function waitForSupabaseReady() {
   });
 }
 
-async function renderBurgerAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+function renderBurgerAuth(session) {
   const user = session?.user || null;
   if (user) {
     // Username aus profiles holen
@@ -117,27 +116,24 @@ console.log('🍝 Burger-Login gerendert als:', username);
 }
 
 // Initial prüfen – aber erst wenn Supabase wirklich bereit ist
-waitForSupabaseReady().then(() => {
-  renderBurgerAuth();
-  setTimeout(renderBurgerAuth, 150); // kleiner Fallback
+waitForSupabaseReady().then(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  renderBurgerAuth(session);
+  // kleiner Fallback, aber mit frischer Session:
+  setTimeout(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    renderBurgerAuth(session);
+  }, 150);
 });
-
 
 // Bei Änderungen (SIGNED_IN, SIGNED_OUT, etc.) neu rendern
-supabase.auth.onAuthStateChange(async (event, session) => {
-  console.log('🔔 AuthStateChange:', event);
-
-  // Wenn Supabase uns die Session schon liefert, kurz warten und dann rendern
-  if (session?.user) {
-    setTimeout(renderBurgerAuth, 0);
-    setTimeout(renderBurgerAuth, 120);
-    return;
-  }
-
-  // Fallback: Session aktiv abfragen und dann rendern
-  await renderBurgerAuth();
-  setTimeout(renderBurgerAuth, 120);
+supabase.auth.onAuthStateChange((_event, session) => {
+  // direkte Verwendung der mitgelieferten Session – kein Re-Fetch
+  renderBurgerAuth(session);
+  // optionaler kurzer Fallback-Refresh mit derselben Session
+  setTimeout(() => renderBurgerAuth(session), 120);
 });
+
 
 // Rechte "Map"-Kachel anlegen (zunächst versteckt)
 const mapFab = document.createElement('div');
