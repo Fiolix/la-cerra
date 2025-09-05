@@ -7,30 +7,21 @@ window.addEventListener("beforeunload", () => {
 
 async function loadPage(page) {
   if (loadPage.isLoading) {
-    // statt Abbruch: die gewünschte Seite vormerken
-    loadPage.nextPage = page;
-    console.warn("⏳ Lädt noch – nächste Seite vorgemerkt:", page);
+    console.warn(`⏳ Seite wird gerade geladen – Abbruch.`);
+    return;
+  }
+  loadPage.isLoading = true;
+
+  const contentElement = document.getElementById("content");
+  if (!contentElement) {
+    console.error("❌ Kein #content-Element gefunden!");
     return;
   }
 
-const contentElement = document.getElementById("content");
-if (!contentElement) {
-  console.error("❌ Kein #content-Element gefunden!");
-  return;
-}
+const [basePage, anchor] = page.split('#'); // z.B. "somewhere.html", "block-04-05"
 
-// ✅ Busy-Flags NACH erfolgreicher #content-Prüfung setzen
-loadPage.isLoading = true;
-window.__pageLoading = true;
-
-const [basePage, anchor] = page.split('#'); // z.B. "somewhere" oder "somewhere.html", "block-04-05"
-
-// 🔧 NEU: .html-Endung automatisch ergänzen
-let base = basePage;
-if (!base.endsWith('.html')) base = `${base}.html`;
-
-localStorage.setItem("lastPage", base);
-const url = `/la-cerra/content/${base}`;
+localStorage.setItem("lastPage", basePage);
+const url = `/la-cerra/content/${basePage}`;
 console.log(`📥 Versuche zu laden: ${url}`);
 
   try {
@@ -43,37 +34,21 @@ console.log(`📥 Versuche zu laden: ${url}`);
 
     let handledScroll = false;
 
-// 🔧 NEU: "profile" und "profile.html" gleich behandeln
-const isProfile = (base === "profile.html" || basePage === "profile");
-if (isProfile) {
-  import("/la-cerra/js/profile_handler.js")
-    .then(m => m.initProfile())
-    .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
-}
+    if (basePage === "profile") {
+      import("/la-cerra/js/profile_handler.js")
+        .then(m => m.initProfile())
+        .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
+    }
 
-if (html.includes('id="boulder-blocks"')) {
-  import("/la-cerra/js/boulder_loader.js")
-    .then(mod => mod.loadBlocks())
-    .catch(err => console.error("❌ Fehler beim Laden von boulder_loader.js:", err));
+    if (html.includes('id="boulder-blocks"')) {
+      try {
+        const mod = await import("/la-cerra/js/boulder_loader.js");
+        await mod.loadBlocks();
 
-// Bilder im Hintergrund fertigladen – nicht blockieren
-{
-  const images = document.querySelectorAll("#boulder-blocks img");
-  const waitImages = Promise.all(Array.from(images).map(img => {
-    if (img.complete) return Promise.resolve();
-    return new Promise(res => {
-      const done = () => {
-        img.removeEventListener('load', done);
-        img.removeEventListener('error', done);
-        res();
-      };
-      img.addEventListener('load', done, { once: true });
-      img.addEventListener('error', done, { once: true });
-      setTimeout(done, 3000);
-    });
-  }));
-  waitImages.then(() => console.log("🖼️ Bilder in #boulder-blocks fertig (ok/fehler)"));
-}
+        const images = document.querySelectorAll("#boulder-blocks img");
+        await Promise.all(Array.from(images).map(img =>
+          img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
+        ));
 
 if (anchor) {
   // 🔎 Warte kurz, bis der Ziel-Block existiert, dann scrolle dorthin
@@ -100,7 +75,12 @@ if (anchor) {
   restoreScrollPosition();
   handledScroll = true;
 }
-}
+
+
+      } catch (err) {
+        console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
+      }
+    }
 
     if (html.includes("sector-summary")) {
       import("/la-cerra/js/summary_toggle.js")
@@ -108,12 +88,12 @@ if (anchor) {
         .catch(err => console.error("❌ Fehler beim Diagramm-Toggle:", err));
     }
 
-if (html.includes('id="routen-diagramm"')) {
-  const sektorName = base.replace(".html", ""); // 🔧 NEU: die normalisierte Basis verwenden
-  import("/la-cerra/js/routen_diagram_loader.js")
-    .then(m => m.loadRoutenDiagramm(sektorName))
-    .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
-}
+    if (html.includes('id="routen-diagramm"')) {
+      const sektorName = basePage.replace(".html", "");
+      import("/la-cerra/js/routen_diagram_loader.js")
+        .then(m => m.loadRoutenDiagramm(sektorName))
+        .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
+    }
 
     if (basePage === "register") {
       import("/la-cerra/js/register_handler.js")
@@ -123,33 +103,17 @@ if (html.includes('id="routen-diagramm"')) {
 
     if (!handledScroll) restoreScrollPosition();
 
-// 🔓 Ladevorgang abgeschlossen
-loadPage.isLoading = false;
-window.__pageLoading = false;
+    // 🔓 Ladevorgang abgeschlossen
+    loadPage.isLoading = false;
 
-// 🔍 Fokus entfernen, damit z. B. Dropdown kein scrollIntoView auslöst
-document.activeElement?.blur();
+    // 🔍 Fokus entfernen, damit z. B. Dropdown kein scrollIntoView auslöst
+    document.activeElement?.blur();
 
-} catch (err) {
-  console.error("❌ Fehler beim Laden der Seite:", err);
-  contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
-} finally {
-  // ✅ Egal was passiert – Flags sauber zurücksetzen
-  loadPage.isLoading = false;
-  window.__pageLoading = false;
-
-  // Fokus wegnehmen (wie bisher)
-  document.activeElement?.blur();
-
-  // Falls während des Ladens ein neuer Wunsch kam: jetzt sofort nachziehen
-  const next = loadPage.nextPage;
-  loadPage.nextPage = null;
-  if (next) {
-    // Flags sind ja gerade freigegeben – direkt neuer Start
-    loadPage(next);
+  } catch (err) {
+    console.error("❌ Fehler beim Laden der Seite:", err);
+    loadPage.isLoading = false;
+    contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
   }
-}
-
 }
 
 function restoreScrollPosition() {

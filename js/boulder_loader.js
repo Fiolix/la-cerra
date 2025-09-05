@@ -4,13 +4,6 @@ import { getPublicTickStats } from './tick_stats_loader.js';
 
 import { showTicklistPopup } from './ticklist_popup.js';
 
-const showError = (msg) => {
-  const box = document.createElement('div');
-  box.className = 'error-box';
-  box.textContent = msg;
-  document.querySelector('#boulder-blocks')?.appendChild(box);
-};
-
 function toAnchorId(nr) {
   // aus "04/05" wird "04-05"
   return `block-${String(nr).replaceAll('/', '-')}`;
@@ -48,25 +41,17 @@ if (dropdown) {
     return;
   }
 
-  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').ilike('sektor', sektor).order('nummer');
-
-if (!blockError && Array.isArray(blocks) && blocks.length === 0) {
-  console.warn(`Keine Blöcke für Sektor "${sektor}" gefunden.`);
-  return;
-}
-
+  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer');
   const { data: routes, error: routeError } = await supabase.from('routes').select('*');
 
-if (blockError) {
-  console.error('❌ Fehler beim Laden der Blöcke:', blockError);
-  showError('Blocks could not be loaded (network/policy).'); // <— NEU
-  return;
-}
-if (routeError) {
-  console.error('❌ Fehler beim Laden der Routen:', routeError);
-  showError('Routes could not be loaded (network/policy).'); // <— NEU
-  return;
-}
+  if (blockError) {
+    console.error('❌ Fehler beim Laden der Blöcke:', blockError);
+    return;
+  }
+  if (routeError) {
+    console.error('❌ Fehler beim Laden der Routen:', routeError);
+    return;
+  }
 
   console.log(`ℹ️ ${blocks.length} Blöcke geladen für Sektor '${sektor}'`);
 
@@ -232,37 +217,30 @@ const ratingDisplay = ratingCount > 0
       }
 
       // ✅ Ticklist-Popup vorbereiten mit Prüfung auf bestehende Einträge
-const checkboxes = blockDiv.querySelectorAll('.route-tick input[type="checkbox"]:checked');
-const selectedRouteIds = Array.from(checkboxes).map(cb => cb.dataset.routeId);
+      const checkboxes = blockDiv.querySelectorAll('.route-tick input[type="checkbox"]:checked');
+      const selectedRouteIds = Array.from(checkboxes).map(cb => cb.dataset.routeId);
 
-// ⛔ Früh raus, wenn nichts gewählt
-if (selectedRouteIds.length === 0) {
-  alert("Please select at least one route.");
-  return;
-}
+      // Prüfe in Supabase: existiert bereits ein Eintrag für diese User-Routen-Kombination?
+      const { data: existing, error: checkError } = await supabase
+        .from('ticklist')
+        .select('route_id')
+        .eq('user_id', userId)
+        .in('route_id', selectedRouteIds);
 
-// Erst jetzt DB prüfen
-const { data: existing, error: checkError } = await supabase
-  .from('ticklist')
-  .select('route_id')
-  .eq('user_id', userId)
-  .in('route_id', selectedRouteIds);
+      if (checkError) {
+        console.error('❌ Fehler beim Prüfen der bestehenden Ticklist:', checkError);
+        alert('An error occurred while checking your ticklist.');
+        return;
+      }
 
-if (checkError) {
-  console.error('❌ Ticklist check failed:', checkError);
-  if (checkError.status === 401 || checkError.status === 403) {
-    alert('Please (re)login to use your personal ticklist.');
-    return;
-  }
-  alert('An error occurred while checking your ticklist.');
-  return;
-}
-
-if (existing?.length > 0) {
-  const proceed = confirm('You already ticked some of these routes. Are you sure you want to continue?');
-  if (!proceed) return;
-}
-
+      if (existing.length > 0) {
+        const proceed = confirm('You already ticked some of these routes. Are you sure you want to continue?');
+        if (!proceed) return;
+      }
+      if (checkboxes.length === 0) {
+        alert("Please select at least one route.");
+        return;
+      }
 
       const routesForPopup = Array.from(checkboxes).map(cb => {
   const routeElement = cb.closest('.route');

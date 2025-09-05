@@ -3,17 +3,51 @@ console.log("🚀 initAuth() gestartet");
 import { supabase } from './supabase.js';
 
 export async function initAuth() {
-  // Hilfsfunktion: jeweiligen Login-Block verdrahten (IDs können fehlen → dann no-op)
-  const wireLogin = ({ userId, passId, btnId }) => {
-    const emailInput = document.getElementById(userId);
-    const passwordInput = document.getElementById(passId);
-    const loginButton = document.getElementById(btnId);
 
-    if (!emailInput || !passwordInput || !loginButton) return;     // Block existiert nicht
-    if (loginButton.dataset.bound === '1') return;                  // schon verdrahtet
-    loginButton.dataset.bound = '1';
+    const emailInput = document.getElementById("user");
+    const passwordInput = document.getElementById("password");
+    const loginButton = document.getElementById("login-button");
+    const loginBlock = document.querySelector(".login-block");
+console.log("📣 loginBlock:", loginBlock);
 
-    loginButton.addEventListener("click", async () => {
+    const createLink = document.querySelector('[data-page="register"]')?.closest('li');
+
+    // ✅ Session-Erkennung beim Laden
+    const { data: sessionData } = await supabase.auth.getSession();
+    const currentUserId = sessionData?.session?.user?.id;
+
+console.log("🔎 Aktuelle user_id:", currentUserId);
+
+    if (currentUserId && loginBlock) {
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("user_id", currentUserId)
+        .maybeSingle();
+
+console.log("🧠 Ergebnis der Profile-Abfrage:", profileData);
+console.log("❗ Fehler bei Profile-Abfrage:", profileError);
+
+      const username = profileData?.username || "Nutzer";
+
+      loginBlock.innerHTML = `
+        <p style="margin-bottom: 0.5rem">Angemeldet als: <strong>${username}</strong></p>
+        <p><a href="#" data-page="profile">My Profile</a></p>
+        <button id="logout-button">Logout</button>
+      `;
+
+      const logoutButton = document.getElementById("logout-button");
+      logoutButton?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+        window.location.reload();
+      });
+
+      // 🔒 Verstecke Link zu "Create Account" wenn eingeloggt
+      if (createLink) createLink.style.display = "none";
+      return;
+    }
+
+    loginButton?.addEventListener("click", async () => {
       let identifier = emailInput.value.trim();
       const password = passwordInput.value;
 
@@ -22,18 +56,24 @@ export async function initAuth() {
         return;
       }
 
-      // Username → E-Mail auflösen (dein bestehender Supabase-Flow)
       if (!identifier.includes("@")) {
+        console.log("⤵️ Loginversuch mit Username:", identifier);
+
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("user_id")
           .eq("username", identifier)
           .maybeSingle();
 
+        console.log("⤵️ Supabase-Ergebnis:", profile);
+        console.log("↪️ profile.user_id:", profile?.user_id);
+
         if (profileError) {
+          console.error("Supabase-Fehler beim Suchen nach Username:", profileError);
           alert("Fehler bei der Anmeldung. Bitte später erneut versuchen.");
           return;
         }
+
         if (!profile) {
           alert("Dieser Username wurde nicht gefunden. Achte auf die genaue Schreibweise.");
           return;
@@ -49,6 +89,7 @@ export async function initAuth() {
           alert("E-Mail konnte zu diesem Username nicht gefunden werden.");
           return;
         }
+
         identifier = userRecord.email;
       }
 
@@ -61,88 +102,32 @@ export async function initAuth() {
         alert("❌ Username oder Passwort falsch.");
         return;
       }
-      // kein reload nötig – burger_menu.js reagiert per onAuthStateChange
-    });
-  };
 
-  // ❶ Burgermenü-Login verdrahten (wie bisher)
-  wireLogin({ userId: "user", passId: "password", btnId: "login-button" });
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("user_id", userId)
+        .maybeSingle();
 
-  // ❷ Startseiten-Login zusätzlich verdrahten (IDs bitte anpassen, falls bei dir anders)
-  wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
+      const username = profileData?.username || "Nutzer";
 
-const toggleStartLogin = async (session) => {
+      if (loginBlock) {
+        loginBlock.innerHTML = `
+          <p style="margin-bottom: 0.5rem">Angemeldet als: <strong>${username}</strong></p>
+          <p><a href="#" data-page="profile">My Profile</a></p>
+          <button id="logout-button">Logout</button>
+        `;
 
-console.log("🔧 toggleStartLogin:", { isAuth: !!session?.user });
-
-  const isAuth = !!session?.user;
-
-  // Elemente der Startseite:
-  const section = document.getElementById("start-login-section"); // ganzer Abschnitt
-  const card = document.getElementById("start-login-card") || document.querySelector("#start-login-section .login-card");
-  const helloBox = document.getElementById("already-logged-in");
-  const greet = document.getElementById("start-greeting");
-
-  if (isAuth) {
-    // Login-Form ausblenden
-    if (section) section.style.display = "none";
-    if (card) card.style.display = "none";
-
-    // "Already logged in"-Box anzeigen + Begrüßung setzen
-    if (helloBox) {
-      helloBox.classList.remove("hidden");
-      helloBox.style.display = ""; // ⇦ hier hinein!
-      if (greet) {
-        let name = session.user.email?.split("@")[0] || "you";
-        try {
-          const { data, error } = await supabase
-            .from("profiles").select("username")
-            .eq("user_id", session.user.id).maybeSingle();
-          if (!error && data?.username) name = data.username;
-        } catch {}
-        greet.textContent = `Ciao, ${name} –`;
+        const logoutButton = document.getElementById("logout-button");
+        logoutButton?.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          window.location.reload();
+        });
       }
-    }
 
-  } else {
-    // Ausgeloggt: Login-Form zeigen, Hello-Box verstecken
-    if (section) section.style.display = "";
-    if (card) card.style.display = "";
-    if (helloBox) helloBox.classList.add("hidden");
-  }
-};
-
-const { data: { session } } = await supabase.auth.getSession();
-toggleStartLogin(session);
-
-supabase.auth.onAuthStateChange((_e, s) => {
-  toggleStartLogin(s);
-});
-
-// kleiner Fallback, falls #start-login-section minimal später kommt
-setTimeout(async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  await toggleStartLogin(session);
-}, 150);
-setTimeout(async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  await toggleStartLogin(session);
-}, 600);
-
-// Reagiere auf dynamisch nachgeladenen Content (#content)
-const contentRoot = document.getElementById('content');
-if (contentRoot) {
-  const mo = new MutationObserver(async () => {
-  console.log("👀 content geändert → versuche Start-Login zu verdrahten/umschalten");
-
-  // Start-Login (falls neu gerendert) verdrahten
-  wireLogin({ userId: "start-username", passId: "start-password", btnId: "start-login-button" });
-
-  // Sichtbarkeit je nach Session toggeln
-  const { data: { session } } = await supabase.auth.getSession();
-  await toggleStartLogin(session);
-});
-
-  mo.observe(contentRoot, { childList: true, subtree: true });
+      // 🔒 Verstecke Link zu "Create Account" nach erfolgreichem Login
+      if (createLink) createLink.style.display = "none";
+    });
 }
-} // ⬅︎ schließt export async function initAuth()

@@ -1,118 +1,34 @@
 <div class="profile-container">
+  <h2>My Profile</h2>
 
-<!-- Neuer Profil-Header (Desktop) -->
-<div class="profile-header">
-  <div class="profile-avatar" aria-hidden="true">○</div>
+  <div class="profile-info">
+    <p><strong>Username:</strong> <span id="profile-username">...</span></p>
+    <p><strong>Email:</strong> <span id="profile-email">...</span></p>
+    <p><strong>User since:</strong> <span id="profile-since">...</span></p>
+  </div>
 
-  <div class="profile-meta">
-    <div class="profile-name" id="profile-username">...</div>
-    <div class="profile-email" id="profile-email">...</div>
-    <div class="profile-since">User since: <span id="profile-since">...</span></div>
+  <div class="profile-actions">
+    <button id="change-password-btn">Change password</button>
+    <button id="delete-account-btn">Delete account</button>
+  </div>
 
-    <div class="profile-links">
-      <a href="#" id="change-password-link">Change password</a>
-      <span class="dot">·</span>
-      <a href="#" id="delete-account-link">Delete account</a>
-    </div>
+  <div class="profile-stats">
+    <h3>Ticklist stats</h3>
+    <p><strong>Total ticks:</strong> <span id="tick-count">...</span></p>
+    <p><strong>Highest grade:</strong> <span id="highest-grade">...</span></p>
+    <p><strong>Highest flash:</strong> <span id="highest-flash">...</span></p>
   </div>
 </div>
 
-
-<!-- Stat-Kacheln -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-number" id="tick-count">...</div>
-    <div class="stat-label">Ticks</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" id="highest-grade">...</div>
-    <div class="stat-label">Highest grade</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" id="highest-flash">...</div>
-    <div class="stat-label">Highest flash</div>
-  </div>
+<!-- Sicherheitsabfrage für Account-Löschung -->
+<div id="delete-confirm" style="display: none;">
+  <p>Are you sure you want to delete your account? This cannot be undone.</p>
+  <button id="confirm-delete">Yes, delete my account</button>
+  <button id="cancel-delete">Cancel</button>
 </div>
-
-</div>
-
-<!-- Delete account (Modal) -->
-<div id="delete-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-box" role="document">
-    <h3>Delete account</h3>
-    <p>Are you sure you want to delete your account? This action cannot be undone.</p>
-
-    <label>Confirm with your password<br>
-      <input type="password" id="delete-password" autocomplete="current-password" />
-    </label>
-
-    <p id="delete-error" class="error" aria-live="polite"></p>
-
-    <div class="actions">
-      <button id="confirm-delete">Yes, delete my account</button>
-      <button id="cancel-delete">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Change Password Modal -->
-<div id="pw-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-box" role="document">
-    <h3>Change password</h3>
-
-    <label>Current password<br>
-      <input type="password" id="pw-current" autocomplete="current-password">
-    </label><br>
-
-    <label>New password<br>
-      <input type="password" id="pw-new" autocomplete="new-password">
-    </label><br>
-
-    <label>Repeat new password<br>
-      <input type="password" id="pw-repeat" autocomplete="new-password">
-    </label>
-
-    <p id="pw-error" class="error" aria-live="polite"></p>
-
-    <div class="actions">
-      <button id="pw-save">Save</button>
-      <button id="pw-cancel">Cancel</button>
-    </div>
-  </div>
-</div>
-
 
 <section class="profile-ticklist">
   <h3>My Ticklist</h3>
-
-  <!-- Filter + Spalten (Desktop) -->
-  <div class="filter-bar" id="tick-filters">
-    <div class="filters-left">
-      <label>Sector
-        <select id="filter-sector">
-          <option value="">All</option>
-        </select>
-      </label>
-</div>
-
-<div class="filters-right">
-  <details class="columns-menu">
-    <summary>View</summary>
-    <div class="columns-panel">
-      <label><input type="checkbox" class="col-toggle" data-col="date" checked> Date</label>
-      <label><input type="checkbox" class="col-toggle" data-col="grade" checked> Grade</label>
-      <label><input type="checkbox" class="col-toggle" data-col="users_grade" checked> Users grade</label>
-      <label><input type="checkbox" class="col-toggle" data-col="your_grade" checked> Your grade</label>
-      <label><input type="checkbox" class="col-toggle" data-col="flash" checked> Flash</label>
-      <label><input type="checkbox" class="col-toggle" data-col="rating" checked> Rating</label>
-    </div>
-  </details>
-</div>
-
-
-  </div>
-
   <div id="ticklist-table"></div>
   <div id="pagination-controls"></div>
 </section>
-

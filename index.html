@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/burger_menu_style.css" />
   <script defer src="js/content_loader.js"></script>
+  <script type="module" src="js/boulder_loader.js"></script>
+  <script src="js/profile_handler.js" type="module"></script>
   <script type="module">
   import { initAuth } from './js/auth_handler.js';
   initAuth();
@@ -14,7 +16,7 @@
 </head>
 <body>
   <header class="hero">
-    <div class="menu-icon" id="menu-fab" aria-label="Open menu" title="Menu">☰</div>
+    <div class="menu-icon">☰</div>
     <img src="img/header_index.jpg" alt="La Cerra" class="header-image" />
     <h1 style="text-shadow: 1px 1px 4px rgba(0,0,0,0.6);">BOULDERING<br />LA CERRA</h1>
   </header>
@@ -33,8 +35,7 @@
     <p><a href="https://agriturismolacerra.it" target="_blank">agriturismolacerra.it</a></p>
   </footer>
 
-<script type="module" src="js/start_handler.js"></script>
 <!-- Burger-Menu nur einmalig laden -->
-<script type="module" src="js/burger_menu.js"></script>
+<script type="module" src="/la-cerra/js/burger_menu.js"></script>
 </body>
 </html>
