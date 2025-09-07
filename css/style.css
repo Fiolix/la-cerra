@@ -565,7 +565,7 @@ button#register-button:hover {
   font-size: 1.8rem;     /* etwas größer als vorher */
   line-height: 1.2;
   font-weight: 600;
-  text-align: center;    /* zentral */
+  text-align: left;    /* zentral */
 }
 
 /* Label: linksbündig unter dem Wert */
