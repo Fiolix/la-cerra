@@ -27,11 +27,43 @@
 </div>
 
   <!-- Ticklist-Bereich (Schritt 2: Filter & Anzeigeoptionen) -->
-  <section class="profile-ticklist">
-    <div id="ticklist-controls"></div>
-    <div id="ticklist-table"></div>
-    <div id="pagination-controls"></div>
-  </section>
+<section class="profile-ticklist">
+  <!-- Bedienleiste -->
+  <div id="ticklist-controls" class="ticklist-controls">
+    <div class="controls-left">
+      <label for="sector-filter" class="controls-label">Sector</label>
+      <select id="sector-filter" class="controls-select">
+        <!-- Optionen füllen wir per JS (Alle Sektoren + echte Sektoren) -->
+      </select>
+    </div>
+
+    <div class="controls-right">
+      <a href="#" id="display-options-toggle" class="text-link small">Display options</a>
+      <div id="display-options-panel" class="display-panel" style="display:none;">
+        <div class="display-row">
+          <input type="checkbox" id="col-suggested" />
+          <label for="col-suggested">Suggested grade</label>
+        </div>
+        <div class="display-row">
+          <input type="checkbox" id="col-usermean" />
+          <label for="col-usermean">User mean</label>
+        </div>
+        <div class="display-row">
+          <input type="checkbox" id="col-date" />
+          <label for="col-date">Date</label>
+        </div>
+        <!-- Route, Fb, Flash, Rating sind Standard und nicht abwählbar -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabelle -->
+  <div id="ticklist-table"></div>
+
+  <!-- Pagination -->
+  <div id="pagination-controls"></div>
+</section>
+
 
   <!-- Sicherheitsabfrage bleibt bestehen -->
   <div id="delete-confirm" style="display: none;">
