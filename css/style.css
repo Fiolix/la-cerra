@@ -496,23 +496,54 @@ button#register-button:hover {
 }
 
 /* ===== Profilseite: Header & Stats ===== */
-.profile-root { display: grid; gap: 16px; }
-
-.profile-header {
+.profile-root {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: start;
-  gap: 12px;
+  gap: 18px;
 }
 
+/* Header: einspaltig, zentriert */
+.profile-header {
+  display: grid;
+  grid-auto-rows: max-content;
+  justify-items: center;   /* Zentriert Inhalte horizontal */
+  align-items: start;
+  row-gap: 8px;
+  padding: 4px 8px;        /* gleiche optische Einzüge wie restliches Layout */
+}
+
+/* Profil-Infos */
+.profile-meta {
+  text-align: center;
+}
 .profile-meta .profile-line { margin: 2px 0; }
 .profile-meta .label { color: #666; margin-right: 6px; }
 
-.profile-actions { display: flex; gap: 16px; align-items: center; }
-.text-link { text-decoration: none; color: #666; border-bottom: 1px dotted transparent; }
-.text-link:hover { color: #000; border-bottom-color: #999; }
+/* Links unter den Infos, dezent */
+.profile-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;    /* mittig unter den Infos */
+}
+.profile-actions.under-meta { margin-top: 2px; }
+
+.text-link {
+  text-decoration: none;
+  color: #666;
+  border-bottom: 1px dotted transparent;
+}
+.text-link:hover {
+  color: #000;
+  border-bottom-color: #999;
+}
 .text-link.danger { color: #a22; }
 .text-link.danger:hover { color: #d00; }
+
+/* kleinere, dezentere Links */
+.text-link.small { 
+  font-size: 0.9rem; 
+  opacity: 0.9;
+}
 
 /* Stats als Kachel-Grid (auto volle Breite, responsive) */
 .profile-stats {
@@ -536,4 +567,3 @@ button#register-button:hover {
 }
 .stat-value { font-size: 1.6rem; line-height: 1.2; font-weight: 600; }
 .stat-label { font-size: 0.9rem; color: #666; margin-top: 4px; }
-
