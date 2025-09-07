@@ -1,34 +1,42 @@
-<div class="profile-container">
-  <h2>My Profile</h2>
-
-  <div class="profile-info">
-    <p><strong>Username:</strong> <span id="profile-username">...</span></p>
-    <p><strong>Email:</strong> <span id="profile-email">...</span></p>
-    <p><strong>User since:</strong> <span id="profile-since">...</span></p>
+<div id="profile-root" class="profile-root">
+  <div class="profile-header">
+    <div class="profile-meta">
+      <div class="profile-line"><span class="label">Username:</span> <span id="profile-username">—</span></div>
+      <div class="profile-line"><span class="label">E-Mail:</span> <span id="profile-email">—</span></div>
+      <div class="profile-line"><span class="label">User since:</span> <span id="profile-since">—</span></div>
+    </div>
+    <div class="profile-actions">
+      <a href="#" id="link-change-password" class="text-link">Change password</a>
+      <a href="#" id="link-delete-account" class="text-link danger">Delete account</a>
+    </div>
   </div>
 
-  <div class="profile-actions">
-    <button id="change-password-btn">Change password</button>
-    <button id="delete-account-btn">Delete account</button>
+  <div id="profile-stats" class="profile-stats">
+    <div class="stat-card">
+      <div class="stat-value" id="tick-count">—</div>
+      <div class="stat-label">Gesamtzahl Ticklist</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="highest-grade">—</div>
+      <div class="stat-label">Höchster Grad</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="highest-flash">—</div>
+      <div class="stat-label">Höchster Flash</div>
+    </div>
   </div>
 
-  <div class="profile-stats">
-    <h3>Ticklist stats</h3>
-    <p><strong>Total ticks:</strong> <span id="tick-count">...</span></p>
-    <p><strong>Highest grade:</strong> <span id="highest-grade">...</span></p>
-    <p><strong>Highest flash:</strong> <span id="highest-flash">...</span></p>
+  <!-- Ticklist-Bereich (Schritt 2: Filter & Anzeigeoptionen) -->
+  <section class="profile-ticklist">
+    <div id="ticklist-controls"></div>
+    <div id="ticklist-table"></div>
+    <div id="pagination-controls"></div>
+  </section>
+
+  <!-- Sicherheitsabfrage bleibt bestehen -->
+  <div id="delete-confirm" style="display: none;">
+    <p>Are you sure you want to delete your account? This cannot be undone.</p>
+    <button id="confirm-delete">Yes, delete my account</button>
+    <button id="cancel-delete">Cancel</button>
   </div>
 </div>
-
-<!-- Sicherheitsabfrage für Account-Löschung -->
-<div id="delete-confirm" style="display: none;">
-  <p>Are you sure you want to delete your account? This cannot be undone.</p>
-  <button id="confirm-delete">Yes, delete my account</button>
-  <button id="cancel-delete">Cancel</button>
-</div>
-
-<section class="profile-ticklist">
-  <h3>My Ticklist</h3>
-  <div id="ticklist-table"></div>
-  <div id="pagination-controls"></div>
-</section>

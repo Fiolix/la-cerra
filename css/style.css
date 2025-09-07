@@ -494,3 +494,46 @@ button#register-button:hover {
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* ===== Profilseite: Header & Stats ===== */
+.profile-root { display: grid; gap: 16px; }
+
+.profile-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.profile-meta .profile-line { margin: 2px 0; }
+.profile-meta .label { color: #666; margin-right: 6px; }
+
+.profile-actions { display: flex; gap: 16px; align-items: center; }
+.text-link { text-decoration: none; color: #666; border-bottom: 1px dotted transparent; }
+.text-link:hover { color: #000; border-bottom-color: #999; }
+.text-link.danger { color: #a22; }
+.text-link.danger:hover { color: #d00; }
+
+/* Stats als Kachel-Grid (auto volle Breite, responsive) */
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 900px) {
+  .profile-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .profile-stats { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.stat-value { font-size: 1.6rem; line-height: 1.2; font-weight: 600; }
+.stat-label { font-size: 0.9rem; color: #666; margin-top: 4px; }
+
