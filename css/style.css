@@ -525,7 +525,7 @@ button#register-button:hover {
 .profile-meta .label {
   color: #666;
   display: inline-block;
-  width: 60px;            /* Einzug der Werte – bei Bedarf anpassen (z. B. 110–140px) */
+  width: 100px;            /* Einzug der Werte – bei Bedarf anpassen (z. B. 110–140px) */
   margin-right: 0;
   text-align: left;
 }
