@@ -42,6 +42,23 @@ let currentPage = 1;
 let currentSort = { column: null, direction: 'asc' };
 const itemsPerPage = 20;
 
+// Sichtbare Spalten (Standard: Route, Fb, Flash, Rating = true; Optional aus)
+const visibleColumnsKey = 'ticklist_visible_columns';
+const sectorFilterKey   = 'ticklist_sector_filter';
+
+let visibleColumns = {
+  route: true,   // fix, nicht abwählbar
+  fb: true,      // fix
+  flash: true,   // fix
+  rating: true,  // fix
+  suggested: false,
+  userMean: false,  // aktuell: keine Datenquelle -> zeigt "–", kann später befüllt werden
+  date: false
+};
+
+let currentSector = 'all';  // 'all' = alle Sektoren (Dropdown)
+
+
 export async function initTicklistTable(userId) {
   currentUserId = userId;
   const { data, error } = await supabase
@@ -71,18 +88,132 @@ export async function initTicklistTable(userId) {
     return;
   }
 
-  tickData = data;
-  renderTable();
+tickData = data;
+
+// Controls (Sector + Display options) initialisieren
+initTicklistControls();
+
+// Tabelle zeichnen
+renderTable();
+
 }
 
+function initTicklistControls() {
+  // ---- Sichtbare Spalten aus localStorage laden
+  try {
+    const savedCols = JSON.parse(localStorage.getItem(visibleColumnsKey));
+    if (savedCols && typeof savedCols === 'object') {
+      visibleColumns = { ...visibleColumns, ...savedCols };
+    }
+  } catch (_) {}
+
+  // ---- Sektor-Filter aus localStorage laden
+  try {
+    const savedSector = localStorage.getItem(sectorFilterKey);
+    if (savedSector) currentSector = savedSector;
+  } catch (_) {}
+
+  // ---- Dropdown "Sector" befüllen
+  const sel = document.getElementById('sector-filter');
+  if (sel) {
+    // Einmal leeren
+    sel.innerHTML = '';
+
+    // "Alle" zuerst
+    const optAll = document.createElement('option');
+    optAll.value = 'all';
+    optAll.textContent = 'All sectors';
+    sel.appendChild(optAll);
+
+    // Einzigartige Sektoren aus den Tickdaten sammeln
+    const sectors = new Set();
+    for (const t of tickData) {
+      const s = t.route?.block?.sektor;
+      if (s) sectors.add(s);
+    }
+    // Sortiert einfügen (nach Anzeigename)
+    Array.from(sectors)
+      .sort((a, b) => formatSectorName(a).localeCompare(formatSectorName(b)))
+      .forEach(sektor => {
+        const opt = document.createElement('option');
+        opt.value = sektor;
+        opt.textContent = formatSectorName(sektor);
+        sel.appendChild(opt);
+      });
+
+    // Auswahl setzen
+    sel.value = currentSector || 'all';
+
+    // Event: Änderung anwenden + merken
+    sel.addEventListener('change', () => {
+      currentSector = sel.value || 'all';
+      try { localStorage.setItem(sectorFilterKey, currentSector); } catch (_) {}
+      currentPage = 1; // bei Filterwechsel auf Seite 1
+      renderTable();
+    });
+  }
+
+  // ---- Anzeigeoptionen (Panel + Checkboxen)
+  const toggle = document.getElementById('display-options-toggle');
+  const panel  = document.getElementById('display-options-panel');
+  const chkSuggested = document.getElementById('col-suggested');
+  const chkUserMean  = document.getElementById('col-usermean');
+  const chkDate      = document.getElementById('col-date');
+
+  if (toggle && panel) {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    });
+    // optional: Klick außerhalb schließt Panel
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+        panel.style.display = 'none';
+      }
+    });
+  }
+
+  // Startzustand in Checkboxen widerspiegeln
+  if (chkSuggested) chkSuggested.checked = !!visibleColumns.suggested;
+  if (chkUserMean)  chkUserMean.checked  = !!visibleColumns.userMean;
+  if (chkDate)      chkDate.checked      = !!visibleColumns.date;
+
+  const persistAndRender = () => {
+    try { localStorage.setItem(visibleColumnsKey, JSON.stringify(visibleColumns)); } catch (_) {}
+    currentPage = 1; // Spaltenwechsel -> zurück auf Seite 1
+    renderTable();
+  };
+
+  if (chkSuggested) chkSuggested.addEventListener('change', () => {
+    visibleColumns.suggested = chkSuggested.checked;
+    persistAndRender();
+  });
+  if (chkUserMean) chkUserMean.addEventListener('change', () => {
+    visibleColumns.userMean = chkUserMean.checked;
+    persistAndRender();
+  });
+  if (chkDate) chkDate.addEventListener('change', () => {
+    visibleColumns.date = chkDate.checked;
+    persistAndRender();
+  });
+}
+
+
 function renderTable() {
-  const container = document.getElementById('ticklist-table');
-  const pagination = document.getElementById('pagination-controls');
+const container = document.getElementById('ticklist-table');
+const pagination = document.getElementById('pagination-controls');
 
-  if (!container || !pagination) return;
+if (!container || !pagination) return;
 
+// 1) Daten nach Sektor filtern
+let rows = tickData;
+if (currentSector && currentSector !== 'all') {
+  rows = tickData.filter(t => (t.route?.block?.sektor || '') === currentSector);
+}
+
+// 2) Sortierung anwenden
 if (currentSort.column) {
-  tickData.sort((a, b) => {
+  rows.sort((a, b) => {
     let valA = getValueForSort(a, currentSort.column);
     let valB = getValueForSort(b, currentSort.column);
 
@@ -95,36 +226,51 @@ if (currentSort.column) {
   });
 }
 
-  const start = (currentPage - 1) * itemsPerPage;
-  const pageItems = tickData.slice(start, start + itemsPerPage);
+// 3) Pagination
+const start = (currentPage - 1) * itemsPerPage;
+const pageItems = rows.slice(start, start + itemsPerPage);
 
-  let html = `
-    <table class="ticklist">
-      <thead>
-        <tr>
-          <th class="ticklist-route" data-sort="route">Route</th>
-          <th style="text-align: center;" data-sort="grad">Fb</th>
-          <th style="text-align: center;" data-sort="suggestion">Sugg.</th>
-          <th style="text-align: center;" data-sort="flash">Flash</th>
-          <th style="text-align: center;" data-sort="rating">Rating</th>
-        </tr>
-      </thead>
-      <tbody>
+// 4) Header dynamisch
+let html = `
+  <table class="ticklist">
+    <thead>
+      <tr>
+        <th class="ticklist-route" data-sort="route">Route</th>
+        <th style="text-align: center;" data-sort="grad">Fb</th>
+        ${visibleColumns.flash    ? `<th style="text-align: center;" data-sort="flash">Flash</th>` : ''}
+        ${visibleColumns.rating   ? `<th style="text-align: center;" data-sort="rating">Rating</th>` : ''}
+        ${visibleColumns.suggested? `<th style="text-align: center;" data-sort="suggestion">Sugg.</th>` : ''}
+        ${visibleColumns.userMean ? `<th style="text-align: center;">User mean</th>` : ''}
+        ${visibleColumns.date     ? `<th style="text-align: center;">Date</th>` : ''}
+      </tr>
+    </thead>
+    <tbody>
+`;
+
+for (const entry of pageItems) {
+  const stars = renderStars(entry.rating);
+
+  // optionale Zellen vorbereiten
+  const tdFlash    = visibleColumns.flash    ? `<td style="text-align: center;">${entry.flash ? '✅' : ''}</td>` : '';
+  const tdRating   = visibleColumns.rating   ? `<td style="text-align: center;">${stars}</td>` : '';
+  const tdSuggested= visibleColumns.suggested? `<td style="text-align: center;">${entry.grade_suggestion ?? '-'}</td>` : '';
+  const tdUserMean = visibleColumns.userMean ? `<td style="text-align: center;">—</td>` : ''; // TODO: später befüllen (View/Query)
+  const tdDate     = visibleColumns.date     ? `<td style="text-align: center;">${entry.created_at ? new Date(entry.created_at).toLocaleDateString() : '—'}</td>` : '';
+
+  html += `
+    <tr>
+      <td class="ticklist-route">${entry.route?.name ?? '-'}</td>
+      <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
+      ${tdFlash}
+      ${tdRating}
+      ${tdSuggested}
+      ${tdUserMean}
+      ${tdDate}
+    </tr>
   `;
 
-  for (const entry of pageItems) {
 
-    const stars = renderStars(entry.rating);
-    html += `
-      <tr>
-        <td class="ticklist-route">${entry.route?.name ?? '-'}</td>
-        <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
-        <td style="text-align: center;">${entry.grade_suggestion ?? '-'}</td>
-        <td style="text-align: center;">${entry.flash ? '✅' : ''}</td>
-        <td style="text-align: center;">${stars}</td>
-      </tr>
-    `;
-
+// Innerhalb der renderTable()-Schleife
 // Innerhalb der renderTable()-Schleife
 const sektor = entry.route?.block?.sektor;
 const blockname = entry.route?.block?.name;
@@ -134,15 +280,25 @@ if (nummer) nummer = nummer.replaceAll('/', '-');
 const blockAnchor = nummer ? `#block-${nummer}` : '';
 const blockPage = sektor ? `${sektor}.html` : null;
 
+// aktuelle Spaltenanzahl berechnen:
+// 2 fixe Spalten (Route, Fb) + optionale sichtbare
+const colCount = 2
+  + (visibleColumns.flash ? 1 : 0)
+  + (visibleColumns.rating ? 1 : 0)
+  + (visibleColumns.suggested ? 1 : 0)
+  + (visibleColumns.userMean ? 1 : 0)
+  + (visibleColumns.date ? 1 : 0);
+
 html += `
   <tr class="ticklist-meta">
-    <td colspan="5">
+    <td colspan="${colCount}">
       ${blockname && blockPage ? `<a href="#" data-page="${blockPage}${blockAnchor}">${blockname}</a>` : '–'} &nbsp;|
       ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${formatSectorName(sektor)}</a>` : '–'} &nbsp;|
       <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
     </td>
   </tr>
 `;
+
 
   }
 
@@ -172,7 +328,7 @@ container.querySelectorAll('th[data-sort]').forEach(th => {
 });
 
 
-const totalPages = Math.ceil(tickData.length / itemsPerPage);
+const totalPages = Math.ceil(rows.length / itemsPerPage);
 
 // Dezente Pagination: Pfeile + Seitenzahlen (ohne große Buttons)
 let pageControls = '<nav class="pagination">';
