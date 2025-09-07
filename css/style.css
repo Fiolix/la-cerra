@@ -502,21 +502,33 @@ button#register-button:hover {
 }
 
 /* Header: einspaltig, zentriert */
+/* ===== Profilseite: Header & Stats ===== */
 .profile-header {
   display: grid;
   grid-auto-rows: max-content;
-  justify-items: center;   /* Zentriert Inhalte horizontal */
+  justify-items: center;   /* Block zentriert auf der Seite */
   align-items: start;
   row-gap: 8px;
-  padding: 4px 8px;        /* gleiche optische Einzüge wie restliches Layout */
+  padding: 4px 8px;
 }
 
-/* Profil-Infos */
+/* Profil-Infos: Block zentriert, Text im Block linksbündig */
 .profile-meta {
-  text-align: center;
+  text-align: left;        /* linksbündig untereinander */
+  display: inline-block;   /* erlaubt zentriertes "Block-in-Block" */
 }
+
+/* Jede Zeile kompakt */
 .profile-meta .profile-line { margin: 2px 0; }
-.profile-meta .label { color: #666; margin-right: 6px; }
+
+/* Labels mit fixer Breite -> Werte sind sauber eingerückt */
+.profile-meta .label {
+  color: #666;
+  display: inline-block;
+  width: 120px;            /* Einzug der Werte – bei Bedarf anpassen (z. B. 110–140px) */
+  margin-right: 0;
+  text-align: left;
+}
 
 /* Links unter den Infos, dezent */
 .profile-actions {
