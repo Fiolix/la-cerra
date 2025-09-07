@@ -536,7 +536,7 @@ button#register-button:hover {
   color: #000;
   border-bottom-color: #999;
 }
-.text-link.danger { color: #a22; }
+.text-link.danger { color: #666; }
 .text-link.danger:hover { color: #d00; }
 
 /* kleinere, dezentere Links */
@@ -548,14 +548,8 @@ button#register-button:hover {
 /* Stats als Kachel-Grid (auto volle Breite, responsive) */
 .profile-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 gleich breite Spalten über die ganze Breite */
   gap: 12px;
-}
-@media (max-width: 900px) {
-  .profile-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 600px) {
-  .profile-stats { grid-template-columns: 1fr; }
 }
 
 .stat-card {
@@ -565,5 +559,19 @@ button#register-button:hover {
   padding: 14px 16px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
-.stat-value { font-size: 1.6rem; line-height: 1.2; font-weight: 600; }
-.stat-label { font-size: 0.9rem; color: #666; margin-top: 4px; }
+
+/* Wert: deutlich sichtbar & zentriert */
+.stat-value {
+  font-size: 1.8rem;     /* etwas größer als vorher */
+  line-height: 1.2;
+  font-weight: 600;
+  text-align: center;    /* zentral */
+}
+
+/* Label: linksbündig unter dem Wert */
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+  text-align: left;      /* links */
+}
