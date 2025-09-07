@@ -587,3 +587,44 @@ button#register-button:hover {
   margin-top: 4px;
   text-align: left;      /* links */
 }
+
+/* ===== Ticklist: Bedienleiste & Anzeige-Panel ===== */
+.ticklist-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0 10px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 8px;
+}
+
+.controls-left { display: flex; align-items: center; gap: 8px; }
+.controls-label { font-size: 0.9rem; color: #666; }
+.controls-select {
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.controls-right { position: relative; display: flex; align-items: center; gap: 10px; }
+
+/* Aufklapp-Panel für Anzeigeoptionen */
+.display-panel {
+  position: absolute;
+  right: 0;
+  top: 26px;
+  min-width: 190px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  padding: 10px 12px;
+  z-index: 20;
+}
+.display-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.display-row label { font-size: 0.95rem; color: #333; }
+
+/* optional: Klick-Außenseite schließt Panel (Cursor-Hinweis) */
+.controls-right .text-link.small { cursor: pointer; }
