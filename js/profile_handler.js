@@ -65,3 +65,113 @@ export async function initProfile() {
 
   initTicklistTable(user.id);
 }
+
+// ===== Profile modals: open/close helpers =====
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.style.display = 'block';
+  m.setAttribute('aria-hidden', 'false');
+  // ESC zum Schließen
+  const onEsc = (e) => {
+    if (e.key === 'Escape') { closeModal(id); document.removeEventListener('keydown', onEsc); }
+  };
+  document.addEventListener('keydown', onEsc);
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.style.display = 'none';
+  m.setAttribute('aria-hidden', 'true');
+}
+
+// ===== Wire links after profile DOM exists =====
+(function initProfileModals() {
+  // Change password: open
+  document.getElementById('link-change-password')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-new2').value = '';
+    document.getElementById('pw-msg').textContent = '';
+    openModal('modal-password');
+  });
+
+  // Delete account: open
+  document.getElementById('link-delete-account')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('del-msg').textContent = '';
+    openModal('modal-delete');
+  });
+
+  // Close handlers (X, backdrop, Cancel)
+  document.querySelectorAll('[data-close]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeModal(el.getAttribute('data-close'));
+    });
+  });
+
+  // Submit: Change password
+  document.getElementById('form-password')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('pw-msg');
+    const current = document.getElementById('pw-current').value.trim();
+    const pw1 = document.getElementById('pw-new').value.trim();
+    const pw2 = document.getElementById('pw-new2').value.trim();
+
+    msg.textContent = '';
+
+    if (pw1.length < 8) { msg.textContent = 'Password must be at least 8 characters.'; return; }
+    if (pw1 !== pw2)    { msg.textContent = 'New passwords do not match.'; return; }
+
+    try {
+      // 1) aktuelle Session holen
+      const { data: sessionData } = await supabase.auth.getSession();
+      const email = sessionData?.session?.user?.email;
+      if (!email) { msg.textContent = 'No active session.'; return; }
+
+      // 2) Re-Login zur Verifizierung des aktuellen Passworts
+      const { error: signErr } = await supabase.auth.signInWithPassword({ email, password: current });
+      if (signErr) { msg.textContent = 'Current password is incorrect.'; return; }
+
+      // 3) Passwort setzen
+      const { error: updErr } = await supabase.auth.updateUser({ password: pw1 });
+      if (updErr) { msg.textContent = 'Could not update password.'; return; }
+
+      msg.textContent = 'Password changed successfully.';
+      setTimeout(() => closeModal('modal-password'), 800);
+    } catch (err) {
+      console.error('change password error', err);
+      msg.textContent = 'Unexpected error.';
+    }
+  });
+
+  // Confirm delete account
+  document.getElementById('btn-delete-confirm')?.addEventListener('click', async () => {
+    const out = document.getElementById('del-msg');
+    out.textContent = '';
+    try {
+      //⚠️ Wichtiger Hinweis:
+      // Ein echtes Löschen des Auth-Users erfordert Server-/Edge-Funktion mit Service-Role.
+      // Versuch: Aufruf einer (von dir zu erstellenden) Edge Function 'delete_user'
+      // Rückfall: Meldung, falls Funktion nicht vorhanden.
+      const { data, error } = await supabase.functions.invoke('delete_user', { body: {} });
+      if (error) {
+        out.textContent = 'Delete is not configured on the server (Edge Function missing).';
+        return;
+      }
+      // Erfolg: ausloggen und zur Startseite
+      await supabase.auth.signOut();
+      out.textContent = 'Account deleted.';
+      setTimeout(() => {
+        closeModal('modal-delete');
+        // optional: redirect auf Startseite, je nach Routing
+        if (window?.location) window.location.href = '/la-cerra/';
+      }, 600);
+    } catch (err) {
+      console.error('delete account error', err);
+      out.textContent = 'Unexpected error.';
+    }
+  });
+})();
