@@ -72,7 +72,6 @@ function openModal(id) {
   if (!m) return;
   m.style.display = 'block';
   m.setAttribute('aria-hidden', 'false');
-  // ESC zum Schließen
   const onEsc = (e) => {
     if (e.key === 'Escape') { closeModal(id); document.removeEventListener('keydown', onEsc); }
   };
@@ -85,93 +84,87 @@ function closeModal(id) {
   m.setAttribute('aria-hidden', 'true');
 }
 
-// ===== Wire links after profile DOM exists =====
 (function initProfileModals() {
   // Change password: open
   document.getElementById('link-change-password')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    document.getElementById('pw-current').value = '';
-    document.getElementById('pw-new').value = '';
-    document.getElementById('pw-new2').value = '';
-    document.getElementById('pw-msg').textContent = '';
+    e.preventDefault(); e.stopPropagation();
+    document.getElementById('pw-username')?.setAttribute('value', ''); // optional
+    document.getElementById('pw-current')?.value = '';
+    document.getElementById('pw-new')?.value = '';
+    document.getElementById('pw-new2')?.value = '';
+    const msg = document.getElementById('pw-msg'); if (msg) msg.textContent = '';
     openModal('modal-password');
   });
 
   // Delete account: open
   document.getElementById('link-delete-account')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    document.getElementById('del-msg').textContent = '';
+    e.preventDefault(); e.stopPropagation();
+    const out = document.getElementById('del-msg'); if (out) out.textContent = '';
     openModal('modal-delete');
   });
 
-  // Close handlers (X, backdrop, Cancel)
+  // Close via X, Cancel, Backdrop
   document.querySelectorAll('[data-close]').forEach(el => {
     el.addEventListener('click', (e) => {
-      e.preventDefault();
+      e.preventDefault(); e.stopPropagation();
       closeModal(el.getAttribute('data-close'));
     });
   });
 
   // Submit: Change password
   document.getElementById('form-password')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.preventDefault(); e.stopPropagation();
     const msg = document.getElementById('pw-msg');
     const current = document.getElementById('pw-current').value.trim();
     const pw1 = document.getElementById('pw-new').value.trim();
     const pw2 = document.getElementById('pw-new2').value.trim();
 
-    msg.textContent = '';
-
-    if (pw1.length < 8) { msg.textContent = 'Password must be at least 8 characters.'; return; }
-    if (pw1 !== pw2)    { msg.textContent = 'New passwords do not match.'; return; }
+    if (msg) msg.textContent = '';
+    if (pw1.length < 8) { if (msg) msg.textContent = 'Password must be at least 8 characters.'; return; }
+    if (pw1 !== pw2)    { if (msg) msg.textContent = 'New passwords do not match.'; return; }
 
     try {
-      // 1) aktuelle Session holen
       const { data: sessionData } = await supabase.auth.getSession();
       const email = sessionData?.session?.user?.email;
-      if (!email) { msg.textContent = 'No active session.'; return; }
+      if (!email) { if (msg) msg.textContent = 'No active session.'; return; }
 
-      // 2) Re-Login zur Verifizierung des aktuellen Passworts
+      // Re-Auth mit aktuellem Passwort
       const { error: signErr } = await supabase.auth.signInWithPassword({ email, password: current });
-      if (signErr) { msg.textContent = 'Current password is incorrect.'; return; }
+      if (signErr) { if (msg) msg.textContent = 'Current password is incorrect.'; return; }
 
-      // 3) Passwort setzen
+      // Neues Passwort setzen
       const { error: updErr } = await supabase.auth.updateUser({ password: pw1 });
-      if (updErr) { msg.textContent = 'Could not update password.'; return; }
+      if (updErr) { if (msg) msg.textContent = 'Could not update password.'; return; }
 
-      msg.textContent = 'Password changed successfully.';
+      if (msg) msg.textContent = 'Password changed successfully.';
       setTimeout(() => closeModal('modal-password'), 800);
     } catch (err) {
       console.error('change password error', err);
-      msg.textContent = 'Unexpected error.';
+      if (msg) msg.textContent = 'Unexpected error.';
     }
   });
 
   // Confirm delete account
-  document.getElementById('btn-delete-confirm')?.addEventListener('click', async () => {
+  document.getElementById('btn-delete-confirm')?.addEventListener('click', async (e) => {
+    e.preventDefault(); e.stopPropagation();
     const out = document.getElementById('del-msg');
-    out.textContent = '';
+    if (out) out.textContent = '';
     try {
-      //⚠️ Wichtiger Hinweis:
-      // Ein echtes Löschen des Auth-Users erfordert Server-/Edge-Funktion mit Service-Role.
-      // Versuch: Aufruf einer (von dir zu erstellenden) Edge Function 'delete_user'
-      // Rückfall: Meldung, falls Funktion nicht vorhanden.
+      // Serverseitiges Löschen erfordert Edge Function mit Service-Role
       const { data, error } = await supabase.functions.invoke('delete_user', { body: {} });
       if (error) {
-        out.textContent = 'Delete is not configured on the server (Edge Function missing).';
+        if (out) out.textContent = 'Delete is not configured on the server (Edge Function missing).';
         return;
       }
-      // Erfolg: ausloggen und zur Startseite
       await supabase.auth.signOut();
-      out.textContent = 'Account deleted.';
+      if (out) out.textContent = 'Account deleted.';
       setTimeout(() => {
         closeModal('modal-delete');
-        // optional: redirect auf Startseite, je nach Routing
         if (window?.location) window.location.href = '/la-cerra/';
       }, 600);
     } catch (err) {
       console.error('delete account error', err);
-      out.textContent = 'Unexpected error.';
+      if (out) out.textContent = 'Unexpected error.';
     }
   });
 })();
