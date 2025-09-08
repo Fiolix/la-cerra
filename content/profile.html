@@ -60,7 +60,7 @@
   <!-- Tabelle -->
   <div id="ticklist-table"></div>
 
-  <!-- Pagination -->
+    <!-- Pagination -->
   <div id="pagination-controls"></div>
 </section>
 
@@ -73,7 +73,11 @@
     <button class="modal-close" data-close="modal-password" aria-label="Close">×</button>
     <h3 id="modal-password-title" class="modal-title">Change password</h3>
 
-    <form id="form-password" class="modal-form">
+    <form id="form-password" class="modal-form" novalidate>
+      <!-- Accessibility: verstecktes Username-Feld -->
+      <input type="text" name="username" id="pw-username" autocomplete="username"
+             style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0; pointer-events:none;" />
+
       <div class="form-field">
         <label for="pw-current">Current password</label>
         <input id="pw-current" type="password" autocomplete="current-password" required />
@@ -105,7 +109,7 @@
     <h3 id="modal-delete-title" class="modal-title">Delete account</h3>
 
     <p class="modal-text">
-      Do you really want to delete your account? This cannot be undone.
+      Are you sure you want to delete your account? This action cannot be undone.
     </p>
 
     <div class="modal-actions">
