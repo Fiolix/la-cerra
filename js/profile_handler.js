@@ -84,24 +84,30 @@ function closeModal(id) {
   m.setAttribute('aria-hidden', 'true');
 }
 
-(function initProfileModals() {
+function initProfileModals() {
   // Change password: open
-  document.getElementById('link-change-password')?.addEventListener('click', (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const u = document.getElementById('pw-username'); if (u) u.setAttribute('value', '');
-    const c = document.getElementById('pw-current'); if (c) c.value = '';
-    const n1 = document.getElementById('pw-new');     if (n1) n1.value = '';
-    const n2 = document.getElementById('pw-new2');    if (n2) n2.value = '';
-    const msg = document.getElementById('pw-msg');    if (msg) msg.textContent = '';
-    openModal('modal-password');
-  });
+  const btnPw = document.getElementById('link-change-password');
+  if (btnPw) {
+    btnPw.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const u  = document.getElementById('pw-username'); if (u)  u.setAttribute('value', '');
+      const c  = document.getElementById('pw-current');  if (c)  c.value = '';
+      const n1 = document.getElementById('pw-new');      if (n1) n1.value = '';
+      const n2 = document.getElementById('pw-new2');     if (n2) n2.value = '';
+      const msg= document.getElementById('pw-msg');      if (msg) msg.textContent = '';
+      openModal('modal-password');
+    });
+  }
 
   // Delete account: open
-  document.getElementById('link-delete-account')?.addEventListener('click', (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const out = document.getElementById('del-msg'); if (out) out.textContent = '';
-    openModal('modal-delete');
-  });
+  const btnDel = document.getElementById('link-delete-account');
+  if (btnDel) {
+    btnDel.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const out = document.getElementById('del-msg'); if (out) out.textContent = '';
+      openModal('modal-delete');
+    });
+  }
 
   // Close via X, Cancel, Backdrop
   document.querySelectorAll('[data-close]').forEach(el => {
@@ -112,59 +118,59 @@ function closeModal(id) {
   });
 
   // Submit: Change password
-  document.getElementById('form-password')?.addEventListener('submit', async (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const msg = document.getElementById('pw-msg');
-    const current = document.getElementById('pw-current').value.trim();
-    const pw1 = document.getElementById('pw-new').value.trim();
-    const pw2 = document.getElementById('pw-new2').value.trim();
+  const formPw = document.getElementById('form-password');
+  if (formPw) {
+    formPw.addEventListener('submit', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const msg = document.getElementById('pw-msg');
+      const current = document.getElementById('pw-current')?.value.trim() || '';
+      const pw1 = document.getElementById('pw-new')?.value.trim() || '';
+      const pw2 = document.getElementById('pw-new2')?.value.trim() || '';
 
-    if (msg) msg.textContent = '';
-    if (pw1.length < 8) { if (msg) msg.textContent = 'Password must be at least 8 characters.'; return; }
-    if (pw1 !== pw2)    { if (msg) msg.textContent = 'New passwords do not match.'; return; }
+      if (msg) msg.textContent = '';
+      if (pw1.length < 8) { if (msg) msg.textContent = 'Password must be at least 8 characters.'; return; }
+      if (pw1 !== pw2)    { if (msg) msg.textContent = 'New passwords do not match.'; return; }
 
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const email = sessionData?.session?.user?.email;
-      if (!email) { if (msg) msg.textContent = 'No active session.'; return; }
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const email = sessionData?.session?.user?.email;
+        if (!email) { if (msg) msg.textContent = 'No active session.'; return; }
 
-      // Re-Auth mit aktuellem Passwort
-      const { error: signErr } = await supabase.auth.signInWithPassword({ email, password: current });
-      if (signErr) { if (msg) msg.textContent = 'Current password is incorrect.'; return; }
+        const { error: signErr } = await supabase.auth.signInWithPassword({ email, password: current });
+        if (signErr) { if (msg) msg.textContent = 'Current password is incorrect.'; return; }
 
-      // Neues Passwort setzen
-      const { error: updErr } = await supabase.auth.updateUser({ password: pw1 });
-      if (updErr) { if (msg) msg.textContent = 'Could not update password.'; return; }
+        const { error: updErr } = await supabase.auth.updateUser({ password: pw1 });
+        if (updErr) { if (msg) msg.textContent = 'Could not update password.'; return; }
 
-      if (msg) msg.textContent = 'Password changed successfully.';
-      setTimeout(() => closeModal('modal-password'), 800);
-    } catch (err) {
-      console.error('change password error', err);
-      if (msg) msg.textContent = 'Unexpected error.';
-    }
-  });
+        if (msg) msg.textContent = 'Password changed successfully.';
+        setTimeout(() => closeModal('modal-password'), 800);
+      } catch (err) {
+        console.error('change password error', err);
+        if (msg) msg.textContent = 'Unexpected error.';
+      }
+    });
+  }
 
   // Confirm delete account
-  document.getElementById('btn-delete-confirm')?.addEventListener('click', async (e) => {
-    e.preventDefault(); e.stopPropagation();
-    const out = document.getElementById('del-msg');
-    if (out) out.textContent = '';
-    try {
-      // Serverseitiges Löschen erfordert Edge Function mit Service-Role
-      const { data, error } = await supabase.functions.invoke('delete_user', { body: {} });
-      if (error) {
-        if (out) out.textContent = 'Delete is not configured on the server (Edge Function missing).';
-        return;
+  const btnConfirmDel = document.getElementById('btn-delete-confirm');
+  if (btnConfirmDel) {
+    btnConfirmDel.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const out = document.getElementById('del-msg');
+      if (out) out.textContent = '';
+      try {
+        const { data, error } = await supabase.functions.invoke('delete_user', { body: {} });
+        if (error) { if (out) out.textContent = 'Delete is not configured on the server (Edge Function missing).'; return; }
+        await supabase.auth.signOut();
+        if (out) out.textContent = 'Account deleted.';
+        setTimeout(() => {
+          closeModal('modal-delete');
+          if (window?.location) window.location.href = '/la-cerra/';
+        }, 600);
+      } catch (err) {
+        console.error('delete account error', err);
+        if (out) out.textContent = 'Unexpected error.';
       }
-      await supabase.auth.signOut();
-      if (out) out.textContent = 'Account deleted.';
-      setTimeout(() => {
-        closeModal('modal-delete');
-        if (window?.location) window.location.href = '/la-cerra/';
-      }, 600);
-    } catch (err) {
-      console.error('delete account error', err);
-      if (out) out.textContent = 'Unexpected error.';
-    }
-  });
-})();
+    });
+  }
+}
