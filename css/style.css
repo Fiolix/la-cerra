@@ -681,3 +681,15 @@ button#register-button:hover {
   color: #666;
 }
 .modal-close:hover { color: #000; }
+
+/* Buttons wie Text-Links darstellen (für Modals) */
+button.text-link.as-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit; /* übernimmt .text-link Farbregeln */
+}
+button.text-link.as-link:focus { outline: none; }
