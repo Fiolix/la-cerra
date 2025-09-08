@@ -63,8 +63,12 @@ export async function initProfile() {
   document.getElementById("highest-grade").textContent = maxGrade ? valueToFb[maxGrade] : "-";
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
 
-  initTicklistTable(user.id);
+    initTicklistTable(user.id);
+
+  // Modals erst JETZT binden – HTML ist sicher im DOM
+  initProfileModals();
 }
+
 
 // ===== Profile modals: open/close helpers =====
 function openModal(id) {
