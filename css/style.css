@@ -649,12 +649,8 @@ button#register-button:hover {
   padding: 16px 16px 14px;
 }
 
-.modal-title {
-  margin: 0 0 8px 0;
-  font-size: 1.2rem;
-}
-
-.modal-text { margin: 8px 0 14px; }
+.modal-title { margin: 0 0 8px; font-size: 1.2rem; }
+.modal-text  { margin: 8px 0 14px; }
 
 .modal-form .form-field label { font-weight: 600; }
 .modal-form .form-field input {
@@ -665,9 +661,7 @@ button#register-button:hover {
   box-sizing: border-box;
 }
 
-.modal-actions {
-  display: flex; gap: 10px; align-items: center; margin-top: 8px;
-}
+.modal-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
 
 .btn-primary, .btn-danger {
   display: inline-block;
