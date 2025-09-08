@@ -64,11 +64,58 @@
   <div id="pagination-controls"></div>
 </section>
 
+<!-- ===== Modals: Password & Delete ===== -->
 
-  <!-- Sicherheitsabfrage bleibt bestehen -->
-  <div id="delete-confirm" style="display: none;">
-    <p>Are you sure you want to delete your account? This cannot be undone.</p>
-    <button id="confirm-delete">Yes, delete my account</button>
-    <button id="cancel-delete">Cancel</button>
+<!-- Change Password Modal -->
+<div id="modal-password" class="modal" aria-hidden="true" style="display:none;">
+  <div class="modal-backdrop" data-close="modal-password"></div>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-password-title">
+    <button class="modal-close" data-close="modal-password" aria-label="Close">×</button>
+    <h3 id="modal-password-title" class="modal-title">Change password</h3>
+
+    <form id="form-password" class="modal-form">
+      <div class="form-field">
+        <label for="pw-current">Current password</label>
+        <input id="pw-current" type="password" autocomplete="current-password" required />
+      </div>
+      <div class="form-field">
+        <label for="pw-new">New password</label>
+        <input id="pw-new" type="password" autocomplete="new-password" minlength="8" required />
+      </div>
+      <div class="form-field">
+        <label for="pw-new2">Repeat new password</label>
+        <input id="pw-new2" type="password" autocomplete="new-password" minlength="8" required />
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary">Save</button>
+        <a href="#" class="text-link small" data-close="modal-password">Cancel</a>
+      </div>
+
+      <p id="pw-msg" class="form-note" aria-live="polite"></p>
+    </form>
   </div>
 </div>
+
+<!-- Delete Account Modal -->
+<div id="modal-delete" class="modal" aria-hidden="true" style="display:none;">
+  <div class="modal-backdrop" data-close="modal-delete"></div>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-delete-title">
+    <button class="modal-close" data-close="modal-delete" aria-label="Close">×</button>
+    <h3 id="modal-delete-title" class="modal-title">Delete account</h3>
+
+    <p class="modal-text">
+      Do you really want to delete your account? This cannot be undone.
+    </p>
+
+    <div class="modal-actions">
+      <button id="btn-delete-confirm" class="btn-danger">Yes, delete my account</button>
+      <a href="#" class="text-link small" data-close="modal-delete">Cancel</a>
+    </div>
+
+    <p id="del-msg" class="form-note" aria-live="polite"></p>
+  </div>
+</div>
+
+</div> <!-- /#profile-root -->
+
