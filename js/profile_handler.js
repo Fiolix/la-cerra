@@ -88,11 +88,11 @@ function closeModal(id) {
   // Change password: open
   document.getElementById('link-change-password')?.addEventListener('click', (e) => {
     e.preventDefault(); e.stopPropagation();
-    document.getElementById('pw-username')?.setAttribute('value', ''); // optional
-    document.getElementById('pw-current')?.value = '';
-    document.getElementById('pw-new')?.value = '';
-    document.getElementById('pw-new2')?.value = '';
-    const msg = document.getElementById('pw-msg'); if (msg) msg.textContent = '';
+    const u = document.getElementById('pw-username'); if (u) u.setAttribute('value', '');
+    const c = document.getElementById('pw-current'); if (c) c.value = '';
+    const n1 = document.getElementById('pw-new');     if (n1) n1.value = '';
+    const n2 = document.getElementById('pw-new2');    if (n2) n2.value = '';
+    const msg = document.getElementById('pw-msg');    if (msg) msg.textContent = '';
     openModal('modal-password');
   });
 
