@@ -38,6 +38,11 @@ const fbToValue = {
   '9a': 31
 };
 
+// Reverse-Mapping (Zahl -> Fb) + Speicher für Mittelwerte pro Route
+const valueToFb = Object.fromEntries(Object.entries(fbToValue).map(([k, v]) => [v, k]));
+let routeMean = {}; // { [route_id]: '6b+' | '7a' | ... }
+
+
 let currentPage = 1;
 let currentSort = { column: null, direction: 'asc' };
 const itemsPerPage = 20;
@@ -88,7 +93,67 @@ export async function initTicklistTable(userId) {
     return;
   }
 
+async function loadUserMeansForRoutes(routeIds) {
+  routeMean = {};
+  if (!routeIds || routeIds.length === 0) return;
+
+  // 1) Versuch: aus einer öffentlichen View (z. B. public_tick_stats)
+  // Wir wissen: Es gibt KEINE fertige "mean"-Spalte. Daher ziehen wir – falls vorhanden –
+  // die einzelnen Vorschläge/Einträge heran. Wenn die View das nicht bietet, Fallback (2).
+  let rows = [];
+  try {
+    const { data, error } = await supabase
+      .from('public_tick_stats')
+      .select('route_id, grade_suggestion')
+      .in('route_id', routeIds);
+
+    if (!error && Array.isArray(data)) {
+      rows = data.filter(r => !!r.grade_suggestion);
+    }
+  } catch (_) { /* ignorieren – wir haben Fallback */ }
+
+  // 2) Fallback: direkt aus ticklist (kann an RLS scheitern – dann bleibt Mean leer)
+  if (rows.length === 0) {
+    try {
+      const { data, error } = await supabase
+        .from('ticklist')
+        .select('route_id, grade_suggestion')
+        .in('route_id', routeIds);
+
+      if (!error && Array.isArray(data)) {
+        rows = data.filter(r => !!r.grade_suggestion);
+      }
+    } catch (_) { /* ignorieren */ }
+  }
+
+  // Nichts bekommen -> nichts zu tun
+  if (!rows.length) return;
+
+  // Werte je Route mitteln
+  const buckets = new Map(); // route_id -> number[]
+  for (const r of rows) {
+    const fb = String(r.grade_suggestion || '').toLowerCase();
+    const val = fbToValue[fb];
+    if (!val) continue;
+    if (!buckets.has(r.route_id)) buckets.set(r.route_id, []);
+    buckets.get(r.route_id).push(val);
+  }
+
+  for (const [rid, vals] of buckets.entries()) {
+    if (!vals.length) continue;
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const rounded = Math.round(avg);
+    routeMean[rid] = valueToFb[rounded] || null;
+  }
+}
+
 tickData = data;
+
+// IDs der in der Tabelle vorkommenden Routen einsammeln
+const routeIds = Array.from(new Set((tickData || []).map(t => t.route_id).filter(Boolean)));
+
+// Mittelwerte für diese Routen laden (robust, mit Fallback)
+await loadUserMeansForRoutes(routeIds);
 
 // Controls (Sector + Display options) initialisieren
 initTicklistControls();
@@ -254,7 +319,8 @@ for (const entry of pageItems) {
   const tdFlash    = visibleColumns.flash    ? `<td style="text-align: center;">${entry.flash ? '✅' : ''}</td>` : '';
   const tdRating   = visibleColumns.rating   ? `<td style="text-align: center;">${stars}</td>` : '';
   const tdSuggested= visibleColumns.suggested? `<td style="text-align: center;">${entry.grade_suggestion ?? '-'}</td>` : '';
-  const tdUserMean = visibleColumns.userMean ? `<td style="text-align: center;">—</td>` : ''; // TODO: später befüllen (View/Query)
+  const meanFb = routeMean[entry.route_id] ?? null;
+  const tdUserMean = visibleColumns.userMean ? `<td style="text-align: center;">${meanFb || '—'}</td>` : '';
   const tdDate     = visibleColumns.date     ? `<td style="text-align: center;">${entry.created_at ? new Date(entry.created_at).toLocaleDateString() : '—'}</td>` : '';
 
   html += `
