@@ -693,3 +693,18 @@ button.text-link.as-link {
   color: inherit; /* übernimmt .text-link Farbregeln */
 }
 button.text-link.as-link:focus { outline: none; }
+
+/* Fix: Modal-Close-Button darf nicht full-width sein */
+.modal-close {
+  position: absolute; top: 8px; right: 10px;
+  display: inline-block;      /* überschreibt globales button-Display */
+  width: auto;                /* überschreibt width:100% */
+  padding: 0;                 /* keine Zusatzfläche */
+  line-height: 1;             /* kompakt */
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #666;
+}
+.modal-close:hover { color: #000; }
