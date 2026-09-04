@@ -12,7 +12,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const navMenu = document.createElement("nav");
 
   navMenu.classList.add("slide-menu");
+  navMenu.id = "slide-menu";
   navMenu.innerHTML = `
+    <button class="menu-close" type="button" aria-label="Close menu">×</button>
     <div class="home-icon-wrapper">
       <a href="#" data-page="start" title="Home"><img src="img/home_icon.png" alt="Home" style="width: 48px; height: 48px;" /></a>
     </div>
@@ -52,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
   `;
 
   document.body.insertBefore(navMenu, document.body.firstChild);
+  const menuClose = navMenu.querySelector(".menu-close");
 
   // Neues Event feuern, wenn Login-Elemente vorhanden sind
   const checkLoginBlockReady = setInterval(() => {
@@ -73,22 +76,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  function setMenuOpen(open) {
+    navMenu.classList.toggle("open", open);
+    menuIcon.setAttribute("aria-expanded", String(open));
+    menuIcon.classList.toggle("is-hidden", open);
+    menuIcon.setAttribute("aria-hidden", String(open));
+    menuIcon.tabIndex = open ? -1 : 0;
+  }
+
   navMenu.querySelectorAll("a[data-page]").forEach(link => {
     link.addEventListener("click", () => {
       const parentItem = link.closest("li");
       if (!parentItem?.classList.contains("toggleable")) {
-        navMenu.classList.remove("open");
+        setMenuOpen(false);
       }
     });
   });
 
   menuIcon.addEventListener("click", function () {
-    navMenu.classList.toggle("open");
+    setMenuOpen(!navMenu.classList.contains("open"));
+  });
+
+  menuClose?.addEventListener("click", function () {
+    setMenuOpen(false);
+    menuIcon.focus();
   });
 
   document.addEventListener("click", function (e) {
     if (!navMenu.contains(e.target) && !menuIcon.contains(e.target)) {
-      navMenu.classList.remove("open");
+      setMenuOpen(false);
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && navMenu.classList.contains("open")) {
+      setMenuOpen(false);
+      menuIcon.focus();
     }
   });
 });

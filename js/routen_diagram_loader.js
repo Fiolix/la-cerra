@@ -43,22 +43,32 @@ export async function loadRoutenDiagramm(sektorName) {
   );
 
   const canvas = document.createElement("canvas");
+  const axisPrefix = document.createElement("span");
+  axisPrefix.className = "diagram-axis-prefix";
+  axisPrefix.textContent = "Fb";
+  axisPrefix.setAttribute("aria-hidden", "true");
   canvas.style.height = "100%";
-  canvas.style.maxHeight = "100px";
+  canvas.style.maxHeight = "115px";
   diagramContainer.innerHTML = "";
+  diagramContainer.appendChild(axisPrefix);
   diagramContainer.appendChild(canvas);
-  diagramContainer.style.height = "100px";
+  diagramContainer.style.height = "115px";
   diagramContainer.style.padding = "0";
 
   setTimeout(() => {
     const chart = new Chart(canvas, {
       type: "bar",
       data: {
-        labels: schwierigkeiten.map(s => `Fb ${s}`),
+        labels: schwierigkeiten,
         datasets: [{
           label: "Routes",
           data: anzahl,
-          backgroundColor: "#384e4d"
+          backgroundColor: "#384e4d",
+          borderRadius: 6,
+          borderSkipped: false,
+          barPercentage: 0.55,
+          categoryPercentage: 0.78,
+          maxBarThickness: 28
         }]
       },
       options: {
@@ -91,7 +101,10 @@ export async function loadRoutenDiagramm(sektorName) {
           },
           x: {
             grid: { display: false },
-            ticks: { font: { size: 14 } }
+            ticks: {
+              color: "#666",
+              font: { family: "Arial", size: 13, weight: "normal" }
+            }
           }
         }
       },

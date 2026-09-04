@@ -25,6 +25,32 @@
   transform: translateX(0);
 }
 
+.slide-menu .menu-close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.35rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 1rem;
+  line-height: 1;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.slide-menu .menu-close:hover,
+.slide-menu .menu-close:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: 1px solid rgba(255, 255, 255, 0.8);
+}
+
 /* Animiertes Aufklappen der Untermenüs mit voller Breite */
 .slide-menu ul ul {
   max-height: 0;
