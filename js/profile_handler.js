@@ -2,7 +2,7 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20260904-profile-stats-3';
+import { initTicklistTable } from './ticklist_table.js?v=20260904-stabilization-1';
 
 export async function initProfile() {
   console.log("🧾 Lade Profildaten...");

@@ -1,5 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
+const ASSET_VERSION = "20260904-stabilization-1";
+
 const PAGE_ALIASES = {
   start: "start.html",
   bouldering: "bouldering.html",
@@ -88,13 +90,13 @@ async function loadPage(page) {
     let handledScroll = false;
 
     if (basePage === "profile.html") {
-      const module = await import("/la-cerra/js/profile_handler.js?v=20260904-profile-stats-3");
+      const module = await import(`/la-cerra/js/profile_handler.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.initProfile();
     }
 
     if (html.includes('id="boulder-blocks"')) {
-      const module = await import("/la-cerra/js/boulder_loader.js");
+      const module = await import(`/la-cerra/js/boulder_loader.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.loadBlocks();
       if (loadId !== activeLoadId) return;
@@ -113,20 +115,20 @@ async function loadPage(page) {
     }
 
     if (html.includes("sector-summary")) {
-      const module = await import("/la-cerra/js/summary_toggle.js");
+      const module = await import(`/la-cerra/js/summary_toggle.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       module.setupSummaryToggle();
     }
 
     if (html.includes('id="routen-diagramm"')) {
       const sektorName = basePage.replace(".html", "");
-      const module = await import("/la-cerra/js/routen_diagram_loader.js");
+      const module = await import(`/la-cerra/js/routen_diagram_loader.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.loadRoutenDiagramm(sektorName);
     }
 
     if (basePage === "register.html") {
-      const module = await import("/la-cerra/js/register_handler.js");
+      const module = await import(`/la-cerra/js/register_handler.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       module.initRegisterForm();
     }
