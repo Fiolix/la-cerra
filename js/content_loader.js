@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260904-menu-diagramm-2";
+const ASSET_VERSION = "20260904-login-session-5";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -77,7 +77,7 @@ async function loadPage(page) {
   contentElement.setAttribute("aria-busy", "true");
 
   try {
-    const response = await fetch(`/la-cerra/content/${basePage}`, {
+    const response = await fetch(`/la-cerra/content/${basePage}?v=${ASSET_VERSION}`, {
       signal: activeController.signal
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -88,6 +88,12 @@ async function loadPage(page) {
     contentElement.innerHTML = html;
 
     let handledScroll = false;
+
+    if (basePage === "start.html") {
+      const module = await import(`/la-cerra/js/start_account.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await module.initStartAccount();
+    }
 
     if (basePage === "profile.html") {
       const module = await import(`/la-cerra/js/profile_handler.js?v=${ASSET_VERSION}`);
@@ -218,6 +224,10 @@ document.body.addEventListener("click", event => {
   const historyPage = `${basePage}${anchor ? `#${anchor}` : ""}`;
   history.pushState({ page: historyPage }, "", `?p=${encodeURIComponent(historyPage)}`);
   loadPage(historyPage);
+});
+
+document.addEventListener("reloadCurrentPage", () => {
+  loadPage(pageFromLocation());
 });
 
 document.addEventListener("loadPage", event => {

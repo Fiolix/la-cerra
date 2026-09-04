@@ -536,6 +536,57 @@ button#register-button:hover {
 }
 
 /* ===== Profilseite: Header & Stats ===== */
+.start-account h2,
+.account-notice h2 {
+  margin-top: 0;
+}
+
+.start-account-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 520px;
+}
+
+button.secondary-button {
+  color: #384e4d;
+  background: #e7edec;
+  border: 1px solid #cbd7d5;
+}
+
+button.secondary-button:hover,
+button.secondary-button:focus-visible {
+  background: #dce6e4;
+}
+
+.start-account-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.start-account-heading h2 {
+  margin-bottom: 0;
+}
+
+.start-account-heading button {
+  flex: 0 0 auto;
+  width: auto;
+  margin: 0;
+}
+
+.quick-profile-stats .stat-value {
+  overflow-wrap: anywhere;
+  font-size: clamp(1.1rem, 4.5vw, 1.8rem);
+}
+
+.account-loading,
+.account-message {
+  color: #666;
+}
+
 .profile-root {
   display: grid;
   gap: 18px;

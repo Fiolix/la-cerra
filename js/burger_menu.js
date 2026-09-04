@@ -1,9 +1,3 @@
-import { supabase } from './supabase.js';
-
-supabase.auth.getUser().then(({ data }) => {
-  console.log("👤 Eingeloggt als:", data?.user?.email);
-});
-
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Menü existiert schon? → nicht erneut einfügen
   if (document.querySelector("nav.slide-menu")) return;
@@ -102,6 +96,15 @@ document.addEventListener("DOMContentLoaded", function () {
     menuIcon.focus();
   });
 
+  document.addEventListener("openLoginMenu", function () {
+    setMenuOpen(true);
+    window.setTimeout(() => document.getElementById("user")?.focus(), 320);
+  });
+
+  document.addEventListener("closeBurgerMenu", function () {
+    setMenuOpen(false);
+  });
+
   document.addEventListener("click", function (e) {
     if (!navMenu.contains(e.target) && !menuIcon.contains(e.target)) {
       setMenuOpen(false);
@@ -120,14 +123,8 @@ function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
 
-import { initAuth } from './auth_handler.js';
+import { initAuth } from './auth_handler.js?v=20260904-login-session-5';
 
 document.addEventListener("loginBlockReady", () => {
-console.log("📡 loginBlockReady ausgelöst – auth_handler.js sollte jetzt starten");
-
   initAuth();
-});
-
-supabase.auth.getSession().then(({ data }) => {
-  console.log("✅ Session beim Start (burger_menu.js):", data?.session);
 });
