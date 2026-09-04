@@ -133,16 +133,47 @@ img {
   margin: 0.5rem 0;
 }
 
+.boulder-block {
+  margin-top: 1rem;
+  scroll-margin-top: 4.5rem;
+  border-bottom: 1px solid #d6d6d6;
+}
+
 .block-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.6rem;
   font-variant: small-caps;
   font-weight: bold;
   font-size: 1.1rem;
+  padding: 0.75rem 0.25rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.block-header::-webkit-details-marker {
+  display: none;
+}
+
+.block-header::after {
+  content: "▼";
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: #384e4d;
+  transition: transform 0.2s ease;
+}
+
+.boulder-block[open] .block-header::after {
+  transform: rotate(180deg);
+}
+
+.boulder-block[open] .block-header {
   border-bottom: 1px solid #ccc;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
+}
+
+.block-content {
+  padding-top: 0.25rem;
 }
 
 .block-id {
@@ -158,6 +189,19 @@ img {
 .block-height {
   text-align: right;
   white-space: nowrap;
+}
+
+.block-route-count {
+  color: #666;
+  font-size: 0.82rem;
+  font-variant: normal;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.block-route-count.has-completed {
+  color: #384e4d;
+  font-weight: 600;
 }
 
 .route {
@@ -189,6 +233,24 @@ img {
 .route-grade {
   text-align: right;
   white-space: nowrap;
+}
+
+.route-completed-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.45rem;
+  border-radius: 0.2rem;
+  background: #384e4d;
+  color: #fff;
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.route-completed .route-title {
+  box-shadow: inset 3px 0 0 #384e4d;
 }
 
 .route-meta {
@@ -233,9 +295,50 @@ img {
   text-align: right;
 }
 
+.route-tick-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.route-completed .route-tick-label {
+  color: #384e4d;
+  font-weight: bold;
+  cursor: default;
+}
+
 .route-tick input[type="checkbox"] {
   transform: scale(1.2);
   cursor: pointer;
+  accent-color: #384e4d;
+}
+
+.route-tick input[type="checkbox"]:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+@media (max-width: 599px) {
+  .block-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.2rem 0.5rem;
+  }
+
+  .block-height {
+    display: none;
+  }
+
+  .block-route-count {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .block-header::after {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
 }
 
 /* Bestehendes CSS für .sector-summary */

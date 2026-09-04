@@ -4,9 +4,50 @@ import { getPublicTickStats } from './tick_stats_loader.js';
 
 import { showTicklistPopup } from './ticklist_popup.js';
 
+let authRefreshTimer = null;
+
+document.addEventListener('authStateChanged', () => {
+  if (!document.getElementById('boulder-blocks')) return;
+
+  window.clearTimeout(authRefreshTimer);
+  authRefreshTimer = window.setTimeout(() => {
+    document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+  }, 50);
+});
+
 function toAnchorId(nr) {
   // aus "04/05" wird "04-05"
   return `block-${String(nr).replaceAll('/', '-')}`;
+}
+
+async function getTickedRouteIds() {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  const userId = sessionData?.session?.user?.id;
+
+  if (sessionError || !userId) return new Set();
+
+  const { data, error } = await supabase
+    .from('ticklist')
+    .select('route_id')
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Personal route status could not be loaded:', error);
+    return new Set();
+  }
+
+  return new Set((data || []).map(entry => entry.route_id).filter(Boolean));
+}
+
+function openAndScrollToBlock(blockId) {
+  const block = document.getElementById(blockId);
+  if (!block) return false;
+
+  block.open = true;
+  window.requestAnimationFrame(() => {
+    block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  return true;
 }
 
 export async function loadBlocks() {
@@ -80,7 +121,7 @@ if (dropdown && Array.isArray(blocks)) {
     const tryScroll = () => {
       const el = document.getElementById(id);
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        openAndScrollToBlock(id);
       } else if (tries-- > 0) {
         setTimeout(tryScroll, 100);
       }
@@ -92,6 +133,7 @@ if (dropdown && Array.isArray(blocks)) {
 
 // ⭐ Neue Bewertungsladung – ersetzt durch View
 const tickStats = await getPublicTickStats();
+const tickedRouteIds = await getTickedRouteIds();
 
 const ratingMap = {};
 const gradeMap = {};
@@ -125,12 +167,17 @@ for (const entry of tickStats) {
     const blockRoutes = routes
       .filter(r => r.block_id === block.id)
       .sort((a, b) => a.buchstabe.localeCompare(b.buchstabe));
-    const blockDiv = document.createElement('section');
+    const completedInBlock = blockRoutes.filter(route => tickedRouteIds.has(route.uuid)).length;
+    const routeSummary = `${blockRoutes.length} ${blockRoutes.length === 1 ? 'route' : 'routes'}`;
+    const completionSummary = completedInBlock > 0
+      ? `${routeSummary} · ${completedInBlock} climbed`
+      : routeSummary;
+    const blockDiv = document.createElement('details');
     blockDiv.className = 'boulder-block';
     blockDiv.id = toAnchorId(block.nummer);
-    blockDiv.style.marginTop = '2rem';
 
     const routesHtml = blockRoutes.map(route => {
+  const isTicked = tickedRouteIds.has(route.uuid);
   const routeRatings = ratingMap[route.uuid] || [];
   const ratingCount = routeRatings.length;
   const ratingAvg = ratingCount > 0 ? routeRatings.reduce((a, b) => a + b, 0) / ratingCount : 0;
@@ -165,10 +212,11 @@ const ratingDisplay = ratingCount > 0
   const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg]} <span style='color:#333; font-size: 0.8em;'>(${gradeCount})</span>` : '';
 
   return `
-    <div class=\"route\">
+    <div class=\"route${isTicked ? ' route-completed' : ''}\">
       <div class=\"route-title\">
         <span class=\"route-label\">${route.buchstabe}</span>
         <span class=\"route-name\">${route.name ?? ''}</span>
+        ${isTicked ? '<span class="route-completed-mark" title="Already in your ticklist" aria-label="Climbed">✓</span>' : ''}
         <span class=\"route-grade\">${route.grad ?? '?'}</span>
       </div>
       ${route.beschreibung ? `<p class=\"route-description\"><em>${route.beschreibung}</em></p>` : ''}
@@ -185,7 +233,10 @@ const ratingDisplay = ratingCount > 0
             : 'not available'}
         </div>
         <div class=\"route-tick\">
-          Tick route: <input type=\"checkbox\" title=\"Mark as climbed\" data-route-id=\"${route.uuid}\" />
+          <label class="route-tick-label">
+            <span>${isTicked ? 'Climbed' : 'Tick route'}</span>
+            <input type=\"checkbox\" title=\"${isTicked ? 'Already in your ticklist' : 'Mark as climbed'}\" data-route-id=\"${route.uuid}\" ${isTicked ? 'checked disabled' : ''} />
+          </label>
         </div>
       </div>
     </div>
@@ -194,15 +245,18 @@ const ratingDisplay = ratingCount > 0
 
 
     blockDiv.innerHTML = `
-      <div class="block-header">
+      <summary class="block-header">
         <span class="block-id">${block.nummer}</span>
         <span class="block-name">${block.name}</span>
         <span class="block-height">Height: ${block.hoehe ?? ''}</span>
-      </div>
-      <img src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" alt="Blockbild" />
-      ${routesHtml}
-      <div class="ticklist-button">
-        <button type="button">Add to tick list</button>
+        <span class="block-route-count${completedInBlock > 0 ? ' has-completed' : ''}">${completionSummary}</span>
+      </summary>
+      <div class="block-content">
+        <img src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" alt="${block.name || `Block ${block.nummer}`}" />
+        ${routesHtml}
+        <div class="ticklist-button">
+          <button type="button">Add to tick list</button>
+        </div>
       </div>
     `;
 
@@ -220,8 +274,13 @@ const ratingDisplay = ratingCount > 0
       }
 
       // ✅ Ticklist-Popup vorbereiten mit Prüfung auf bestehende Einträge
-      const checkboxes = blockDiv.querySelectorAll('.route-tick input[type="checkbox"]:checked');
+      const checkboxes = blockDiv.querySelectorAll('.route-tick input[type="checkbox"]:checked:not(:disabled)');
       const selectedRouteIds = Array.from(checkboxes).map(cb => cb.dataset.routeId);
+
+      if (checkboxes.length === 0) {
+        alert("Please select at least one new route.");
+        return;
+      }
 
       // Prüfe in Supabase: existiert bereits ein Eintrag für diese User-Routen-Kombination?
       const { data: existing, error: checkError } = await supabase
@@ -240,11 +299,6 @@ const ratingDisplay = ratingCount > 0
         const proceed = confirm('You already ticked some of these routes. Are you sure you want to continue?');
         if (!proceed) return;
       }
-      if (checkboxes.length === 0) {
-        alert("Please select at least one route.");
-        return;
-      }
-
       const routesForPopup = Array.from(checkboxes).map(cb => {
   const routeElement = cb.closest('.route');
   return {
