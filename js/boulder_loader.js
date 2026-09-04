@@ -35,9 +35,9 @@ if (dropdown) {
     return;
   }
 
-  const sektor = document.querySelector('main[data-sektor]')?.dataset.sektor;
+  const sektor = document.querySelector('[data-sektor]')?.dataset.sektor;
   if (!sektor) {
-    console.error('❌ Kein data-sektor im <main> Element gefunden');
+    console.error('❌ Kein data-sektor im Sektor-Inhalt gefunden');
     return;
   }
 
@@ -46,10 +46,14 @@ if (dropdown) {
 
   if (blockError) {
     console.error('❌ Fehler beim Laden der Blöcke:', blockError);
+    container.textContent = 'Boulder data could not be loaded. Please try again later.';
+    dropdown.disabled = true;
     return;
   }
   if (routeError) {
     console.error('❌ Fehler beim Laden der Routen:', routeError);
+    container.textContent = 'Route data could not be loaded. Please try again later.';
+    dropdown.disabled = true;
     return;
   }
 
@@ -185,7 +189,6 @@ const ratingDisplay = ratingCount > 0
         </div>
       </div>
     </div>
-   </div>
   `;
 }).join('');
 

@@ -401,7 +401,7 @@ let pageControls = '<nav class="pagination">';
 
 // Prev-Pfeil
 if (currentPage > 1) {
-  pageControls += `<a href="#" class="page-prev" data-page="${currentPage - 1}">‹</a>`;
+  pageControls += `<a href="#" class="page-prev" data-tick-page="${currentPage - 1}">‹</a>`;
 } else {
   pageControls += `<span class="page-prev disabled">‹</span>`;
 }
@@ -411,13 +411,13 @@ for (let i = 1; i <= totalPages; i++) {
   if (i === currentPage) {
     pageControls += `<span class="page current">${i}</span>`;
   } else {
-    pageControls += `<a href="#" class="page" data-page="${i}">${i}</a>`;
+    pageControls += `<a href="#" class="page" data-tick-page="${i}">${i}</a>`;
   }
 }
 
 // Next-Pfeil
 if (currentPage < totalPages) {
-  pageControls += `<a href="#" class="page-next" data-page="${currentPage + 1}">›</a>`;
+  pageControls += `<a href="#" class="page-next" data-tick-page="${currentPage + 1}">›</a>`;
 } else {
   pageControls += `<span class="page-next disabled">›</span>`;
 }
@@ -429,7 +429,7 @@ pagination.innerHTML = pageControls;
 pagination.querySelectorAll('.pagination a').forEach(a => {
   a.addEventListener('click', (e) => {
     e.preventDefault();
-    const pg = parseInt(a.getAttribute('data-page'), 10);
+    const pg = parseInt(a.getAttribute('data-tick-page'), 10);
     if (!isNaN(pg)) {
       currentPage = pg;
       renderTable();

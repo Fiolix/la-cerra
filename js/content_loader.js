@@ -1,170 +1,232 @@
-// content_loader.js (mit Scroll-Speicherung & Fokus-Reset)
+// Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-// Scrollposition beim Verlassen speichern
+const PAGE_ALIASES = {
+  start: "start.html",
+  bouldering: "bouldering.html",
+  la_cerra: "la_cerra.html",
+  "la-cerra": "la_cerra.html",
+  "la-cerra.html": "la_cerra.html",
+  somewhere: "somewhere.html",
+  la_sportiva: "la_sportiva.html",
+  gallura: "gallura.html",
+  register: "register.html",
+  profile: "profile.html"
+};
+
+let activeLoadId = 0;
+let activeController = null;
+
 window.addEventListener("beforeunload", () => {
   sessionStorage.setItem("scrollY", window.scrollY);
 });
 
-async function loadPage(page) {
-  if (loadPage.isLoading) {
-    console.warn(`⏳ Seite wird gerade geladen – Abbruch.`);
-    return;
-  }
-  loadPage.isLoading = true;
+function normalizePage(page) {
+  const rawPage = String(page || "start.html");
+  const hashIndex = rawPage.indexOf("#");
+  const rawBase = hashIndex >= 0 ? rawPage.slice(0, hashIndex) : rawPage;
+  const anchor = hashIndex >= 0 ? rawPage.slice(hashIndex + 1) : "";
+  const alias = PAGE_ALIASES[rawBase];
+  const basePage = alias || (rawBase.endsWith(".html") ? rawBase : `${rawBase}.html`);
 
+  if (!/^[a-z0-9_-]+\.html$/i.test(basePage)) {
+    throw new Error("Ungültiger Seitenname");
+  }
+
+  return { basePage, anchor };
+}
+
+function pageFromLocation() {
+  const params = new URLSearchParams(window.location.search);
+  const queryPage = params.get("p");
+  let page = queryPage
+    ? queryPage
+    : (localStorage.getItem("lastPage") || "start.html");
+
+  if (window.location.hash && !page.includes("#")) {
+    page += window.location.hash;
+  }
+
+  return page;
+}
+
+async function loadPage(page) {
   const contentElement = document.getElementById("content");
   if (!contentElement) {
-    console.error("❌ Kein #content-Element gefunden!");
+    console.error("Kein #content-Element gefunden.");
     return;
   }
 
-const [basePage, anchor] = page.split('#'); // z.B. "somewhere.html", "block-04-05"
+  let normalized;
+  try {
+    normalized = normalizePage(page);
+  } catch (error) {
+    showLoadError(contentElement, String(page || ""));
+    console.error("Ungültiger Seitenaufruf:", error);
+    return;
+  }
 
-localStorage.setItem("lastPage", basePage);
-const url = `/la-cerra/content/${basePage}`;
-console.log(`📥 Versuche zu laden: ${url}`);
+  const { basePage, anchor } = normalized;
+  const loadId = ++activeLoadId;
+
+  activeController?.abort();
+  activeController = new AbortController();
+
+  localStorage.setItem("lastPage", basePage);
+  contentElement.setAttribute("aria-busy", "true");
 
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Seite konnte nicht geladen werden");
+    const response = await fetch(`/la-cerra/content/${basePage}`, {
+      signal: activeController.signal
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
     const html = await response.text();
+    if (loadId !== activeLoadId) return;
 
     contentElement.innerHTML = html;
-    console.log("✅ Inhalt erfolgreich geladen:", basePage);
 
     let handledScroll = false;
 
-    if (basePage === "profile") {
-      import("/la-cerra/js/profile_handler.js")
-        .then(m => m.initProfile())
-        .catch(err => console.error("❌ Fehler beim Laden von profile_handler.js:", err));
+    if (basePage === "profile.html") {
+      const module = await import("/la-cerra/js/profile_handler.js");
+      if (loadId !== activeLoadId) return;
+      await module.initProfile();
     }
 
     if (html.includes('id="boulder-blocks"')) {
-      try {
-        const mod = await import("/la-cerra/js/boulder_loader.js");
-        await mod.loadBlocks();
+      const module = await import("/la-cerra/js/boulder_loader.js");
+      if (loadId !== activeLoadId) return;
+      await module.loadBlocks();
+      if (loadId !== activeLoadId) return;
 
-        const images = document.querySelectorAll("#boulder-blocks img");
-        await Promise.all(Array.from(images).map(img =>
-          img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
-        ));
+      await waitForImages(document.querySelectorAll("#boulder-blocks img"));
+      if (loadId !== activeLoadId) return;
 
-if (anchor) {
-  // 🔎 Warte kurz, bis der Ziel-Block existiert, dann scrolle dorthin
-  let tries = 20;
-  const tryScroll = () => {
-    const el = document.getElementById(anchor); // z.B. "block-04-05"
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (tries-- > 0) {
-      setTimeout(tryScroll, 100);
-    }
-  };
-  tryScroll();
-  handledScroll = true;
-
-} else if (sessionStorage.getItem('forceTop') === '1') {
-  // 🔝 explizit am Seitenanfang starten (Sektor-Link aus der Ticklist)
-  window.scrollTo(0, 0);
-  sessionStorage.removeItem('forceTop');
-  handledScroll = true;
-
-} else {
-  // 🔁 normales Verhalten: alte Scrollposition wiederherstellen
-  restoreScrollPosition();
-  handledScroll = true;
-}
-
-
-      } catch (err) {
-        console.error("❌ Fehler beim Laden von boulder_loader.js:", err);
+      if (anchor) {
+        scrollToAnchor(anchor);
+        handledScroll = true;
+      } else if (sessionStorage.getItem("forceTop") === "1") {
+        window.scrollTo(0, 0);
+        sessionStorage.removeItem("forceTop");
+        handledScroll = true;
       }
     }
 
     if (html.includes("sector-summary")) {
-      import("/la-cerra/js/summary_toggle.js")
-        .then(m => m.setupSummaryToggle())
-        .catch(err => console.error("❌ Fehler beim Diagramm-Toggle:", err));
+      const module = await import("/la-cerra/js/summary_toggle.js");
+      if (loadId !== activeLoadId) return;
+      module.setupSummaryToggle();
     }
 
     if (html.includes('id="routen-diagramm"')) {
       const sektorName = basePage.replace(".html", "");
-      import("/la-cerra/js/routen_diagram_loader.js")
-        .then(m => m.loadRoutenDiagramm(sektorName))
-        .catch(err => console.error("❌ Fehler beim Diagramm-Laden:", err));
+      const module = await import("/la-cerra/js/routen_diagram_loader.js");
+      if (loadId !== activeLoadId) return;
+      await module.loadRoutenDiagramm(sektorName);
     }
 
-    if (basePage === "register") {
-      import("/la-cerra/js/register_handler.js")
-        .then(m => m.initRegisterForm())
-        .catch(err => console.error("❌ Fehler beim Laden von register_handler.js:", err));
+    if (basePage === "register.html") {
+      const module = await import("/la-cerra/js/register_handler.js");
+      if (loadId !== activeLoadId) return;
+      module.initRegisterForm();
     }
 
     if (!handledScroll) restoreScrollPosition();
-
-    // 🔓 Ladevorgang abgeschlossen
-    loadPage.isLoading = false;
-
-    // 🔍 Fokus entfernen, damit z. B. Dropdown kein scrollIntoView auslöst
     document.activeElement?.blur();
-
-  } catch (err) {
-    console.error("❌ Fehler beim Laden der Seite:", err);
-    loadPage.isLoading = false;
-    contentElement.innerHTML = `<p style='color:red'>Fehler beim Laden: ${basePage}</p>`;
+  } catch (error) {
+    if (error?.name === "AbortError" || loadId !== activeLoadId) return;
+    console.error("Fehler beim Laden der Seite:", error);
+    showLoadError(contentElement, basePage);
+  } finally {
+    if (loadId === activeLoadId) {
+      contentElement.removeAttribute("aria-busy");
+    }
   }
+}
+
+function waitForImages(images) {
+  return Promise.all(Array.from(images).map(image => {
+    if (image.complete) return Promise.resolve();
+
+    return new Promise(resolve => {
+      const timeout = window.setTimeout(resolve, 10000);
+      const finish = () => {
+        window.clearTimeout(timeout);
+        resolve();
+      };
+
+      image.addEventListener("load", finish, { once: true });
+      image.addEventListener("error", finish, { once: true });
+    });
+  }));
+}
+
+function scrollToAnchor(anchor) {
+  let remainingAttempts = 20;
+
+  const tryScroll = () => {
+    const target = document.getElementById(anchor);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (remainingAttempts-- > 0) {
+      window.setTimeout(tryScroll, 100);
+    }
+  };
+
+  tryScroll();
 }
 
 function restoreScrollPosition() {
   const scrollY = sessionStorage.getItem("scrollY");
-  if (scrollY) {
-    console.log("🔁 Wiederherstellung ScrollY:", scrollY);
+  if (scrollY !== null) {
     window.scrollTo(0, Number(scrollY));
     sessionStorage.removeItem("scrollY");
   }
 }
 
-document.body.addEventListener("click", (e) => {
-  const link = e.target.closest("[data-page]");
-  if (!link) return;
-  e.preventDefault();
-  const page = link.getAttribute("data-page");
-
-  // 🔝 Wenn der Link den Seitenanfang erzwingen soll (Sektor-Link aus der Ticklist)
-  const forceTop = link.hasAttribute('data-scrolltop');
-  if (forceTop) {
-    sessionStorage.setItem('forceTop', '1');
-  }
-
-  history.pushState({ page }, '', `?p=${encodeURIComponent(page)}`);
-  loadPage(page);
-});
-
-if (!window.loadPageListenerRegistered) {
-  document.addEventListener("loadPage", (e) => {
-    sessionStorage.setItem("scrollY", window.scrollY);
-    loadPage(e.detail);
-  });
-  window.loadPageListenerRegistered = true;
+function showLoadError(container, page) {
+  container.innerHTML = `
+    <section class="load-error" role="alert">
+      <h2>Page could not be loaded</h2>
+      <p>This page is currently unavailable. Please try again later.</p>
+      <button type="button" data-retry-page="${encodeURIComponent(page)}">Try again</button>
+    </section>
+  `;
 }
 
-window.addEventListener('popstate', () => {
-  const params = new URLSearchParams(location.search);
-  const p = params.get('p');
-  const page = p ? decodeURIComponent(p) : 'start.html';
-  loadPage(page);
-});
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const contentElement = document.getElementById("content");
-  if (!contentElement) {
-    console.error("❌ content-Element nicht vorhanden beim Initialisieren");
+document.body.addEventListener("click", event => {
+  const retryButton = event.target.closest("[data-retry-page]");
+  if (retryButton) {
+    loadPage(decodeURIComponent(retryButton.dataset.retryPage));
     return;
   }
-  const params = new URLSearchParams(location.search);
-  const p = params.get('p');
-  const initial = p ? decodeURIComponent(p) : (localStorage.getItem("lastPage") || "start.html");
-  loadPage(initial);
+
+  const link = event.target.closest("[data-page]");
+  if (!link) return;
+
+  event.preventDefault();
+  const page = link.getAttribute("data-page");
+  if (!page) return;
+
+  if (link.hasAttribute("data-scrolltop")) {
+    sessionStorage.setItem("forceTop", "1");
+  }
+
+  const { basePage, anchor } = normalizePage(page);
+  const historyPage = `${basePage}${anchor ? `#${anchor}` : ""}`;
+  history.pushState({ page: historyPage }, "", `?p=${encodeURIComponent(historyPage)}`);
+  loadPage(historyPage);
+});
+
+document.addEventListener("loadPage", event => {
+  sessionStorage.setItem("scrollY", window.scrollY);
+  loadPage(event.detail);
+});
+
+window.addEventListener("popstate", () => {
+  loadPage(pageFromLocation());
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadPage(pageFromLocation());
 });

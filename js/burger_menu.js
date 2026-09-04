@@ -74,17 +74,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   navMenu.querySelectorAll("a[data-page]").forEach(link => {
-    if (!link.dataset.bound) {
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const page = this.getAttribute("data-page");
-        if (page && page !== "#") {
-          const event = new CustomEvent("loadPage", { detail: page });
-          document.dispatchEvent(event);
-        }
-      });
-      link.dataset.bound = "true"; // ✅ Markiere diesen Link als \"gebunden\"
-    }
+    link.addEventListener("click", () => {
+      const parentItem = link.closest("li");
+      if (!parentItem?.classList.contains("toggleable")) {
+        navMenu.classList.remove("open");
+      }
+    });
   });
 
   menuIcon.addEventListener("click", function () {

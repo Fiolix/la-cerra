@@ -20,6 +20,7 @@ export async function loadRoutenDiagramm(sektorName) {
 
   if (blockError || !sektorBlocks || sektorBlocks.length === 0) {
     console.error("❌ Fehler beim Laden des Blocks:", blockError);
+    diagramContainer.textContent = "Route statistics are currently unavailable.";
     return;
   }
 
@@ -32,6 +33,7 @@ export async function loadRoutenDiagramm(sektorName) {
 
   if (routeError || !routes || routes.length === 0) {
     console.warn("⚠️ Keine Routen gefunden für", sektorName);
+    diagramContainer.textContent = "No route statistics are available for this sector.";
     return;
   }
 
