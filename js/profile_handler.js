@@ -2,7 +2,7 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js';
+import { initTicklistTable } from './ticklist_table.js?v=20260904-profile-stats-3';
 
 export async function initProfile() {
   console.log("🧾 Lade Profildaten...");
@@ -27,17 +27,13 @@ export async function initProfile() {
   document.getElementById("profile-email").textContent = user.email || "-";
   document.getElementById("profile-since").textContent = new Date(user.created_at).toLocaleDateString();
 
-  // Ticklist auslesen inkl. zugehöriger Route-Info
-  const { data: ticks, error } = await supabase
-    .from("ticklist")
-    .select("flash, route:route_id(grad)")
-    .eq("user_id", user.id);
+  await initTicklistTable(user.id, ticks => renderProfileStats(ticks));
 
-  if (error) {
-    console.error("❌ Fehler beim Laden der Ticklist:", error);
-    return;
-  }
+  // Modals erst JETZT binden – HTML ist sicher im DOM
+  initProfileModals();
+}
 
+function renderProfileStats(ticks) {
   document.getElementById("tick-count").textContent = ticks.length;
 
   const fbToValue = {
@@ -62,11 +58,6 @@ export async function initProfile() {
 
   document.getElementById("highest-grade").textContent = maxGrade ? valueToFb[maxGrade] : "-";
   document.getElementById("highest-flash").textContent = maxFlash ? valueToFb[maxFlash] : "-";
-
-    initTicklistTable(user.id);
-
-  // Modals erst JETZT binden – HTML ist sicher im DOM
-  initProfileModals();
 }
 
 

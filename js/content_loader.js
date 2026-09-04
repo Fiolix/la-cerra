@@ -88,7 +88,7 @@ async function loadPage(page) {
     let handledScroll = false;
 
     if (basePage === "profile.html") {
-      const module = await import("/la-cerra/js/profile_handler.js");
+      const module = await import("/la-cerra/js/profile_handler.js?v=20260904-profile-stats-3");
       if (loadId !== activeLoadId) return;
       await module.initProfile();
     }

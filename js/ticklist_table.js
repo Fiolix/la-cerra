@@ -26,6 +26,7 @@ function formatSectorName(slug) {
 let tickData = [];
 
 let currentUserId = null;
+let onTickDataChanged = null;
 
 const fbToValue = {
   '2a': 1, '2b': 2, '2c': 3,
@@ -64,8 +65,9 @@ let visibleColumns = {
 let currentSector = 'all';  // 'all' = alle Sektoren (Dropdown)
 
 
-export async function initTicklistTable(userId) {
+export async function initTicklistTable(userId, onDataChanged = null) {
   currentUserId = userId;
+  onTickDataChanged = typeof onDataChanged === 'function' ? onDataChanged : null;
   const { data, error } = await supabase
     .from('ticklist')
     .select(`
@@ -160,6 +162,7 @@ initTicklistControls();
 
 // Tabelle zeichnen
 renderTable();
+await onTickDataChanged?.(tickData);
 
 }
 
@@ -476,6 +479,7 @@ window.deleteTick = async (tickId) => {
   } else {
     tickData = tickData.filter(t => t.id !== tickId);
     renderTable();
+    await onTickDataChanged?.(tickData);
   }
 };
 
@@ -524,6 +528,7 @@ window.editTick = (tickId, userId) => {
       } else {
         tickData = data;
         renderTable();
+        await onTickDataChanged?.(tickData);
       }
     }
   });
