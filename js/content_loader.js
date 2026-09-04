@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260904-route-accordion-2";
+const ASSET_VERSION = "20260904-route-accordion-3";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -108,8 +108,7 @@ async function loadPage(page) {
       if (loadId !== activeLoadId) return;
 
       if (anchor) {
-        const anchorTarget = document.getElementById(anchor);
-        if (anchorTarget?.matches('details.boulder-block')) anchorTarget.open = true;
+        module.setBlockOpen(anchor, true);
       }
 
       await waitForImages(document.querySelectorAll("#boulder-blocks img"));

@@ -134,26 +134,27 @@ img {
 }
 
 .boulder-block {
-  margin-top: 1rem;
+  margin-top: 2rem;
   scroll-margin-top: 4.5rem;
-  border-bottom: 1px solid #d6d6d6;
 }
 
 .block-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.6rem;
   font-variant: small-caps;
   font-weight: bold;
   font-size: 1.1rem;
-  padding: 0.75rem 0.25rem;
+  font-family: inherit;
+  width: 100%;
+  margin: 0 0 0.5rem;
+  padding: 0 0 0.5rem;
+  background: transparent;
+  color: inherit;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  border-radius: 0;
   cursor: pointer;
-  list-style: none;
-}
-
-.block-header::-webkit-details-marker {
-  display: none;
 }
 
 .block-header::after {
@@ -164,16 +165,16 @@ img {
   transition: transform 0.2s ease;
 }
 
-.boulder-block[open] .block-header::after {
+.boulder-block.is-open .block-header::after {
   transform: rotate(180deg);
-}
-
-.boulder-block[open] .block-header {
-  border-bottom: 1px solid #ccc;
 }
 
 .block-content {
   padding-top: 0.25rem;
+}
+
+.block-content[hidden] {
+  display: none;
 }
 
 .block-id {
@@ -189,19 +190,6 @@ img {
 .block-height {
   text-align: right;
   white-space: nowrap;
-}
-
-.block-route-count {
-  color: #666;
-  font-size: 0.82rem;
-  font-variant: normal;
-  font-weight: normal;
-  white-space: nowrap;
-}
-
-.block-route-count.has-completed {
-  color: #384e4d;
-  font-weight: 600;
 }
 
 .route {
@@ -317,28 +305,6 @@ img {
 .route-tick input[type="checkbox"]:disabled {
   cursor: default;
   opacity: 1;
-}
-
-@media (max-width: 599px) {
-  .block-header {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 0.2rem 0.5rem;
-  }
-
-  .block-height {
-    display: none;
-  }
-
-  .block-route-count {
-    grid-column: 2;
-    text-align: left;
-  }
-
-  .block-header::after {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-  }
 }
 
 /* Bestehendes CSS für .sector-summary */

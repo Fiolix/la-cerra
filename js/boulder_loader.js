@@ -39,11 +39,24 @@ async function getTickedRouteIds() {
   return new Set((data || []).map(entry => entry.route_id).filter(Boolean));
 }
 
-function openAndScrollToBlock(blockId) {
+export function setBlockOpen(blockId, open = true) {
   const block = document.getElementById(blockId);
   if (!block) return false;
 
-  block.open = true;
+  const toggle = block.querySelector('.block-header');
+  const content = block.querySelector('.block-content');
+  if (!toggle || !content) return false;
+
+  toggle.setAttribute('aria-expanded', String(open));
+  content.hidden = !open;
+  block.classList.toggle('is-open', open);
+  return true;
+}
+
+function openAndScrollToBlock(blockId) {
+  if (!setBlockOpen(blockId, true)) return false;
+
+  const block = document.getElementById(blockId);
   window.requestAnimationFrame(() => {
     block.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
@@ -167,12 +180,7 @@ for (const entry of tickStats) {
     const blockRoutes = routes
       .filter(r => r.block_id === block.id)
       .sort((a, b) => a.buchstabe.localeCompare(b.buchstabe));
-    const completedInBlock = blockRoutes.filter(route => tickedRouteIds.has(route.uuid)).length;
-    const routeSummary = `${blockRoutes.length} ${blockRoutes.length === 1 ? 'route' : 'routes'}`;
-    const completionSummary = completedInBlock > 0
-      ? `${routeSummary} · ${completedInBlock} climbed`
-      : routeSummary;
-    const blockDiv = document.createElement('details');
+    const blockDiv = document.createElement('section');
     blockDiv.className = 'boulder-block';
     blockDiv.id = toAnchorId(block.nummer);
 
@@ -245,14 +253,13 @@ const ratingDisplay = ratingCount > 0
 
 
     blockDiv.innerHTML = `
-      <summary class="block-header">
+      <button class="block-header" type="button" aria-expanded="false" aria-controls="${blockDiv.id}-routes">
         <span class="block-id">${block.nummer}</span>
         <span class="block-name">${block.name}</span>
         <span class="block-height">Height: ${block.hoehe ?? ''}</span>
-        <span class="block-route-count${completedInBlock > 0 ? ' has-completed' : ''}">${completionSummary}</span>
-      </summary>
-      <div class="block-content">
-        <img src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" alt="${block.name || `Block ${block.nummer}`}" />
+      </button>
+      <img src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" alt="${block.name || `Block ${block.nummer}`}" />
+      <div class="block-content" id="${blockDiv.id}-routes" hidden>
         ${routesHtml}
         <div class="ticklist-button">
           <button type="button">Add to tick list</button>
@@ -261,6 +268,12 @@ const ratingDisplay = ratingCount > 0
     `;
 
     container.appendChild(blockDiv);
+
+    const blockToggle = blockDiv.querySelector('.block-header');
+    blockToggle?.addEventListener('click', () => {
+      const shouldOpen = blockToggle.getAttribute('aria-expanded') !== 'true';
+      setBlockOpen(blockDiv.id, shouldOpen);
+    });
 
     // Add click listener to 'Add to ticklist' button
     const tickButton = blockDiv.querySelector(".ticklist-button button");
