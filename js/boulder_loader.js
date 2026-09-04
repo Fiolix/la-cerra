@@ -43,11 +43,11 @@ export function setBlockOpen(blockId, open = true) {
   const block = document.getElementById(blockId);
   if (!block) return false;
 
-  const toggle = block.querySelector('.block-header');
+  const toggles = block.querySelectorAll('[data-block-toggle]');
   const content = block.querySelector('.block-content');
-  if (!toggle || !content) return false;
+  if (toggles.length === 0 || !content) return false;
 
-  toggle.setAttribute('aria-expanded', String(open));
+  toggles.forEach(toggle => toggle.setAttribute('aria-expanded', String(open)));
   content.hidden = !open;
   block.classList.toggle('is-open', open);
   return true;
@@ -253,12 +253,14 @@ const ratingDisplay = ratingCount > 0
 
 
     blockDiv.innerHTML = `
-      <button class="block-header" type="button" aria-expanded="false" aria-controls="${blockDiv.id}-routes">
+      <button class="block-header" type="button" data-block-toggle aria-expanded="false" aria-controls="${blockDiv.id}-routes">
         <span class="block-id">${block.nummer}</span>
         <span class="block-name">${block.name}</span>
         <span class="block-height">Height: ${block.hoehe ?? ''}</span>
       </button>
-      <img src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" alt="${block.name || `Block ${block.nummer}`}" />
+      <button class="block-image-toggle" type="button" data-block-toggle aria-expanded="false" aria-controls="${blockDiv.id}-routes" aria-label="Show or hide routes for ${block.name || `Block ${block.nummer}`}">
+        <img src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" alt="${block.name || `Block ${block.nummer}`}" />
+      </button>
       <div class="block-content" id="${blockDiv.id}-routes" hidden>
         ${routesHtml}
         <div class="ticklist-button">
@@ -269,10 +271,11 @@ const ratingDisplay = ratingCount > 0
 
     container.appendChild(blockDiv);
 
-    const blockToggle = blockDiv.querySelector('.block-header');
-    blockToggle?.addEventListener('click', () => {
-      const shouldOpen = blockToggle.getAttribute('aria-expanded') !== 'true';
-      setBlockOpen(blockDiv.id, shouldOpen);
+    blockDiv.querySelectorAll('[data-block-toggle]').forEach(blockToggle => {
+      blockToggle.addEventListener('click', () => {
+        const shouldOpen = blockToggle.getAttribute('aria-expanded') !== 'true';
+        setBlockOpen(blockDiv.id, shouldOpen);
+      });
     });
 
     // Add click listener to 'Add to ticklist' button
