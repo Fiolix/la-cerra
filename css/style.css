@@ -197,7 +197,7 @@ img {
 }
 
 .route {
-  margin-bottom: 1rem;
+  margin-bottom: 1.6rem;
 }
 
 .route-title {
@@ -239,10 +239,6 @@ img {
   color: #fff;
   font-size: 0.82rem;
   line-height: 1;
-}
-
-.route-completed .route-title {
-  box-shadow: inset 3px 0 0 #384e4d;
 }
 
 .route-meta {
@@ -297,6 +293,11 @@ img {
 .route-completed .route-tick-label {
   color: #384e4d;
   font-weight: bold;
+  cursor: default;
+}
+
+.route-project-label {
+  color: #777;
   cursor: default;
 }
 

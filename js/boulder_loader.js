@@ -185,7 +185,11 @@ for (const entry of tickStats) {
     blockDiv.id = toAnchorId(block.nummer);
 
     const routesHtml = blockRoutes.map(route => {
-  const isTicked = tickedRouteIds.has(route.uuid);
+  const displayedGrade = String(route.grad ?? '').trim();
+  const normalizedGrade = displayedGrade.toLowerCase();
+  const isProject = ['', '-', '?', 'project', 'projekt', 'n/a'].includes(normalizedGrade);
+  const isTicked = !isProject && tickedRouteIds.has(route.uuid);
+  const tickDisabled = isTicked || isProject;
   const routeRatings = ratingMap[route.uuid] || [];
   const ratingCount = routeRatings.length;
   const ratingAvg = ratingCount > 0 ? routeRatings.reduce((a, b) => a + b, 0) / ratingCount : 0;
@@ -225,7 +229,7 @@ const ratingDisplay = ratingCount > 0
         <span class=\"route-label\">${route.buchstabe}</span>
         <span class=\"route-name\">${route.name ?? ''}</span>
         ${isTicked ? '<span class="route-completed-mark" title="Already in your ticklist" aria-label="Climbed">✓</span>' : ''}
-        <span class=\"route-grade\">${route.grad ?? '?'}</span>
+        <span class=\"route-grade\">${displayedGrade || '?'}</span>
       </div>
       ${route.beschreibung ? `<p class=\"route-description\"><em>${route.beschreibung}</em></p>` : ''}
       <div class=\"route-meta\">
@@ -241,9 +245,9 @@ const ratingDisplay = ratingCount > 0
             : 'not available'}
         </div>
         <div class=\"route-tick\">
-          <label class="route-tick-label">
-            <span>${isTicked ? 'Climbed' : 'Tick route'}</span>
-            <input type=\"checkbox\" title=\"${isTicked ? 'Already in your ticklist' : 'Mark as climbed'}\" data-route-id=\"${route.uuid}\" ${isTicked ? 'checked disabled' : ''} />
+          <label class="route-tick-label${isProject && !isTicked ? ' route-project-label' : ''}">
+            <span>${isTicked ? 'Climbed' : (isProject ? 'Project' : 'Tick route')}</span>
+            <input type=\"checkbox\" title=\"${isTicked ? 'Already in your ticklist' : (isProject ? 'Projects cannot be added to the tick list yet' : 'Mark as climbed')}\" data-route-id=\"${route.uuid}\" ${isTicked ? 'checked' : ''} ${tickDisabled ? 'disabled' : ''} />
           </label>
         </div>
       </div>
