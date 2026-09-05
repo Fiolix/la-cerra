@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260905-sectors-3";
+const ASSET_VERSION = "20260905-overview-stats-2";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -151,6 +151,12 @@ async function loadPage(page) {
       const module = await import(`/la-cerra/js/routen_diagram_loader.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.loadRoutenDiagramm(sektorName);
+    }
+
+    if (html.includes('id="la-cerra-routen-diagramm"')) {
+      const module = await import(`/la-cerra/js/routen_diagram_loader.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await module.loadLaCerraDiagramm();
     }
 
     if (basePage === "register.html") {

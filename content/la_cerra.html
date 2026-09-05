@@ -11,9 +11,14 @@
     <button class="toggle-summary" type="button">Show more</button>
   </section>
 
-  <div class="content-image-placeholder" role="img" aria-label="Placeholder for the introductory La Cerra image">
-    Introductory image placeholder
-  </div>
+  <section class="la-cerra-route-overview" data-sectors="somewhere,la_sportiva,sushi-free,bermuda_triangle,second_life,stuntblocs,monte_lu_bagnu,monte_pulchiana" aria-label="La Cerra route statistics">
+    <div class="la-cerra-overview-counts" aria-live="polite">
+      <span>Sectors: <strong data-sector-count>8</strong></span>
+      <span>Routes: <strong data-route-count>…</strong></span>
+      <span>Projects: <strong data-project-count>…</strong></span>
+    </div>
+    <div id="la-cerra-routen-diagramm" class="diagramm-container"></div>
+  </section>
 
   <section class="map overview-map" aria-labelledby="la-cerra-map-title">
     <h2 id="la-cerra-map-title" class="visually-hidden">La Cerra sector map</h2>

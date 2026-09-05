@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js';
+import { isProjectGrade } from './route_rules.js?v=20260905-overview-stats-2';
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 
@@ -14,6 +15,81 @@ function showDiagramError(container, message, retry) {
     </div>
   `;
   container.querySelector('[data-diagram-retry]')?.addEventListener('click', retry);
+}
+
+function renderRouteDiagram(diagramContainer, routes) {
+  const schwierigkeiten = ["2", "3", "4", "5", "6", "7", "8"];
+  const anzahl = schwierigkeiten.map(schw =>
+    routes.filter(route => route.grad?.startsWith(schw)).length
+  );
+
+  const canvas = document.createElement("canvas");
+  const axisPrefix = document.createElement("span");
+  axisPrefix.className = "diagram-axis-prefix";
+  axisPrefix.textContent = "Fb";
+  axisPrefix.setAttribute("aria-hidden", "true");
+  canvas.style.height = "100%";
+  canvas.style.maxHeight = "115px";
+  diagramContainer.innerHTML = "";
+  diagramContainer.appendChild(axisPrefix);
+  diagramContainer.appendChild(canvas);
+  diagramContainer.style.height = "115px";
+  diagramContainer.style.padding = "0";
+
+  window.setTimeout(() => {
+    new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: schwierigkeiten,
+        datasets: [{
+          label: "Routes",
+          data: anzahl,
+          backgroundColor: "#384e4d",
+          borderRadius: 6,
+          borderSkipped: false,
+          barPercentage: 0.55,
+          categoryPercentage: 0.78,
+          maxBarThickness: 28
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: 0 },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true },
+          datalabels: {
+            display: true,
+            align: 'end',
+            anchor: 'start',
+            offset: 0,
+            color: '#384e4d',
+            font: { weight: 'bold', size: 14 },
+            clamp: false,
+            clip: false,
+            formatter: value => value > 0 ? value : ''
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            display: false,
+            grid: { display: false },
+            suggestedMax: Math.max(...anzahl) + 2
+          },
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: "#666",
+              font: { family: "Arial", size: 13, weight: "normal" }
+            }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  }, 50);
 }
 
 export async function loadRoutenDiagramm(sektorName) {
@@ -80,80 +156,83 @@ export async function loadRoutenDiagramm(sektorName) {
     return;
   }
 
-  const schwierigkeiten = ["2", "3", "4", "5", "6", "7", "8"];
-  const anzahl = schwierigkeiten.map(schw =>
-    routes.filter(r => r.grad?.startsWith(schw)).length
-  );
+  renderRouteDiagram(diagramContainer, routes);
+}
 
-  const canvas = document.createElement("canvas");
-  const axisPrefix = document.createElement("span");
-  axisPrefix.className = "diagram-axis-prefix";
-  axisPrefix.textContent = "Fb";
-  axisPrefix.setAttribute("aria-hidden", "true");
-  canvas.style.height = "100%";
-  canvas.style.maxHeight = "115px";
-  diagramContainer.innerHTML = "";
-  diagramContainer.appendChild(axisPrefix);
-  diagramContainer.appendChild(canvas);
-  diagramContainer.style.height = "115px";
-  diagramContainer.style.padding = "0";
+export async function loadLaCerraDiagramm() {
+  const overview = document.querySelector('.la-cerra-route-overview');
+  const diagramContainer = document.getElementById('la-cerra-routen-diagramm');
+  if (!overview || !diagramContainer) return;
 
-  setTimeout(() => {
-    const chart = new Chart(canvas, {
-      type: "bar",
-      data: {
-        labels: schwierigkeiten,
-        datasets: [{
-          label: "Routes",
-          data: anzahl,
-          backgroundColor: "#384e4d",
-          borderRadius: 6,
-          borderSkipped: false,
-          barPercentage: 0.55,
-          categoryPercentage: 0.78,
-          maxBarThickness: 28
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: 0
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: true },
-          datalabels: {
-            display: true,
-            align: 'end',
-            anchor: 'start',
-            offset: 0,
-            color: '#384e4d',
-            font: { weight: 'bold', size: 14 },
-            clamp: false,
-            clip: false,
-            formatter: value => value > 0 ? value : ''
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            display: false,
-            grid: { display: false },
-            suggestedMax: Math.max(...anzahl) + 2
-          },
-          x: {
-            grid: { display: false },
-            ticks: {
-              color: "#666",
-              font: { family: "Arial", size: 13, weight: "normal" }
-            }
-          }
-        }
-      },
-      plugins: [ChartDataLabels]
-    });
+  const sectors = String(overview.dataset.sectors || '')
+    .split(',')
+    .map(sector => sector.trim())
+    .filter(Boolean);
+  const sectorCount = overview.querySelector('[data-sector-count]');
+  const routeCount = overview.querySelector('[data-route-count]');
+  const projectCount = overview.querySelector('[data-project-count]');
 
-    console.log("📐 Canvas-Höhe nach Initialisierung:", canvas.offsetHeight, canvas.clientHeight);
-  }, 50);
+  sectorCount.textContent = String(sectors.length);
+  routeCount.textContent = '…';
+  projectCount.textContent = '…';
+  diagramContainer.innerHTML = '<p class="data-loading" role="status">Loading route statistics…</p>';
+
+  let blockResult;
+  try {
+    blockResult = await supabase
+      .from('blocks')
+      .select('id')
+      .in('sektor', sectors);
+  } catch (error) {
+    console.error('La Cerra block statistics request failed:', error);
+    routeCount.textContent = '—';
+    projectCount.textContent = '—';
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', loadLaCerraDiagramm);
+    return;
+  }
+
+  const { data: blocks, error: blockError } = blockResult;
+  if (blockError) {
+    console.error('La Cerra block statistics could not be loaded:', blockError);
+    routeCount.textContent = '—';
+    projectCount.textContent = '—';
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', loadLaCerraDiagramm);
+    return;
+  }
+
+  if (!blocks?.length) {
+    routeCount.textContent = '0';
+    projectCount.textContent = '0';
+    diagramContainer.textContent = 'No route statistics are available yet.';
+    return;
+  }
+
+  let routeResult;
+  try {
+    routeResult = await supabase
+      .from('routes')
+      .select('grad')
+      .in('block_id', blocks.map(block => block.id));
+  } catch (error) {
+    console.error('La Cerra route statistics request failed:', error);
+    routeCount.textContent = '—';
+    projectCount.textContent = '—';
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', loadLaCerraDiagramm);
+    return;
+  }
+
+  const { data: routes, error: routeError } = routeResult;
+  if (routeError) {
+    console.error('La Cerra route statistics could not be loaded:', routeError);
+    routeCount.textContent = '—';
+    projectCount.textContent = '—';
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', loadLaCerraDiagramm);
+    return;
+  }
+
+  const gradedRoutes = (routes || []).filter(route => !isProjectGrade(route.grad));
+  const projects = (routes || []).filter(route => isProjectGrade(route.grad));
+  routeCount.textContent = String(gradedRoutes.length);
+  projectCount.textContent = String(projects.length);
+  renderRouteDiagram(diagramContainer, gradedRoutes);
 }
