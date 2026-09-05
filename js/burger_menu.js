@@ -33,11 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
     </ul>
 
     <div class="login-block">
-      <h3>Login</h3>
-      <input type="text" id="user" name="user" placeholder="User" />
-      <input type="password" id="password" name="password" placeholder="Password" />
-      <button id="login-button" type="button">Log In</button>
-<p><a href="#" data-page="register" style="text-decoration: none; color: inherit; font-size: 0.9rem;">New here? Create an account</a></p>
+      <h3>Account</h3>
+      <p class="account-loading" role="status">Checking login…</p>
     </div>
 
     <div class="language-switcher">
@@ -50,17 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.body.insertBefore(navMenu, document.body.firstChild);
   const menuClose = navMenu.querySelector(".menu-close");
 
-  // Neues Event feuern, wenn Login-Elemente vorhanden sind
-  const checkLoginBlockReady = setInterval(() => {
-    if (
-      document.getElementById("user") &&
-      document.getElementById("password") &&
-      document.getElementById("login-button")
-    ) {
-      document.dispatchEvent(new CustomEvent("loginBlockReady"));
-      clearInterval(checkLoginBlockReady);
-    }
-  }, 50);
+  document.dispatchEvent(new CustomEvent("loginBlockReady"));
 
   navMenu.querySelectorAll("li.toggleable > a").forEach(link => {
     link.addEventListener("click", function (e) {
@@ -123,7 +110,7 @@ function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
 
-import { initAuth } from './auth_handler.js?v=20260904-login-session-5';
+import { initAuth } from './auth_handler.js?v=20260905-stability-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

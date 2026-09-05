@@ -1,14 +1,22 @@
 import { supabase } from './supabase.js';
 
 export async function getPublicTickStats() {
-  const { data, error } = await supabase
-    .from("public_tick_stats")
-    .select("route_id, rating, grade_suggestion");
+  let data;
+  let error;
+  try {
+    const result = await supabase
+      .from("public_tick_stats")
+      .select("route_id, rating, grade_suggestion");
+    data = result.data;
+    error = result.error;
+  } catch (requestError) {
+    error = requestError;
+  }
 
   if (error) {
     console.error("❌ Fehler beim Laden der Tick-Statistiken:", error);
-    return [];
+    return { data: [], error };
   }
 
-  return data;
+  return { data: data || [], error: null };
 }

@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js';
+import { isProjectGrade } from './route_rules.js?v=20260905-stability-1';
 
 const GRADES = [
   '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c',
@@ -9,6 +10,35 @@ const GRADES = [
 
 function isValidUuid(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value || '');
+}
+
+async function validateRoutesForTicklist(routeIds) {
+  try {
+    const uniqueRouteIds = Array.from(new Set(routeIds));
+    const { data, error } = await supabase
+      .from('routes')
+      .select('uuid, grad')
+      .in('uuid', uniqueRouteIds);
+
+    if (error) {
+      console.error('Route validation failed:', error);
+      return { ok: false, message: 'Route details could not be checked. Please try again.' };
+    }
+
+    const routesById = new Map((data || []).map(route => [route.uuid, route]));
+    if (uniqueRouteIds.some(routeId => !routesById.has(routeId))) {
+      return { ok: false, message: 'A selected route no longer exists. Please reload the page.' };
+    }
+
+    if (uniqueRouteIds.some(routeId => isProjectGrade(routesById.get(routeId)?.grad))) {
+      return { ok: false, message: 'Projects without a grade cannot be added to the tick list.' };
+    }
+
+    return { ok: true, message: '' };
+  } catch (error) {
+    console.error('Route validation request failed:', error);
+    return { ok: false, message: 'Route details could not be checked. Please try again.' };
+  }
 }
 
 function createRouteEditor(item) {
@@ -201,7 +231,16 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
     status.classList.remove('is-error', 'is-success');
     status.textContent = 'Saving…';
 
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    let sessionData;
+    let sessionError;
+    try {
+      const sessionResult = await supabase.auth.getSession();
+      sessionData = sessionResult.data;
+      sessionError = sessionResult.error;
+    } catch (error) {
+      console.error('Ticklist session request failed:', error);
+      sessionError = error;
+    }
     const userId = sessionData?.session?.user?.id;
     if (sessionError || !userId) {
       submitButton.disabled = false;
@@ -210,19 +249,32 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
       return;
     }
 
+    const routeValidation = await validateRoutesForTicklist(payload.map(item => item.route_id));
+    if (!routeValidation.ok) {
+      submitButton.disabled = false;
+      status.classList.add('is-error');
+      status.textContent = routeValidation.message;
+      return;
+    }
+
     let result;
-    if (mode === 'edit') {
-      const item = payload[0];
-      result = await supabase
-        .from('ticklist')
-        .update({ rating: item.rating, flash: item.flash, grade_suggestion: item.grade_suggestion })
-        .eq('user_id', userId)
-        .eq('route_id', item.route_id);
-    } else {
-      result = await supabase.from('ticklist').upsert(
-        payload.map(item => ({ ...item, user_id: userId })),
-        { onConflict: 'user_id,route_id', returning: 'minimal' }
-      );
+    try {
+      if (mode === 'edit') {
+        const item = payload[0];
+        result = await supabase
+          .from('ticklist')
+          .update({ rating: item.rating, flash: item.flash, grade_suggestion: item.grade_suggestion })
+          .eq('user_id', userId)
+          .eq('route_id', item.route_id);
+      } else {
+        result = await supabase.from('ticklist').upsert(
+          payload.map(item => ({ ...item, user_id: userId })),
+          { onConflict: 'user_id,route_id', returning: 'minimal' }
+        );
+      }
+    } catch (error) {
+      console.error('Ticklist save request failed:', error);
+      result = { error };
     }
 
     if (result.error) {

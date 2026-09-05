@@ -4,6 +4,18 @@ import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalab
 
 Chart.register(ChartDataLabels); // Plugin registrieren
 
+function showDiagramError(container, message, retry) {
+  container.style.height = '';
+  container.style.padding = '';
+  container.innerHTML = `
+    <div class="data-load-message compact" role="alert">
+      <p>${message}</p>
+      <button type="button" class="text-link small as-link" data-diagram-retry>Try again</button>
+    </div>
+  `;
+  container.querySelector('[data-diagram-retry]')?.addEventListener('click', retry);
+}
+
 export async function loadRoutenDiagramm(sektorName) {
   const diagramContainer = document.getElementById("routen-diagramm");
   if (!diagramContainer) {
@@ -13,25 +25,56 @@ export async function loadRoutenDiagramm(sektorName) {
 
   console.log("📊 Lade Routen-Diagramm für:", sektorName);
 
-  const { data: sektorBlocks, error: blockError } = await supabase
-    .from("blocks")
-    .select("id")
-    .eq("sektor", sektorName);
+  diagramContainer.innerHTML = '<p class="data-loading" role="status">Loading route statistics…</p>';
 
-  if (blockError || !sektorBlocks || sektorBlocks.length === 0) {
+  let blockResult;
+  try {
+    blockResult = await supabase
+      .from("blocks")
+      .select("id")
+      .eq("sektor", sektorName);
+  } catch (error) {
+    console.error("❌ Fehler beim Laden des Blocks:", error);
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
+    return;
+  }
+
+  const { data: sektorBlocks, error: blockError } = blockResult;
+
+  if (blockError) {
     console.error("❌ Fehler beim Laden des Blocks:", blockError);
-    diagramContainer.textContent = "Route statistics are currently unavailable.";
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
+    return;
+  }
+
+  if (!sektorBlocks || sektorBlocks.length === 0) {
+    diagramContainer.textContent = "No route statistics are available for this sector.";
     return;
   }
 
   const blockIds = sektorBlocks.map(b => b.id);
 
-  const { data: routes, error: routeError } = await supabase
-    .from("routes")
-    .select("grad")
-    .in("block_id", blockIds);
+  let routeResult;
+  try {
+    routeResult = await supabase
+      .from("routes")
+      .select("grad")
+      .in("block_id", blockIds);
+  } catch (error) {
+    console.error("❌ Fehler beim Laden der Routen:", error);
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
+    return;
+  }
 
-  if (routeError || !routes || routes.length === 0) {
+  const { data: routes, error: routeError } = routeResult;
+
+  if (routeError) {
+    console.error("❌ Fehler beim Laden der Routen:", routeError);
+    showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
+    return;
+  }
+
+  if (!routes || routes.length === 0) {
     console.warn("⚠️ Keine Routen gefunden für", sektorName);
     diagramContainer.textContent = "No route statistics are available for this sector.";
     return;

@@ -874,6 +874,41 @@ button.secondary-button:focus-visible {
   color: #666;
 }
 
+[data-profile-content][hidden] {
+  display: none;
+}
+
+.data-loading {
+  margin: 1rem 0;
+  color: #666;
+  text-align: center;
+}
+
+.data-load-message {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #cbd7d5;
+  border-radius: 0.35rem;
+  background: #f3f6f5;
+  color: #384e4d;
+  text-align: center;
+}
+
+.data-load-message.compact {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.data-load-message p {
+  margin: 0 0 0.65rem;
+}
+
+.data-load-message button {
+  width: auto;
+  margin: 0;
+}
+
 .profile-root {
   display: grid;
   gap: 18px;

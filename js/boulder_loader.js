@@ -1,8 +1,9 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20260905-stability-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20260905-ticklist-dialog-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20260905-stability-1';
+import { isProjectGrade } from './route_rules.js?v=20260905-stability-1';
 
 let authRefreshTimer = null;
 
@@ -21,22 +22,58 @@ function toAnchorId(nr) {
 }
 
 async function getTickedRouteIds() {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-  const userId = sessionData?.session?.user?.id;
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const userId = sessionData?.session?.user?.id;
 
-  if (sessionError || !userId) return new Set();
+    if (sessionError) return { ids: new Set(), error: sessionError };
+    if (!userId) return { ids: new Set(), error: null };
 
-  const { data, error } = await supabase
-    .from('ticklist')
-    .select('route_id')
-    .eq('user_id', userId);
+    const { data, error } = await supabase
+      .from('ticklist')
+      .select('route_id')
+      .eq('user_id', userId);
 
-  if (error) {
-    console.error('Personal route status could not be loaded:', error);
-    return new Set();
+    if (error) {
+      console.error('Personal route status could not be loaded:', error);
+      return { ids: new Set(), error };
+    }
+
+    return {
+      ids: new Set((data || []).map(entry => entry.route_id).filter(Boolean)),
+      error: null
+    };
+  } catch (error) {
+    console.error('Personal route status request failed:', error);
+    return { ids: new Set(), error };
   }
+}
 
-  return new Set((data || []).map(entry => entry.route_id).filter(Boolean));
+function showBlocksError(container, dropdown, message) {
+  dropdown.disabled = true;
+  container.innerHTML = `
+    <section class="data-load-message" role="alert">
+      <p>${message}</p>
+      <button type="button" class="secondary-button" data-blocks-retry>Try again</button>
+    </section>
+  `;
+  container.querySelector('[data-blocks-retry]')?.addEventListener('click', () => loadBlocks());
+}
+
+function showPartialDataNotice(container, messages) {
+  if (messages.length === 0) return;
+  const notice = document.createElement('section');
+  notice.className = 'data-load-message compact';
+  notice.setAttribute('role', 'status');
+  const text = document.createElement('p');
+  text.textContent = messages.join(' ');
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'text-link small as-link';
+  retry.textContent = 'Try again';
+  retry.addEventListener('click', () => document.dispatchEvent(new CustomEvent('reloadCurrentPage')));
+  notice.append(text, retry);
+  container.prepend(notice);
 }
 
 export function setBlockOpen(blockId, open = true) {
@@ -89,25 +126,39 @@ if (dropdown) {
     return;
   }
 
+  dropdown.disabled = true;
+  container.innerHTML = '<p class="data-loading" role="status">Loading boulders and routes…</p>';
+
   const sektor = document.querySelector('[data-sektor]')?.dataset.sektor;
   if (!sektor) {
     console.error('❌ Kein data-sektor im Sektor-Inhalt gefunden');
     return;
   }
 
-  const { data: blocks, error: blockError } = await supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer');
-  const { data: routes, error: routeError } = await supabase.from('routes').select('*');
+  let blockResult;
+  let routeResult;
+  try {
+    [blockResult, routeResult] = await Promise.all([
+      supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer'),
+      supabase.from('routes').select('*')
+    ]);
+  } catch (error) {
+    console.error('Boulder data request failed:', error);
+    showBlocksError(container, dropdown, 'Boulder and route data could not be loaded.');
+    return;
+  }
+
+  const { data: blocks, error: blockError } = blockResult;
+  const { data: routes, error: routeError } = routeResult;
 
   if (blockError) {
     console.error('❌ Fehler beim Laden der Blöcke:', blockError);
-    container.textContent = 'Boulder data could not be loaded. Please try again later.';
-    dropdown.disabled = true;
+    showBlocksError(container, dropdown, 'Boulder data could not be loaded.');
     return;
   }
   if (routeError) {
     console.error('❌ Fehler beim Laden der Routen:', routeError);
-    container.textContent = 'Route data could not be loaded. Please try again later.';
-    dropdown.disabled = true;
+    showBlocksError(container, dropdown, 'Route data could not be loaded.');
     return;
   }
 
@@ -115,6 +166,7 @@ if (dropdown) {
 
   container.innerHTML = '';
   dropdown.innerHTML = '<option value="">-- Select a block --</option>';
+  dropdown.disabled = false;
 
 // Optionen je Block einfügen (Anzeige "04/05 – Name", Wert "#block-04-05")
 if (dropdown && Array.isArray(blocks)) {
@@ -145,8 +197,13 @@ if (dropdown && Array.isArray(blocks)) {
 
 
 // ⭐ Neue Bewertungsladung – ersetzt durch View
-const tickStats = await getPublicTickStats();
-const tickedRouteIds = await getTickedRouteIds();
+const tickStatsResult = await getPublicTickStats();
+const tickedRoutesResult = await getTickedRouteIds();
+const tickStats = tickStatsResult.data;
+const tickedRouteIds = tickedRoutesResult.ids;
+const partialDataMessages = [];
+if (tickStatsResult.error) partialDataMessages.push('Community ratings are currently unavailable.');
+if (tickedRoutesResult.error) partialDataMessages.push('Your climbed-route markers could not be loaded.');
 
 const ratingMap = {};
 const gradeMap = {};
@@ -186,8 +243,7 @@ for (const entry of tickStats) {
 
     const routesHtml = blockRoutes.map(route => {
   const displayedGrade = String(route.grad ?? '').trim();
-  const normalizedGrade = displayedGrade.toLowerCase();
-  const isProject = ['', '-', '?', 'project', 'projekt', 'n/a'].includes(normalizedGrade);
+  const isProject = isProjectGrade(displayedGrade);
   const isTicked = !isProject && tickedRouteIds.has(route.uuid);
   const tickDisabled = isTicked || isProject;
   const routeRatings = ratingMap[route.uuid] || [];
@@ -291,10 +347,25 @@ const ratingDisplay = ratingCount > 0
       actionMessage.textContent = '';
       tickButton.disabled = true;
 
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      let sessionData;
+      let sessionError;
+      try {
+        const sessionResult = await supabase.auth.getSession();
+        sessionData = sessionResult.data;
+        sessionError = sessionResult.error;
+      } catch (error) {
+        console.error('Ticklist session request failed:', error);
+        sessionError = error;
+      }
       const userId = sessionData?.session?.user?.id;
 
-      if (sessionError || !userId) {
+      if (sessionError) {
+        actionMessage.textContent = 'Your login status could not be checked. Please try again.';
+        tickButton.disabled = false;
+        return;
+      }
+
+      if (!userId) {
         actionMessage.textContent = 'Please log in to add routes to your tick list.';
         tickButton.disabled = false;
         window.setTimeout(() => document.dispatchEvent(new CustomEvent('openLoginMenu')), 0);
@@ -312,11 +383,19 @@ const ratingDisplay = ratingCount > 0
       }
 
       // Prüfe in Supabase: existiert bereits ein Eintrag für diese User-Routen-Kombination?
-      const { data: existing, error: checkError } = await supabase
-        .from('ticklist')
-        .select('route_id')
-        .eq('user_id', userId)
-        .in('route_id', selectedRouteIds);
+      let existing;
+      let checkError;
+      try {
+        const checkResult = await supabase
+          .from('ticklist')
+          .select('route_id')
+          .eq('user_id', userId)
+          .in('route_id', selectedRouteIds);
+        existing = checkResult.data;
+        checkError = checkResult.error;
+      } catch (error) {
+        checkError = error;
+      }
 
       if (checkError) {
         console.error('Ticklist check failed:', checkError);
@@ -353,5 +432,7 @@ const ratingDisplay = ratingCount > 0
       tickButton.disabled = false;
     });
   });
+
+  showPartialDataNotice(container, partialDataMessages);
 }
 

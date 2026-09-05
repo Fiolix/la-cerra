@@ -3,7 +3,7 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20260905-ticklist-dialog-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20260905-stability-1';
 
 // Schöne Anzeigenamen für Sektoren (Slug -> Label)
 const SEKTOR_LABELS = {
@@ -92,7 +92,7 @@ export async function initTicklistTable(userId, onDataChanged = null) {
 
   if (error) {
     console.error('❌ Fehler beim Laden der Ticklist:', error);
-    return;
+    throw new Error('Tick list could not be loaded.', { cause: error });
   }
 
 async function loadUserMeansForRoutes(routeIds) {

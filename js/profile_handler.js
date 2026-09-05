@@ -2,38 +2,92 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20260905-ticklist-dialog-1';
-import { summarizeTicks } from './profile_stats.js?v=20260904-login-session-5';
+import { initTicklistTable } from './ticklist_table.js?v=20260905-stability-1';
+import { summarizeTicks } from './profile_stats.js?v=20260905-stability-1';
 
 let authListenerBound = false;
 
 export async function initProfile() {
   bindAuthListener();
+  showProfileLoading();
 
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user) {
-    showSignedOutProfile();
-    return;
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      console.error('Profile session could not be loaded:', sessionError);
+      showProfileError();
+      return;
+    }
+
+    const user = sessionData?.session?.user;
+    if (!user) {
+      showSignedOutProfile();
+      return;
+    }
+
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error('Profile data could not be loaded:', profileError);
+      showProfileError();
+      return;
+    }
+
+    const username = profileData?.username || "-";
+
+    document.getElementById("profile-username").textContent = username;
+    document.getElementById("profile-email").textContent = user.email || "-";
+    document.getElementById("profile-since").textContent = new Date(user.created_at).toLocaleDateString();
+
+    await initTicklistTable(user.id, ticks => renderProfileStats(ticks));
+    showProfileContent();
+
+    // Modals erst JETZT binden – HTML ist sicher im DOM
+    initProfileModals();
+  } catch (error) {
+    console.error('Profile initialization failed:', error);
+    showProfileError();
   }
+}
 
-  // Zusätzliche Abfrage aus 'profiles'
-  const { data: profileData, error: profileError } = await supabase
-    .from("profiles")
-    .select("username")
-    .eq("user_id", user.id)
-    .single();
+function showProfileLoading() {
+  const root = document.getElementById('profile-root');
+  if (!root) return;
+  root.setAttribute('aria-busy', 'true');
+  const loading = root.querySelector('[data-profile-loading]');
+  const content = root.querySelector('[data-profile-content]');
+  if (loading) loading.hidden = false;
+  if (content) content.hidden = true;
+}
 
-  const username = profileData?.username || "-";
+function showProfileContent() {
+  const root = document.getElementById('profile-root');
+  if (!root) return;
+  root.removeAttribute('aria-busy');
+  const loading = root.querySelector('[data-profile-loading]');
+  const content = root.querySelector('[data-profile-content]');
+  if (loading) loading.hidden = true;
+  if (content) content.hidden = false;
+}
 
-  // Persönliche Daten anzeigen
-  document.getElementById("profile-username").textContent = username;
-  document.getElementById("profile-email").textContent = user.email || "-";
-  document.getElementById("profile-since").textContent = new Date(user.created_at).toLocaleDateString();
-
-  await initTicklistTable(user.id, ticks => renderProfileStats(ticks));
-
-  // Modals erst JETZT binden – HTML ist sicher im DOM
-  initProfileModals();
+function showProfileError() {
+  const root = document.getElementById('profile-root');
+  if (!root) return;
+  root.removeAttribute('aria-busy');
+  root.innerHTML = `
+    <section class="account-notice" role="alert">
+      <h2>Profile could not be loaded</h2>
+      <p>Your profile information is currently unavailable.</p>
+      <button type="button" class="secondary-button" data-profile-retry>Try again</button>
+    </section>
+  `;
+  root.querySelector('[data-profile-retry]')?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+  });
 }
 
 function renderProfileStats(ticks) {
@@ -57,6 +111,7 @@ function bindAuthListener() {
 function showSignedOutProfile() {
   const root = document.getElementById('profile-root');
   if (!root) return;
+  root.removeAttribute('aria-busy');
 
   root.innerHTML = `
     <section class="account-notice" role="status">

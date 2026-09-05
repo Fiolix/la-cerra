@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { summarizeTicks } from './profile_stats.js?v=20260904-login-session-5';
+import { summarizeTicks } from './profile_stats.js?v=20260905-stability-1';
 
 let renderId = 0;
 let authListenerBound = false;
@@ -13,21 +13,28 @@ export async function initStartAccount() {
   const currentRenderId = ++renderId;
   showLoading(container);
 
-  const { data, error } = await supabase.auth.getSession();
-  if (currentRenderId !== renderId || !document.getElementById('start-account')) return;
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (currentRenderId !== renderId || !document.getElementById('start-account')) return;
 
-  if (error) {
-    showAccountError(container);
-    return;
+    if (error) {
+      showAccountError(container);
+      return;
+    }
+
+    const user = data?.session?.user;
+    if (!user) {
+      showLoggedOut(container);
+      return;
+    }
+
+    await showLoggedIn(container, user, currentRenderId);
+  } catch (error) {
+    console.error('Start page account request failed:', error);
+    if (currentRenderId === renderId && document.getElementById('start-account')) {
+      showAccountError(container);
+    }
   }
-
-  const user = data?.session?.user;
-  if (!user) {
-    showLoggedOut(container);
-    return;
-  }
-
-  await showLoggedIn(container, user, currentRenderId);
 }
 
 function bindAuthListener() {
@@ -66,7 +73,7 @@ async function showLoggedIn(container, user, currentRenderId) {
 
   if (currentRenderId !== renderId || !document.getElementById('start-account')) return;
 
-  if (ticksResult.error) {
+  if (profileResult.error || ticksResult.error) {
     showAccountError(container);
     return;
   }

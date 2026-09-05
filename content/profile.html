@@ -1,4 +1,6 @@
-<div id="profile-root" class="profile-root">
+<div id="profile-root" class="profile-root" aria-busy="true">
+<p class="account-loading" data-profile-loading role="status">Loading profile…</p>
+<div data-profile-content hidden>
 <div class="profile-header">
   <div class="profile-meta">
     <div class="profile-line"><span class="label">Username:</span> <span id="profile-username">—</span></div>
@@ -119,5 +121,6 @@
   </div>
 </div>
 
+</div> <!-- /[data-profile-content] -->
 </div> <!-- /#profile-root -->
 

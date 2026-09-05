@@ -1,18 +1,27 @@
 import { supabase } from './supabase.js';
 
 let renderId = 0;
+let authCheckId = 0;
 let authListenerBound = false;
 
 export async function initAuth() {
   bindAuthListener();
+  const currentAuthCheckId = ++authCheckId;
+  renderAuthLoading();
 
-  const { data, error } = await supabase.auth.getSession();
-  if (error) {
-    renderLoggedOut('Login is currently unavailable. Please try again later.');
-    return;
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (currentAuthCheckId !== authCheckId) return;
+    if (error) {
+      renderAuthError();
+      return;
+    }
+
+    await renderSession(data?.session || null);
+  } catch (error) {
+    console.error('Session check failed:', error);
+    if (currentAuthCheckId === authCheckId) renderAuthError();
   }
-
-  await renderSession(data?.session || null);
 }
 
 function bindAuthListener() {
@@ -40,18 +49,49 @@ async function renderSession(session) {
     return;
   }
 
-  const { data: profileData, error } = await supabase
-    .from('profiles')
-    .select('username')
-    .eq('user_id', user.id)
-    .maybeSingle();
+  let profileData;
+  let profileError;
+  try {
+    const result = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    profileData = result.data;
+    profileError = result.error;
+  } catch (error) {
+    console.error('Profile name request failed:', error);
+    profileError = error;
+  }
 
   if (currentRenderId !== renderId) return;
 
   renderLoggedIn(
     profileData?.username || 'User',
-    error ? 'Your profile name is currently unavailable.' : ''
+    profileError ? 'Your profile name is currently unavailable.' : ''
   );
+}
+
+function renderAuthLoading() {
+  const loginBlock = document.querySelector('.login-block');
+  if (!loginBlock) return;
+
+  loginBlock.innerHTML = `
+    <h3>Account</h3>
+    <p class="account-loading" role="status">Checking login…</p>
+  `;
+}
+
+function renderAuthError() {
+  const loginBlock = document.querySelector('.login-block');
+  if (!loginBlock) return;
+
+  loginBlock.innerHTML = `
+    <h3>Account</h3>
+    <p class="account-message" role="alert">Login status could not be loaded.</p>
+    <button type="button" class="secondary-button" data-auth-retry>Try again</button>
+  `;
+  loginBlock.querySelector('[data-auth-retry]')?.addEventListener('click', initAuth);
 }
 
 function renderLoggedOut(message = '') {
