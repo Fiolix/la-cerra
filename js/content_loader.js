@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260904-route-accordion-4";
+const ASSET_VERSION = "20260905-ticklist-dialog-1";
 
 const PAGE_ALIASES = {
   start: "start.html",

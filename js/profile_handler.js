@@ -2,7 +2,7 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20260904-login-session-5';
+import { initTicklistTable } from './ticklist_table.js?v=20260905-ticklist-dialog-1';
 import { summarizeTicks } from './profile_stats.js?v=20260904-login-session-5';
 
 let authListenerBound = false;

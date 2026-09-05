@@ -2,7 +2,7 @@ import { supabase } from './supabase.js';
 
 import { getPublicTickStats } from './tick_stats_loader.js';
 
-import { showTicklistPopup } from './ticklist_popup.js';
+import { showTicklistPopup } from './ticklist_popup.js?v=20260905-ticklist-dialog-1';
 
 let authRefreshTimer = null;
 
@@ -266,6 +266,7 @@ const ratingDisplay = ratingCount > 0
         <div class="ticklist-button">
           <button type="button">Add to tick list</button>
         </div>
+        <p class="block-action-message" role="status" aria-live="polite"></p>
       </div>
     `;
 
@@ -280,12 +281,18 @@ const ratingDisplay = ratingCount > 0
 
     // Add click listener to 'Add to ticklist' button
     const tickButton = blockDiv.querySelector(".ticklist-button button");
+    const actionMessage = blockDiv.querySelector('.block-action-message');
     tickButton?.addEventListener("click", async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
+      actionMessage.textContent = '';
+      tickButton.disabled = true;
+
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       const userId = sessionData?.session?.user?.id;
 
-      if (!userId) {
-        alert("You need an account to add routes to your personal ticklist");
+      if (sessionError || !userId) {
+        actionMessage.textContent = 'Please log in to add routes to your tick list.';
+        tickButton.disabled = false;
+        window.setTimeout(() => document.dispatchEvent(new CustomEvent('openLoginMenu')), 0);
         return;
       }
 
@@ -294,7 +301,8 @@ const ratingDisplay = ratingCount > 0
       const selectedRouteIds = Array.from(checkboxes).map(cb => cb.dataset.routeId);
 
       if (checkboxes.length === 0) {
-        alert("Please select at least one new route.");
+        actionMessage.textContent = 'Please select at least one new route.';
+        tickButton.disabled = false;
         return;
       }
 
@@ -306,28 +314,38 @@ const ratingDisplay = ratingCount > 0
         .in('route_id', selectedRouteIds);
 
       if (checkError) {
-        console.error('❌ Fehler beim Prüfen der bestehenden Ticklist:', checkError);
-        alert('An error occurred while checking your ticklist.');
+        console.error('Ticklist check failed:', checkError);
+        actionMessage.textContent = 'Your tick list could not be checked. Please try again.';
+        tickButton.disabled = false;
         return;
       }
 
-      if (existing.length > 0) {
-        const proceed = confirm('You already ticked some of these routes. Are you sure you want to continue?');
-        if (!proceed) return;
+      const existingRouteIds = new Set((existing || []).map(item => item.route_id));
+      const newCheckboxes = Array.from(checkboxes).filter(cb => !existingRouteIds.has(cb.dataset.routeId));
+      if (newCheckboxes.length === 0) {
+        actionMessage.textContent = 'The selected route is already in your tick list.';
+        tickButton.disabled = false;
+        return;
       }
-      const routesForPopup = Array.from(checkboxes).map(cb => {
-  const routeElement = cb.closest('.route');
-  return {
-    route_id: cb.dataset.routeId,
-    route_name: routeElement.querySelector('.route-name')?.textContent ?? 'Unknown',
-    grad: routeElement.querySelector('.route-grade')?.textContent ?? '?'
-  };
-});
 
-showTicklistPopup({
-  mode: 'add',
-  entry: routesForPopup
-});
+      const routesForPopup = newCheckboxes.map(cb => {
+        const routeElement = cb.closest('.route');
+        return {
+          route_id: cb.dataset.routeId,
+          route_name: routeElement.querySelector('.route-name')?.textContent ?? 'Unknown',
+          grad: routeElement.querySelector('.route-grade')?.textContent ?? '?'
+        };
+      });
+
+      showTicklistPopup({
+        mode: 'add',
+        entry: routesForPopup,
+        onSuccess: () => {
+          sessionStorage.setItem('scrollY', window.scrollY);
+          document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+        }
+      });
+      tickButton.disabled = false;
     });
   });
 }
