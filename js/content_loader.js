@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260905-sectors-2";
+const ASSET_VERSION = "20260905-sectors-3";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -11,6 +11,8 @@ const PAGE_ALIASES = {
   somewhere: "somewhere.html",
   la_sportiva: "la_sportiva.html",
   sushi_free: "sushi_free.html",
+  "sushi-free": "sushi_free.html",
+  "sushi-free.html": "sushi_free.html",
   bermuda_triangle: "bermuda_triangle.html",
   second_life: "second_life.html",
   "2nd_life": "second_life.html",
@@ -144,7 +146,8 @@ async function loadPage(page) {
     }
 
     if (html.includes('id="routen-diagramm"')) {
-      const sektorName = basePage.replace(".html", "");
+      const sektorName = document.querySelector('[data-sektor]')?.dataset.sektor
+        || basePage.replace(".html", "");
       const module = await import(`/la-cerra/js/routen_diagram_loader.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.loadRoutenDiagramm(sektorName);
