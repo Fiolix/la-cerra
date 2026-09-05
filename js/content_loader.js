@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260905-stability-1";
+const ASSET_VERSION = "20260905-sectors-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -10,6 +10,13 @@ const PAGE_ALIASES = {
   "la-cerra.html": "la_cerra.html",
   somewhere: "somewhere.html",
   la_sportiva: "la_sportiva.html",
+  sushi_free: "sushi_free.html",
+  bermuda_triangle: "bermuda_triangle.html",
+  second_life: "second_life.html",
+  "2nd_life": "second_life.html",
+  stuntblocs: "stuntblocs.html",
+  monte_lu_bagnu: "monte_lu_bagnu.html",
+  monte_pulchiana: "monte_pulchiana.html",
   gallura: "gallura.html",
   register: "register.html",
   profile: "profile.html"
@@ -130,6 +137,12 @@ async function loadPage(page) {
       module.setupSummaryToggle();
     }
 
+    if (html.includes('id="sector-select"')) {
+      const module = await import(`/la-cerra/js/sector_navigation.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      module.setupSectorNavigation();
+    }
+
     if (html.includes('id="routen-diagramm"')) {
       const sektorName = basePage.replace(".html", "");
       const module = await import(`/la-cerra/js/routen_diagram_loader.js?v=${ASSET_VERSION}`);
@@ -237,6 +250,16 @@ document.addEventListener("reloadCurrentPage", () => {
 document.addEventListener("loadPage", event => {
   sessionStorage.setItem("scrollY", window.scrollY);
   loadPage(event.detail);
+});
+
+document.addEventListener("navigateToPage", event => {
+  const page = event.detail;
+  if (!page) return;
+  const { basePage, anchor } = normalizePage(page);
+  const historyPage = `${basePage}${anchor ? `#${anchor}` : ""}`;
+  sessionStorage.setItem("forceTop", "1");
+  history.pushState({ page: historyPage }, "", `?p=${encodeURIComponent(historyPage)}`);
+  loadPage(historyPage);
 });
 
 window.addEventListener("popstate", () => {

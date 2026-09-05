@@ -24,6 +24,12 @@ document.addEventListener("DOMContentLoaded", function () {
             <ul>
               <li><a href="#" data-page="somewhere">Somewhere</a></li>
               <li><a href="#" data-page="la_sportiva">La Sportiva</a></li>
+              <li><a href="#" data-page="sushi_free">Sushi-Free</a></li>
+              <li><a href="#" data-page="bermuda_triangle">Bermuda Triangle</a></li>
+              <li><a href="#" data-page="second_life">2nd Life</a></li>
+              <li><a href="#" data-page="stuntblocs">Stuntblocs</a></li>
+              <li><a href="#" data-page="monte_lu_bagnu">Monte Lu Bagnu</a></li>
+              <li><a href="#" data-page="monte_pulchiana">Monte Pulchiana</a></li>
             </ul>
           </li>
           <li><a href="#" data-page="gallura">Gallura</a></li>
