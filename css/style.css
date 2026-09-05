@@ -670,6 +670,51 @@ canvas {
   min-height: min(55vw, 420px);
 }
 
+.interactive-sector-map {
+  position: relative;
+  width: 100%;
+}
+
+.interactive-sector-map > img {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+.sector-map-link {
+  color: inherit;
+}
+
+.map-hit {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.map-hit-circle {
+  border-radius: 50%;
+}
+
+.map-hit-label {
+  border-radius: 0.3rem;
+}
+
+.sector-map-link:hover .map-hit,
+.sector-map-link:focus-visible .map-hit {
+  border-color: #384e4d;
+  background: rgba(56, 78, 77, 0.12);
+}
+
+.sector-map-link:focus-visible {
+  outline: none;
+}
+
 .block-nav,
 .sector-nav {
   margin: 1rem 0;
