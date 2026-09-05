@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260905-ticklist-dialog-3";
+const ASSET_VERSION = "20260905-ticklist-dialog-6";
 
 const PAGE_ALIASES = {
   start: "start.html",

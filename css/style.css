@@ -197,7 +197,11 @@ img {
 }
 
 .route {
-  margin-bottom: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.route + .route {
+  padding-top: 0.5rem;
 }
 
 .route-title {
