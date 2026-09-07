@@ -1,14 +1,23 @@
 /* Grundlegendes Layout */
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
   background: #f4f4f4;
   color: #333;
 }
 
 header.hero {
-  height: 300px;
+  height: 150px;
   overflow: hidden;
   position: relative;
   text-align: center;
@@ -16,13 +25,16 @@ header.hero {
 
 .header-image {
   position: absolute;
-  top: 50%;
+  inset: 0;
   left: 0;
-  transform: translateY(-50%);
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   z-index: -1;
   display: block;
+  margin: 0;
+  border-radius: 0;
 }
 
 header.hero h1 {
@@ -36,7 +48,7 @@ header.hero h1 {
 
 .menu-icon {
   position: fixed;
-  top: 0;
+  top: 12px;
   left: 0;
   width: 2.75rem;
   height: 2.75rem;
