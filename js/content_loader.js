@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260907-news-facts-2";
+const ASSET_VERSION = "20260907-admin-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -22,7 +22,8 @@ const PAGE_ALIASES = {
   monte_pulchiana: "monte_pulchiana.html",
   gallura: "gallura.html",
   register: "register.html",
-  profile: "profile.html"
+  profile: "profile.html",
+  admin: "admin.html"
 };
 
 let activeLoadId = 0;
@@ -120,6 +121,12 @@ async function loadPage(page) {
       const module = await import(`/la-cerra/js/profile_handler.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.initProfile();
+    }
+
+    if (basePage === "admin.html") {
+      const module = await import(`/la-cerra/js/admin_handler.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await module.initAdmin();
     }
 
     if (html.includes('id="boulder-blocks"')) {

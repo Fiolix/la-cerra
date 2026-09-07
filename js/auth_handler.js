@@ -51,14 +51,20 @@ async function renderSession(session) {
 
   let profileData;
   let profileError;
+  let isAdmin = false;
   try {
-    const result = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    profileData = result.data;
-    profileError = result.error;
+    const [profileResult, adminResult] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      supabase.rpc('is_admin')
+    ]);
+    profileData = profileResult.data;
+    profileError = profileResult.error;
+    isAdmin = adminResult.data === true && !adminResult.error;
+    if (adminResult.error) console.error('Admin status request failed:', adminResult.error);
   } catch (error) {
     console.error('Profile name request failed:', error);
     profileError = error;
@@ -68,7 +74,8 @@ async function renderSession(session) {
 
   renderLoggedIn(
     profileData?.username || 'User',
-    profileError ? 'Your profile name is currently unavailable.' : ''
+    profileError ? 'Your profile name is currently unavailable.' : '',
+    isAdmin
   );
 }
 
@@ -184,13 +191,14 @@ async function handleLogin(event) {
   }
 }
 
-function renderLoggedIn(username, message = '') {
+function renderLoggedIn(username, message = '', isAdmin = false) {
   const loginBlock = document.querySelector('.login-block');
   if (!loginBlock) return;
 
   loginBlock.innerHTML = `
     <p class="signed-in-label">Signed in as: <strong data-auth-username></strong></p>
     <p><a href="#" data-page="profile">My profile</a></p>
+    ${isAdmin ? '<p><a href="#" data-page="admin">Admin area</a></p>' : ''}
     <button id="logout-button" type="button">Log out</button>
     <p class="login-message" role="status" aria-live="polite"></p>
   `;

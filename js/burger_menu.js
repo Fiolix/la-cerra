@@ -116,7 +116,7 @@ function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
 
-import { initAuth } from './auth_handler.js?v=20260905-stability-1';
+import { initAuth } from './auth_handler.js?v=20260907-admin-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
