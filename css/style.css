@@ -82,6 +82,11 @@ section, aside {
   margin-bottom: 1.5rem;
 }
 
+.did-you-know p {
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
 .news-item {
   background: #eaeaea;
   padding: 0.75rem;

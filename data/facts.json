@@ -1,0 +1,82 @@
+[
+  {
+    "id": "grades-are-personal",
+    "text": "Bouldering grades are a guide, not an exact measurement: height, reach and climbing style can change how a problem feels."
+  },
+  {
+    "id": "clean-shoes",
+    "text": "Clean climbing shoes improve friction and help to keep dirt away from the holds."
+  },
+  {
+    "id": "brush-holds",
+    "text": "Brushing excess chalk from holds improves friction and leaves the boulder cleaner for the next climber."
+  },
+  {
+    "id": "chalk-sparingly",
+    "text": "A small amount of chalk is usually enough. Too much chalk can make holds feel worse rather than better."
+  },
+  {
+    "id": "check-landing",
+    "text": "Before climbing, check the landing zone for stones, gaps and branches and position the crash pads accordingly."
+  },
+  {
+    "id": "spotting-purpose",
+    "text": "The main purpose of spotting is to guide a falling climber towards the crash pads, not to catch the climber."
+  },
+  {
+    "id": "pads-are-limited",
+    "text": "Crash pads reduce impact, but they cannot remove every risk. A controlled descent remains the safest option."
+  },
+  {
+    "id": "warm-up",
+    "text": "A gradual warm-up prepares fingers, shoulders and the rest of the body for harder climbing."
+  },
+  {
+    "id": "downclimb",
+    "text": "Looking for a safe way down is part of checking a boulder before starting the climb."
+  },
+  {
+    "id": "temperature-friction",
+    "text": "Granite friction often feels different as temperature and humidity change during the day."
+  },
+  {
+    "id": "skin-rest",
+    "text": "Granite can be demanding on the skin, so short breaks may help both performance and recovery."
+  },
+  {
+    "id": "quiet-nature",
+    "text": "Keeping noise low helps protect the atmosphere of the area and avoids disturbing wildlife and other visitors."
+  },
+  {
+    "id": "leave-no-trace",
+    "text": "Take tape, food packaging and all other waste back with you, even if it was left by someone else."
+  },
+  {
+    "id": "paths",
+    "text": "Using existing paths limits erosion and reduces damage to the vegetation around the boulders."
+  },
+  {
+    "id": "tick-marks",
+    "text": "Remove tick marks after climbing so that the rock remains clean and the next climber can solve the moves independently."
+  },
+  {
+    "id": "project-definition",
+    "text": "In this guide, a Project is a line that has not yet received a confirmed grade."
+  },
+  {
+    "id": "flash-definition",
+    "text": "A flash means completing a boulder on the first attempt, even if the climber has already received information about the moves."
+  },
+  {
+    "id": "beta",
+    "text": "Climbers often call information about the movements and sequence of a problem beta."
+  },
+  {
+    "id": "font-scale",
+    "text": "The Fontainebleau scale uses numbers, letters and plus signs to describe increasing bouldering difficulty."
+  },
+  {
+    "id": "different-solutions",
+    "text": "The same boulder can have several good solutions because body size, flexibility and preferred technique differ between climbers."
+  }
+]

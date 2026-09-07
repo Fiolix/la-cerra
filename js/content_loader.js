@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260907-news-facts-1";
+const ASSET_VERSION = "20260907-news-facts-2";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -176,6 +176,10 @@ async function loadPage(page) {
       if (loadId !== activeLoadId) return;
       module.initRegisterForm();
     }
+
+    const factsModule = await import(`/la-cerra/js/facts_loader.js?v=${ASSET_VERSION}`);
+    if (loadId !== activeLoadId) return;
+    await factsModule.showNextFact();
 
     if (!handledScroll) restoreScrollPosition();
     document.activeElement?.blur();
