@@ -3,6 +3,7 @@ html {
   max-width: 100%;
   overflow-x: hidden;
   overflow-x: clip;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -12,6 +13,7 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   overflow-x: clip;
+  overscroll-behavior-x: none;
   background: #f4f4f4;
   color: #333;
 }
