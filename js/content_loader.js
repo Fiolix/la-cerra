@@ -1,9 +1,10 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260905-overview-stats-2";
+const ASSET_VERSION = "20260907-news-facts-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
+  news: "news.html",
   bouldering: "bouldering.html",
   la_cerra: "la_cerra.html",
   "la-cerra": "la_cerra.html",
@@ -102,6 +103,17 @@ async function loadPage(page) {
       const module = await import(`/la-cerra/js/start_account.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.initStartAccount();
+
+      const newsModule = await import(`/la-cerra/js/news_loader.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await newsModule.initStartNews();
+    }
+
+    if (basePage === "news.html") {
+      const module = await import(`/la-cerra/js/news_loader.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await module.initNewsPage(anchor);
+      handledScroll = Boolean(anchor);
     }
 
     if (basePage === "profile.html") {

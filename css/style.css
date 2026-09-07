@@ -89,6 +89,144 @@ section, aside {
   border-radius: 0.3rem;
 }
 
+.content-page-header {
+  margin-bottom: 1rem;
+}
+
+.content-page-header h2,
+.content-page-header p {
+  margin: 0 0 0.4rem;
+}
+
+.news-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.news-card,
+.news-teaser-card {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.news-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 28%) 1fr;
+}
+
+.news-image {
+  min-height: 180px;
+  background: #e8eceb;
+}
+
+.news-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.news-card-content {
+  padding: 1rem;
+}
+
+.news-card-content h2,
+.news-card-content h3,
+.news-card-content p {
+  margin-top: 0;
+}
+
+.news-date {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.news-teaser-text {
+  margin-bottom: 0.65rem;
+}
+
+.news-details summary {
+  display: inline-block;
+  color: #384e4d;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.news-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.news-details summary::marker {
+  content: '';
+}
+
+.news-details summary:focus-visible,
+.news-read-more:focus-visible,
+.all-news-link a:focus-visible {
+  outline: 2px solid #384e4d;
+  outline-offset: 3px;
+}
+
+.news-less-label,
+.news-details[open] .news-more-label {
+  display: none;
+}
+
+.news-details[open] .news-less-label {
+  display: inline;
+}
+
+.news-full-text {
+  margin-top: 0.8rem;
+}
+
+.news-full-text p:last-child {
+  margin-bottom: 0;
+}
+
+.start-news-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.news-teaser-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.news-teaser-card .news-image {
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+}
+
+.news-teaser-card .news-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.news-read-more {
+  margin-top: auto;
+  color: #384e4d;
+  font-weight: bold;
+}
+
+.all-news-link {
+  margin: 1rem 0 0;
+  text-align: right;
+}
+
+.all-news-link a {
+  color: #384e4d;
+  font-weight: bold;
+}
+
 button {
   display: block;
   width: 100%;
@@ -121,6 +259,16 @@ footer a {
     width: 3rem;
     height: 3rem;
     font-size: 1.85rem;
+  }
+
+  .news-card,
+  .start-news-list {
+    grid-template-columns: 1fr;
+  }
+
+  .news-card .news-image {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
   }
 }
 

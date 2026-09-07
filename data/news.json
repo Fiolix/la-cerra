@@ -1,0 +1,50 @@
+[
+  {
+    "id": "sushi-free-online",
+    "date": "2026-09-05",
+    "title": "Sushi-Free is now online",
+    "image": "/la-cerra/img/bouldering/la_cerra/sushi-free/sushi-free_1a.jpg",
+    "imageAlt": "Granite boulder in the Sushi-Free sector",
+    "teaser": "The Sushi-Free sector is now available with its map, boulders and routes.",
+    "text": [
+      "Sushi-Free has been added to the La Cerra guide. The sector page currently includes nine boulders, the corresponding route information and a detailed sector map.",
+      "The overview will continue to grow as descriptions and further information are added."
+    ]
+  },
+  {
+    "id": "interactive-sector-map",
+    "date": "2026-09-04",
+    "title": "Explore La Cerra from the map",
+    "image": "/la-cerra/img/bouldering/la_cerra/la_cerra_map.jpg",
+    "imageAlt": "Overview map of the La Cerra bouldering sectors",
+    "teaser": "The La Cerra overview map now links directly to all eight sector pages.",
+    "text": [
+      "The coloured sector markers and their names can be selected directly on the overview map. This provides a quick route from the general La Cerra page to each individual sector.",
+      "A compact sector menu remains available below the map as an alternative way to navigate."
+    ]
+  },
+  {
+    "id": "route-tracking-update",
+    "date": "2026-09-03",
+    "title": "Route tracking improvements",
+    "image": "/la-cerra/img/bouldering/la_cerra/somewhere/somewhere_1.jpg",
+    "imageAlt": "Boulder in the Somewhere sector",
+    "teaser": "Climbed routes are easier to recognise and manage throughout the guide.",
+    "text": [
+      "Routes already stored in a personal tick list are marked directly on the sector pages. Projects without a confirmed grade cannot be added accidentally.",
+      "The profile provides an overview of climbed routes, grades and personal statistics."
+    ]
+  },
+  {
+    "id": "sector-pages-growing",
+    "date": "2026-09-02",
+    "title": "The sector guide is growing",
+    "image": "/la-cerra/img/bouldering/la_cerra/la_sportiva/la_sportiva_3a.jpg",
+    "imageAlt": "Granite boulder in the La Sportiva sector",
+    "teaser": "Additional La Cerra sector pages are ready to receive maps, descriptions and route data.",
+    "text": [
+      "The guide structure now includes Somewhere, La Sportiva, Sushi-Free, Bermuda Triangle, 2nd Life, Stuntblocs, Monte Lu Bagnu and Monte Pulchiana.",
+      "The individual pages will be completed step by step as maps, photographs and verified route information become available."
+    ]
+  }
+]
