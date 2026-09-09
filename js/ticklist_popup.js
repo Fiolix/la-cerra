@@ -18,7 +18,8 @@ async function validateRoutesForTicklist(routeIds) {
     const { data, error } = await supabase
       .from('routes')
       .select('uuid, grad')
-      .in('uuid', uniqueRouteIds);
+      .in('uuid', uniqueRouteIds)
+      .is('archived_at', null);
 
     if (error) {
       console.error('Route validation failed:', error);

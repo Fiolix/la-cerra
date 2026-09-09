@@ -2,7 +2,7 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20260905-stability-1';
+import { initTicklistTable } from './ticklist_table.js?v=20260909-admin-routes-1';
 import { summarizeTicks } from './profile_stats.js?v=20260905-stability-1';
 
 let authListenerBound = false;

@@ -135,7 +135,8 @@ export async function loadRoutenDiagramm(sektorName) {
     routeResult = await supabase
       .from("routes")
       .select("grad")
-      .in("block_id", blockIds);
+      .in("block_id", blockIds)
+      .is("archived_at", null);
   } catch (error) {
     console.error("❌ Fehler beim Laden der Routen:", error);
     showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
@@ -212,7 +213,8 @@ export async function loadLaCerraDiagramm() {
     routeResult = await supabase
       .from('routes')
       .select('grad')
-      .in('block_id', blocks.map(block => block.id));
+      .in('block_id', blocks.map(block => block.id))
+      .is('archived_at', null);
   } catch (error) {
     console.error('La Cerra route statistics request failed:', error);
     routeCount.textContent = '—';

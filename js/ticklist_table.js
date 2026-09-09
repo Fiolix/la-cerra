@@ -3,7 +3,7 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20260905-stability-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
 
 // Schöne Anzeigenamen für Sektoren (Slug -> Label)
 const SEKTOR_LABELS = {
@@ -80,6 +80,7 @@ export async function initTicklistTable(userId, onDataChanged = null) {
       route:route_id(
         name,
         grad,
+        archived_at,
         block:block_id(
           name,
           nummer,
@@ -328,7 +329,7 @@ for (const entry of pageItems) {
 
   html += `
     <tr>
-      <td class="ticklist-route">${entry.route?.name ?? '-'}</td>
+      <td class="ticklist-route">${entry.route?.name ?? '-'}${entry.route?.archived_at ? ' <span class="ticklist-archived">Archived</span>' : ''}</td>
       <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
       ${tdFlash}
       ${tdRating}

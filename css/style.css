@@ -1409,8 +1409,27 @@ button.secondary-button:focus-visible {
 
 .admin-header h2,
 .admin-header p,
+.admin-browser-heading h3,
 .admin-route-form h3 {
   margin-top: 0;
+}
+
+.admin-browser-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin-browser-heading h3 {
+  margin-bottom: 0;
+}
+
+.admin-browser-heading button {
+  width: auto;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .admin-workspace {
@@ -1439,6 +1458,7 @@ button.secondary-button:focus-visible {
 .admin-filters input,
 .admin-filters select,
 .admin-route-form input,
+.admin-route-form select,
 .admin-route-form textarea {
   width: 100%;
   padding: 0.55rem 0.6rem;
@@ -1450,9 +1470,43 @@ button.secondary-button:focus-visible {
   font: inherit;
 }
 
-.admin-route-form input[readonly] {
-  background: #f1f3f2;
+.admin-route-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.admin-route-fields:disabled {
+  opacity: 0.7;
+}
+
+.admin-block-preview {
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.45rem;
+  background: #f6f8f7;
+}
+
+.admin-block-preview img {
+  display: block;
+  width: 100%;
+  max-height: 26rem;
+  object-fit: contain;
+  border-radius: 0.3rem;
+  background: #fff;
+}
+
+.admin-block-preview figcaption {
+  margin-top: 0.5rem;
   color: #5e6664;
+  font-size: 0.9rem;
+}
+
+.admin-block-preview .form-note {
+  margin: 0;
+  text-align: center;
 }
 
 .admin-list-label {
@@ -1486,6 +1540,42 @@ button.secondary-button:focus-visible {
   color: #384e4d;
 }
 
+.admin-route-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.admin-route-actions button {
+  width: auto;
+  margin: 0;
+}
+
+.admin-route-actions button[hidden],
+.admin-block-preview[hidden],
+.admin-block-preview img[hidden],
+.admin-block-preview figcaption[hidden] {
+  display: none !important;
+}
+
+.admin-route-actions .btn-danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ticklist-archived {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.08rem 0.35rem;
+  border-radius: 0.25rem;
+  background: #e7edec;
+  color: #5e6664;
+  font-size: 0.75rem;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
 @media (max-width: 759px) {
   .admin-workspace,
   .admin-filters,
@@ -1495,6 +1585,10 @@ button.secondary-button:focus-visible {
 
   .admin-route-select {
     min-height: 14rem;
+  }
+
+  .admin-route-actions button {
+    flex: 1 1 100%;
   }
 }
 

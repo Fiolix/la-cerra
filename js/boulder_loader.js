@@ -2,7 +2,7 @@ import { supabase } from './supabase.js';
 
 import { getPublicTickStats } from './tick_stats_loader.js?v=20260905-stability-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20260905-stability-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
 import { isProjectGrade } from './route_rules.js?v=20260905-stability-1';
 
 let authRefreshTimer = null;
@@ -140,7 +140,7 @@ if (dropdown) {
   try {
     [blockResult, routeResult] = await Promise.all([
       supabase.from('blocks').select('*').eq('sektor', sektor).order('nummer'),
-      supabase.from('routes').select('*')
+      supabase.from('routes').select('*').is('archived_at', null)
     ]);
   } catch (error) {
     console.error('Boulder data request failed:', error);
