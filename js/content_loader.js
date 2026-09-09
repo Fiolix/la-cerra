@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260907-admin-1";
+const ASSET_VERSION = "20260909-secure-login-1";
 
 const PAGE_ALIASES = {
   start: "start.html",

@@ -143,37 +143,21 @@ async function handleLogin(event) {
   status.textContent = 'Logging in…';
 
   try {
-    if (!identifier.includes('@')) {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('user_id')
-        .eq('username', identifier)
-        .maybeSingle();
+    let data;
+    let error;
 
-      if (profileError) throw profileError;
-      if (!profile) {
-        status.textContent = 'This username was not found. Check the spelling.';
-        return;
-      }
-
-      const { data: userRecord, error: userError } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('user_id', profile.user_id)
-        .maybeSingle();
-
-      if (userError || !userRecord?.email) {
-        status.textContent = 'Login is currently unavailable. Please try again later.';
-        return;
-      }
-
-      identifier = userRecord.email;
+    if (identifier.includes('@')) {
+      const result = await supabase.auth.signInWithPassword({
+        email: identifier,
+        password
+      });
+      data = result.data;
+      error = result.error;
+    } else {
+      const result = await signInWithUsername(identifier, password);
+      data = result.data;
+      error = result.error;
     }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: identifier,
-      password
-    });
 
     if (error || !data?.session) {
       status.textContent = 'Username or password is incorrect.';
@@ -189,6 +173,21 @@ async function handleLogin(event) {
   } finally {
     if (document.body.contains(loginButton)) loginButton.disabled = false;
   }
+}
+
+async function signInWithUsername(username, password) {
+  const { data: response, error: functionError } = await supabase.functions.invoke('username_login', {
+    body: { username, password }
+  });
+
+  if (functionError || !response?.access_token || !response?.refresh_token) {
+    return { data: null, error: functionError || new Error('Invalid username login response.') };
+  }
+
+  return supabase.auth.setSession({
+    access_token: response.access_token,
+    refresh_token: response.refresh_token
+  });
 }
 
 function renderLoggedIn(username, message = '', isAdmin = false) {

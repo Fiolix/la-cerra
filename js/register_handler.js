@@ -20,7 +20,7 @@ export async function initRegisterForm() {
 
   newForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const username = usernameInput.value.trim();
+    const username = usernameInput.value.normalize("NFKC").trim();
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
@@ -35,13 +35,21 @@ export async function initRegisterForm() {
       return;
     }
 
-    const { data: existing, error: nameCheckError } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("username", username)
-      .maybeSingle();
+    if (username.length < 3 || username.length > 30 || !/^[\p{L}\p{N}_.-]+$/u.test(username)) {
+      alert("Der Username muss 3 bis 30 Zeichen lang sein und darf nur Buchstaben, Zahlen, Punkt, Bindestrich und Unterstrich enthalten.");
+      return;
+    }
 
-    if (existing) {
+    const { data: usernameAvailable, error: nameCheckError } = await supabase
+      .rpc("is_username_available", { candidate: username });
+
+    if (nameCheckError) {
+      console.error("Username availability check failed:", nameCheckError);
+      alert("Der Username kann derzeit nicht geprüft werden. Bitte versuche es später erneut.");
+      return;
+    }
+
+    if (usernameAvailable !== true) {
       alert("Dieser Username ist bereits vergeben.");
       return;
     }
