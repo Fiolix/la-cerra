@@ -1661,6 +1661,52 @@ button.secondary-button:focus-visible {
   gap: 0.45rem;
 }
 
+.admin-user-summary {
+  margin: 0 0 1rem;
+  padding: 0.85rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.45rem;
+  background: #f6f8f7;
+}
+
+.admin-user-summary dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem 1rem;
+  margin: 0;
+}
+
+.admin-user-summary dl > div {
+  min-width: 0;
+}
+
+.admin-user-summary dt {
+  color: #5e6664;
+  font-size: 0.82rem;
+}
+
+.admin-user-summary dd {
+  overflow-wrap: anywhere;
+  margin: 0.15rem 0 0;
+  font-weight: 600;
+}
+
+.admin-user-confirmation {
+  margin-top: 0.8rem;
+  padding: 0.8rem;
+  border: 1px solid #c8d3d0;
+  border-radius: 0.4rem;
+  background: #f6f8f7;
+}
+
+.admin-user-confirmation[hidden] {
+  display: none;
+}
+
+.admin-user-confirmation p {
+  margin: 0 0 0.65rem;
+}
+
 .admin-sector-state {
   color: #5e6664;
   font-size: 0.9rem;
@@ -1712,6 +1758,10 @@ button.secondary-button:focus-visible {
 
   .admin-sector-confirmation {
     max-width: none;
+  }
+
+  .admin-user-summary dl {
+    grid-template-columns: 1fr;
   }
 }
 

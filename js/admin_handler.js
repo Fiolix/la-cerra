@@ -1,5 +1,6 @@
 import { supabase } from './supabase.js';
 import { initBlockAdministration } from './admin_blocks.js?v=20260912-admin-blocks-2';
+import { initUserAdministration } from './admin_users.js?v=20260912-admin-users-1';
 import { loadSectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-2';
 
 let authListenerBound = false;
@@ -52,7 +53,7 @@ export async function initAdmin() {
     }
 
     renderAdminShell(root);
-    await loadAdminData(root);
+    await loadAdminData(root, sessionData.session.user.id);
   } catch (error) {
     console.error('Admin area could not be initialized:', error);
     renderAdminError(root);
@@ -110,11 +111,12 @@ function renderAdminShell(root) {
   root.innerHTML = `
     <section class="admin-header">
       <h2>Administration</h2>
-      <p>Manage routes, blocks and sector visibility.</p>
+      <p>Manage routes, blocks, sectors and user accounts.</p>
       <div class="admin-tabs" role="tablist" aria-label="Administration areas">
         <button type="button" role="tab" aria-selected="true" data-admin-tab="routes">Routes</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="blocks">Blocks</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="sectors">Sectors</button>
+        <button type="button" role="tab" aria-selected="false" data-admin-tab="users">Users</button>
       </div>
     </section>
 
@@ -213,6 +215,10 @@ function renderAdminShell(root) {
     </section>
 
     <section data-admin-panel="sectors" data-admin-sector-settings hidden></section>
+
+    <section data-admin-panel="users" hidden>
+      <div data-admin-users-root></div>
+    </section>
   `;
 
   root.querySelectorAll('[data-admin-tab]').forEach(tab => {
@@ -240,7 +246,7 @@ function renderAdminShell(root) {
   root.querySelector('[data-admin-delete-route]')?.addEventListener('click', permanentlyDeleteSelectedRoute);
 }
 
-async function loadAdminData(root) {
+async function loadAdminData(root, currentUserId) {
   const count = root.querySelector('#admin-route-count');
   if (count) count.textContent = 'Loading routes…';
 
@@ -271,6 +277,10 @@ async function loadAdminData(root) {
       populateSectorControls();
       renderRouteOptions();
     }
+  });
+  await initUserAdministration({
+    root: root.querySelector('[data-admin-users-root]'),
+    currentUserId
   });
 }
 
