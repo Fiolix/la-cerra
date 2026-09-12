@@ -4,7 +4,7 @@ import {
   applySectorVisibility,
   invalidateSectorVisibilityCache,
   sectorLabel
-} from './sector_visibility.js?v=20260912-admin-blocks-1';
+} from './sector_visibility.js?v=20260912-admin-blocks-2';
 
 const IMAGE_PATTERN = /^[a-z0-9._-]+\.(?:jpe?g|png|webp)$/i;
 
@@ -340,9 +340,20 @@ function renderSectorAdministration({ root, sectorSettings, settingsAvailable })
               <strong>${sector.label}</strong>
               <span class="admin-sector-state">${sector.is_visible ? 'Visible' : 'Hidden'}</span>
             </div>
-            <button type="button" class="secondary-button" data-admin-toggle-sector="${sector.slug}" ${settingsAvailable ? '' : 'disabled'}>
-              ${sector.is_visible ? 'Hide sector' : 'Show sector'}
-            </button>
+            <div class="admin-sector-controls">
+              <button type="button" class="secondary-button" data-admin-toggle-sector="${sector.slug}" ${settingsAvailable ? '' : 'disabled'}>
+                ${sector.is_visible ? 'Hide sector' : 'Show sector'}
+              </button>
+              <div class="admin-sector-confirmation" data-admin-sector-confirmation="${sector.slug}" hidden>
+                <p>${sector.is_visible ? 'Hide' : 'Show'} ${sector.label} on the public website?</p>
+                <div class="admin-sector-confirmation-actions">
+                  <button type="button" data-admin-confirm-sector="${sector.slug}">
+                    ${sector.is_visible ? 'Confirm hide' : 'Confirm show'}
+                  </button>
+                  <button type="button" class="secondary-button" data-admin-cancel-sector="${sector.slug}">Cancel</button>
+                </div>
+              </div>
+            </div>
           </article>
         `).join('')}
       </div>
@@ -351,17 +362,32 @@ function renderSectorAdministration({ root, sectorSettings, settingsAvailable })
   `;
 
   panel.querySelectorAll('[data-admin-toggle-sector]').forEach(button => {
-    button.addEventListener('click', async () => {
-      const sector = settings.find(item => item.slug === button.dataset.adminToggleSector);
+    const slug = button.dataset.adminToggleSector;
+    const confirmation = panel.querySelector(`[data-admin-sector-confirmation="${slug}"]`);
+    const confirmButton = panel.querySelector(`[data-admin-confirm-sector="${slug}"]`);
+    const cancelButton = panel.querySelector(`[data-admin-cancel-sector="${slug}"]`);
+
+    button.addEventListener('click', () => {
+      panel.querySelectorAll('[data-admin-sector-confirmation]').forEach(item => {
+        item.hidden = item !== confirmation;
+      });
+      confirmation.hidden = false;
+      confirmButton.focus();
+    });
+
+    cancelButton?.addEventListener('click', () => {
+      confirmation.hidden = true;
+      button.focus();
+    });
+
+    confirmButton?.addEventListener('click', async () => {
+      const sector = settings.find(item => item.slug === slug);
       if (!sector) return;
       const nextVisible = !sector.is_visible;
-      const action = nextVisible ? 'show' : 'hide';
-      const confirmed = window.confirm(
-        `${nextVisible ? 'Show' : 'Hide'} ${sector.label} on the public website?\n\nBlocks and routes will not be deleted.`
-      );
-      if (!confirmed) return;
 
       button.disabled = true;
+      confirmButton.disabled = true;
+      cancelButton.disabled = true;
       const status = panel.querySelector('[data-admin-sector-status]');
       status.textContent = `${nextVisible ? 'Showing' : 'Hiding'} sector…`;
       try {
@@ -376,6 +402,9 @@ function renderSectorAdministration({ root, sectorSettings, settingsAvailable })
         const row = panel.querySelector(`[data-admin-sector-row="${sector.slug}"]`);
         row.querySelector('.admin-sector-state').textContent = sector.is_visible ? 'Visible' : 'Hidden';
         button.textContent = sector.is_visible ? 'Hide sector' : 'Show sector';
+        confirmation.querySelector('p').textContent = `${sector.is_visible ? 'Hide' : 'Show'} ${sector.label} on the public website?`;
+        confirmButton.textContent = sector.is_visible ? 'Confirm hide' : 'Confirm show';
+        confirmation.hidden = true;
         status.textContent = `${sector.label} is now ${sector.is_visible ? 'visible' : 'hidden'}.`;
         invalidateSectorVisibilityCache();
         await applySectorVisibility(document);
@@ -384,6 +413,8 @@ function renderSectorAdministration({ root, sectorSettings, settingsAvailable })
         status.textContent = 'Sector visibility could not be changed. No sector data was deleted.';
       } finally {
         button.disabled = false;
+        confirmButton.disabled = false;
+        cancelButton.disabled = false;
       }
     });
   });

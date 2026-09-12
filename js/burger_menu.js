@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-2';
 
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Menü existiert schon? → nicht erneut einfügen

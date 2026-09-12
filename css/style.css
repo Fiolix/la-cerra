@@ -1632,6 +1632,35 @@ button.secondary-button:focus-visible {
   white-space: nowrap;
 }
 
+.admin-sector-controls {
+  display: grid;
+  justify-items: end;
+  gap: 0.55rem;
+}
+
+.admin-sector-confirmation {
+  max-width: 22rem;
+  padding: 0.7rem;
+  border: 1px solid #c8d3d0;
+  border-radius: 0.4rem;
+  background: #fff;
+}
+
+.admin-sector-confirmation[hidden] {
+  display: none;
+}
+
+.admin-sector-confirmation p {
+  margin: 0 0 0.55rem;
+}
+
+.admin-sector-confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
 .admin-sector-state {
   color: #5e6664;
   font-size: 0.9rem;
@@ -1675,6 +1704,14 @@ button.secondary-button:focus-visible {
 
   .admin-sector-row button {
     width: 100%;
+  }
+
+  .admin-sector-controls {
+    justify-items: stretch;
+  }
+
+  .admin-sector-confirmation {
+    max-width: none;
   }
 }
 
