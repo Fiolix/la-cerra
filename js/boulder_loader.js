@@ -3,7 +3,7 @@ import { supabase } from './supabase.js';
 import { getPublicTickStats } from './tick_stats_loader.js?v=20260905-stability-1';
 
 import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
-import { isProjectGrade } from './route_rules.js?v=20260905-stability-1';
+import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
 
 let authRefreshTimer = null;
 

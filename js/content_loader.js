@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260912-pdf-content-1";
+const ASSET_VERSION = "20260913-bermuda-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
