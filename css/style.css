@@ -1414,6 +1414,35 @@ button.secondary-button:focus-visible {
   margin-top: 0;
 }
 
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.admin-tabs button {
+  width: auto;
+  margin: 0;
+  border: 1px solid #384e4d;
+  background: #fff;
+  color: #384e4d;
+}
+
+.admin-tabs button[aria-selected="true"] {
+  background: #384e4d;
+  color: #fff;
+}
+
+.admin-panel-intro {
+  margin-top: 0;
+}
+
+[data-admin-panel][hidden],
+[data-sector-slug][hidden] {
+  display: none !important;
+}
+
 .admin-browser-heading {
   display: flex;
   align-items: center;
@@ -1564,6 +1593,50 @@ button.secondary-button:focus-visible {
   opacity: 0.5;
 }
 
+.admin-settings-card {
+  padding: 1rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.admin-settings-card h3 {
+  margin-top: 0;
+}
+
+.admin-sector-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.admin-sector-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.4rem;
+  background: #f6f8f7;
+}
+
+.admin-sector-row > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.admin-sector-row button {
+  width: auto;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.admin-sector-state {
+  color: #5e6664;
+  font-size: 0.9rem;
+}
+
 .ticklist-archived {
   display: inline-block;
   margin-left: 0.35rem;
@@ -1589,6 +1662,19 @@ button.secondary-button:focus-visible {
 
   .admin-route-actions button {
     flex: 1 1 100%;
+  }
+
+  .admin-tabs button {
+    flex: 1 1 0;
+  }
+
+  .admin-sector-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-sector-row button {
+    width: 100%;
   }
 }
 

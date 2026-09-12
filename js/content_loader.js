@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260909-admin-routes-3";
+const ASSET_VERSION = "20260912-admin-blocks-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -99,6 +99,17 @@ async function loadPage(page) {
     contentElement.innerHTML = html;
 
     let handledScroll = false;
+    let sectorUnavailable = false;
+
+    const sectorModule = await import(`/la-cerra/js/sector_visibility.js?v=${ASSET_VERSION}`);
+    if (loadId !== activeLoadId) return;
+    await sectorModule.applySectorVisibility(contentElement);
+
+    const sectorSlug = contentElement.querySelector('[data-sektor]')?.dataset.sektor;
+    if (sectorSlug && !(await sectorModule.isSectorVisible(sectorSlug))) {
+      showSectorUnavailable(contentElement, sectorModule.sectorLabel(sectorSlug));
+      sectorUnavailable = true;
+    }
 
     if (basePage === "start.html") {
       const module = await import(`/la-cerra/js/start_account.js?v=${ASSET_VERSION}`);
@@ -129,7 +140,7 @@ async function loadPage(page) {
       await module.initAdmin();
     }
 
-    if (html.includes('id="boulder-blocks"')) {
+    if (!sectorUnavailable && html.includes('id="boulder-blocks"')) {
       const module = await import(`/la-cerra/js/boulder_loader.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.loadBlocks();
@@ -152,19 +163,19 @@ async function loadPage(page) {
       }
     }
 
-    if (html.includes("sector-summary")) {
+    if (!sectorUnavailable && html.includes("sector-summary")) {
       const module = await import(`/la-cerra/js/summary_toggle.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       module.setupSummaryToggle();
     }
 
-    if (html.includes('id="sector-select"')) {
+    if (!sectorUnavailable && html.includes('id="sector-select"')) {
       const module = await import(`/la-cerra/js/sector_navigation.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       module.setupSectorNavigation();
     }
 
-    if (html.includes('id="routen-diagramm"')) {
+    if (!sectorUnavailable && html.includes('id="routen-diagramm"')) {
       const sektorName = document.querySelector('[data-sektor]')?.dataset.sektor
         || basePage.replace(".html", "");
       const module = await import(`/la-cerra/js/routen_diagram_loader.js?v=${ASSET_VERSION}`);
@@ -172,7 +183,7 @@ async function loadPage(page) {
       await module.loadRoutenDiagramm(sektorName);
     }
 
-    if (html.includes('id="la-cerra-routen-diagramm"')) {
+    if (!sectorUnavailable && html.includes('id="la-cerra-routen-diagramm"')) {
       const module = await import(`/la-cerra/js/routen_diagram_loader.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.loadLaCerraDiagramm();
@@ -247,6 +258,19 @@ function showLoadError(container, page) {
       <h2>Page could not be loaded</h2>
       <p>This page is currently unavailable. Please try again later.</p>
       <button type="button" data-retry-page="${encodeURIComponent(page)}">Try again</button>
+    </section>
+  `;
+}
+
+function showSectorUnavailable(container, sectorName) {
+  container.innerHTML = `
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="#" data-page="la_cerra.html">La Cerra</a> › ${sectorName}
+    </nav>
+    <section class="account-notice" role="status">
+      <h2>${sectorName}</h2>
+      <p>This sector is temporarily unavailable. No block or route data has been deleted.</p>
+      <button type="button" data-page="la_cerra.html">Back to La Cerra</button>
     </section>
   `;
 }

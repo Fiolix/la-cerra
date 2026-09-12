@@ -1,4 +1,6 @@
 import { supabase } from './supabase.js';
+import { initBlockAdministration } from './admin_blocks.js?v=20260912-admin-blocks-1';
+import { loadSectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-1';
 
 let authListenerBound = false;
 let blocks = [];
@@ -107,11 +109,18 @@ function renderAdminShell(root) {
 
   root.innerHTML = `
     <section class="admin-header">
-      <h2>Route administration</h2>
-      <p>Create, edit and archive routes. Archived routes remain in existing ticklists.</p>
+      <h2>Administration</h2>
+      <p>Manage routes, blocks and sector visibility.</p>
+      <div class="admin-tabs" role="tablist" aria-label="Administration areas">
+        <button type="button" role="tab" aria-selected="true" data-admin-tab="routes">Routes</button>
+        <button type="button" role="tab" aria-selected="false" data-admin-tab="blocks">Blocks</button>
+        <button type="button" role="tab" aria-selected="false" data-admin-tab="sectors">Sectors</button>
+      </div>
     </section>
 
-    <section class="admin-workspace">
+    <section data-admin-panel="routes">
+      <p class="admin-panel-intro">Create, edit and archive routes. Archived routes remain in existing ticklists.</p>
+      <div class="admin-workspace">
       <div class="admin-browser">
         <div class="admin-browser-heading">
           <h3>Routes</h3>
@@ -196,8 +205,19 @@ function renderAdminShell(root) {
         <p class="form-note" data-admin-tick-usage></p>
         <p class="admin-save-status" data-admin-save-status role="status" aria-live="polite"></p>
       </form>
+      </div>
     </section>
+
+    <section data-admin-panel="blocks" hidden>
+      <div data-admin-blocks-root></div>
+    </section>
+
+    <section data-admin-panel="sectors" data-admin-sector-settings hidden></section>
   `;
+
+  root.querySelectorAll('[data-admin-tab]').forEach(tab => {
+    tab.addEventListener('click', () => activateAdminTab(root, tab.dataset.adminTab));
+  });
 
   root.querySelector('#admin-sector-filter')?.addEventListener('change', renderRouteOptions);
   root.querySelector('#admin-route-status')?.addEventListener('change', () => {
@@ -224,9 +244,10 @@ async function loadAdminData(root) {
   const count = root.querySelector('#admin-route-count');
   if (count) count.textContent = 'Loading routes…';
 
-  const [blockResult, routeResult] = await Promise.all([
+  const [blockResult, routeResult, visibilityResult] = await Promise.all([
     supabase.from('blocks').select('id, sektor, nummer, name, hoehe, bild').order('sektor').order('nummer'),
-    supabase.from('routes').select(routeSelection())
+    supabase.from('routes').select(routeSelection()),
+    loadSectorVisibility({ force: true })
   ]);
 
   if (blockResult.error) throw blockResult.error;
@@ -240,6 +261,28 @@ async function loadAdminData(root) {
   populateSectorControls();
   renderRouteOptions();
   resetEditor();
+  initBlockAdministration({
+    root: root.querySelector('[data-admin-blocks-root]'),
+    blocks,
+    routes,
+    sectorSettings: visibilityResult.sectors,
+    settingsAvailable: visibilityResult.available,
+    onBlocksChanged: () => {
+      populateSectorControls();
+      renderRouteOptions();
+    }
+  });
+}
+
+function activateAdminTab(root, tabName) {
+  root.querySelectorAll('[data-admin-tab]').forEach(tab => {
+    const active = tab.dataset.adminTab === tabName;
+    tab.setAttribute('aria-selected', String(active));
+    tab.tabIndex = active ? 0 : -1;
+  });
+  root.querySelectorAll('[data-admin-panel]').forEach(panel => {
+    panel.hidden = panel.dataset.adminPanel !== tabName;
+  });
 }
 
 function populateSectorControls() {

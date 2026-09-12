@@ -1,3 +1,5 @@
+import { applySectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-1';
+
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Menü existiert schon? → nicht erneut einfügen
   if (document.querySelector("nav.slide-menu")) return;
@@ -22,14 +24,14 @@ document.addEventListener("DOMContentLoaded", function () {
           <li class="toggleable">
             <a href="#" data-page="la_cerra">La Cerra</a>
             <ul>
-              <li><a href="#" data-page="somewhere">Somewhere</a></li>
-              <li><a href="#" data-page="la_sportiva">La Sportiva</a></li>
-              <li><a href="#" data-page="sushi_free">Sushi-Free</a></li>
-              <li><a href="#" data-page="bermuda_triangle">Bermuda Triangle</a></li>
-              <li><a href="#" data-page="second_life">2nd Life</a></li>
-              <li><a href="#" data-page="stuntblocs">Stuntblocs</a></li>
-              <li><a href="#" data-page="monte_lu_bagnu">Monte Lu Bagnu</a></li>
-              <li><a href="#" data-page="monte_pulchiana">Monte Pulchiana</a></li>
+              <li data-sector-slug="somewhere"><a href="#" data-page="somewhere">Somewhere</a></li>
+              <li data-sector-slug="la_sportiva"><a href="#" data-page="la_sportiva">La Sportiva</a></li>
+              <li data-sector-slug="sushi-free"><a href="#" data-page="sushi_free">Sushi-Free</a></li>
+              <li data-sector-slug="bermuda_triangle"><a href="#" data-page="bermuda_triangle">Bermuda Triangle</a></li>
+              <li data-sector-slug="second_life"><a href="#" data-page="second_life">2nd Life</a></li>
+              <li data-sector-slug="stuntblocs"><a href="#" data-page="stuntblocs">Stuntblocs</a></li>
+              <li data-sector-slug="monte_lu_bagnu"><a href="#" data-page="monte_lu_bagnu">Monte Lu Bagnu</a></li>
+              <li data-sector-slug="monte_pulchiana"><a href="#" data-page="monte_pulchiana">Monte Pulchiana</a></li>
             </ul>
           </li>
           <li><a href="#" data-page="gallura">Gallura</a></li>
@@ -51,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
   `;
 
   document.body.insertBefore(navMenu, document.body.firstChild);
+  applySectorVisibility(navMenu);
   const menuClose = navMenu.querySelector(".menu-close");
 
   document.dispatchEvent(new CustomEvent("loginBlockReady"));
