@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260912-guestbook-delete-1";
+const ASSET_VERSION = "20260912-pdf-content-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -20,6 +20,7 @@ const PAGE_ALIASES = {
   stuntblocs: "stuntblocs.html",
   monte_lu_bagnu: "monte_lu_bagnu.html",
   monte_pulchiana: "monte_pulchiana.html",
+  sardinia: "sardinia.html",
   gallura: "gallura.html",
   register: "register.html",
   profile: "profile.html",
