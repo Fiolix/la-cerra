@@ -1,6 +1,7 @@
 import { supabase } from './supabase.js';
 import { initBlockAdministration } from './admin_blocks.js?v=20260912-admin-blocks-2';
 import { initUserAdministration } from './admin_users.js?v=20260912-account-status-1';
+import { initGuestbookAdministration } from './admin_guestbook.js?v=20260912-guestbook-1';
 import { loadSectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-2';
 
 let authListenerBound = false;
@@ -111,12 +112,13 @@ function renderAdminShell(root) {
   root.innerHTML = `
     <section class="admin-header">
       <h2>Administration</h2>
-      <p>Manage routes, blocks, sectors and user accounts.</p>
+      <p>Manage routes, blocks, sectors, user accounts and guestbook entries.</p>
       <div class="admin-tabs" role="tablist" aria-label="Administration areas">
         <button type="button" role="tab" aria-selected="true" data-admin-tab="routes">Routes</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="blocks">Blocks</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="sectors">Sectors</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="users">Users</button>
+        <button type="button" role="tab" aria-selected="false" data-admin-tab="guestbook">Guestbook</button>
       </div>
     </section>
 
@@ -219,6 +221,10 @@ function renderAdminShell(root) {
     <section data-admin-panel="users" hidden>
       <div data-admin-users-root></div>
     </section>
+
+    <section data-admin-panel="guestbook" hidden>
+      <div data-admin-guestbook-root></div>
+    </section>
   `;
 
   root.querySelectorAll('[data-admin-tab]').forEach(tab => {
@@ -281,6 +287,9 @@ async function loadAdminData(root, currentUserId) {
   await initUserAdministration({
     root: root.querySelector('[data-admin-users-root]'),
     currentUserId
+  });
+  await initGuestbookAdministration({
+    root: root.querySelector('[data-admin-guestbook-root]')
   });
 }
 

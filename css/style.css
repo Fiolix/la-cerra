@@ -1707,6 +1707,157 @@ button.secondary-button:focus-visible {
   margin: 0 0 0.65rem;
 }
 
+/* ===== Guestbook ===== */
+.guestbook-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.guestbook-composer,
+.guestbook-card,
+.guestbook-empty {
+  padding: 1rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.guestbook-login-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.guestbook-login-note p {
+  margin: 0;
+}
+
+.guestbook-login-note button {
+  width: auto;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.guestbook-form textarea {
+  width: 100%;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: 0.65rem;
+  border: 1px solid #c8cecd;
+  border-radius: 0.4rem;
+  background: #fff;
+  color: #333;
+  font: inherit;
+}
+
+.guestbook-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.55rem;
+}
+
+.guestbook-form-actions button {
+  width: auto;
+  margin: 0;
+}
+
+.guestbook-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.guestbook-card > header,
+.guestbook-reply-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.guestbook-card time,
+.guestbook-reply time {
+  color: #68706e;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.guestbook-message,
+.guestbook-reply p,
+.admin-guestbook-message {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.guestbook-message {
+  margin: 0.65rem 0;
+}
+
+.guestbook-replies {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.8rem 0 0.65rem 1.25rem;
+  padding-left: 0.85rem;
+  border-left: 3px solid #d8e2df;
+}
+
+.guestbook-reply {
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.4rem;
+  background: #f6f8f7;
+}
+
+.guestbook-reply p {
+  margin: 0.45rem 0 0;
+}
+
+.guestbook-reply-button {
+  margin-top: 0.35rem !important;
+}
+
+.guestbook-reply-form {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #e1e1e1;
+}
+
+.guestbook-empty {
+  margin: 0;
+  text-align: center;
+  color: #5e6664;
+}
+
+.admin-guestbook-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem 1rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.45rem;
+  background: #f6f8f7;
+}
+
+.admin-guestbook-summary dt {
+  color: #5e6664;
+  font-size: 0.82rem;
+}
+
+.admin-guestbook-summary dd {
+  margin: 0.15rem 0 0;
+  font-weight: 600;
+}
+
+.admin-guestbook-message {
+  margin-bottom: 1rem;
+  padding: 0.85rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.45rem;
+  background: #fff;
+}
+
 .admin-sector-state {
   color: #5e6664;
   font-size: 0.9rem;
@@ -1761,6 +1912,26 @@ button.secondary-button:focus-visible {
   }
 
   .admin-user-summary dl {
+    grid-template-columns: 1fr;
+  }
+
+  .guestbook-login-note,
+  .guestbook-card > header,
+  .guestbook-reply-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .guestbook-login-note button {
+    width: 100%;
+  }
+
+  .guestbook-replies {
+    margin-left: 0.35rem;
+  }
+
+  .admin-guestbook-summary {
     grid-template-columns: 1fr;
   }
 }

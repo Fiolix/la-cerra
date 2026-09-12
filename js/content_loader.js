@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260912-account-status-1";
+const ASSET_VERSION = "20260912-guestbook-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -23,6 +23,7 @@ const PAGE_ALIASES = {
   gallura: "gallura.html",
   register: "register.html",
   profile: "profile.html",
+  guestbook: "guestbook.html",
   admin: "admin.html"
 };
 
@@ -138,6 +139,12 @@ async function loadPage(page) {
       const module = await import(`/la-cerra/js/admin_handler.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.initAdmin();
+    }
+
+    if (basePage === "guestbook.html") {
+      const module = await import(`/la-cerra/js/guestbook_loader.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await module.initGuestbook();
     }
 
     if (!sectorUnavailable && html.includes('id="boulder-blocks"')) {
