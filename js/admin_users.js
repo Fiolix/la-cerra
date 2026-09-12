@@ -6,6 +6,10 @@ const ROLE_LABELS = {
   moderator: 'Moderator',
   admin: 'Administrator'
 };
+const STATUS_LABELS = {
+  active: 'Active',
+  suspended: 'Suspended'
+};
 
 export async function initUserAdministration({ root, currentUserId }) {
   if (!root) return;
@@ -25,6 +29,14 @@ export async function initUserAdministration({ root, currentUserId }) {
               <option value="user">Users</option>
               <option value="moderator">Moderators</option>
               <option value="admin">Administrators</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="admin-user-status-filter">Account status</label>
+            <select id="admin-user-status-filter">
+              <option value="all">All accounts</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
             </select>
           </div>
           <div class="form-field admin-field-wide">
@@ -47,6 +59,7 @@ export async function initUserAdministration({ root, currentUserId }) {
             <div><dt>Registered</dt><dd data-admin-user-created></dd></div>
             <div><dt>Last login</dt><dd data-admin-user-last-login></dd></div>
             <div><dt>Ticklist entries</dt><dd data-admin-user-ticks></dd></div>
+            <div><dt>Account status</dt><dd data-admin-user-account-status></dd></div>
           </dl>
         </div>
 
@@ -64,6 +77,13 @@ export async function initUserAdministration({ root, currentUserId }) {
                 <option value="admin">Administrator</option>
               </select>
             </div>
+            <div class="form-field">
+              <label for="admin-user-account-status">Account status</label>
+              <select id="admin-user-account-status">
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
           </div>
         </fieldset>
 
@@ -79,7 +99,7 @@ export async function initUserAdministration({ root, currentUserId }) {
           </div>
         </div>
 
-        <p class="form-note">The moderator role is reserved for future guestbook or forum moderation. It currently grants no route or user administration rights.</p>
+        <p class="form-note">Suspending an account blocks future logins without deleting its profile or ticklist. The moderator role is reserved for future guestbook moderation and currently grants no route or user administration rights.</p>
         <p class="admin-save-status" data-admin-user-status role="status" aria-live="polite"></p>
       </form>
     </section>
@@ -91,10 +111,12 @@ export async function initUserAdministration({ root, currentUserId }) {
 
   const userSelect = root.querySelector('#admin-user-select');
   const roleFilter = root.querySelector('#admin-user-role-filter');
+  const accountStatusFilter = root.querySelector('#admin-user-status-filter');
   const search = root.querySelector('#admin-user-search');
   const fields = root.querySelector('#admin-user-fields');
   const usernameInput = root.querySelector('#admin-user-username');
   const roleSelect = root.querySelector('#admin-user-role');
+  const accountStatusSelect = root.querySelector('#admin-user-account-status');
   const saveButton = root.querySelector('[data-admin-save-user]');
   const confirmation = root.querySelector('[data-admin-user-confirmation]');
   const confirmButton = root.querySelector('[data-admin-confirm-user]');
@@ -107,16 +129,18 @@ export async function initUserAdministration({ root, currentUserId }) {
 
   function renderUsers() {
     const role = roleFilter.value;
+    const accountStatus = accountStatusFilter.value;
     const term = search.value.normalize('NFKC').trim().toLowerCase();
     const filtered = users.filter(user => {
       if (role !== 'all' && user.role !== role) return false;
+      if (accountStatus !== 'all' && user.account_status !== accountStatus) return false;
       if (!term) return true;
       return `${user.username || ''} ${user.email || ''}`.toLowerCase().includes(term);
     });
 
     userSelect.replaceChildren();
     filtered.forEach(user => {
-      const label = `${user.username || '(no username)'} · ${ROLE_LABELS[user.role] || user.role}`;
+      const label = `${user.username || '(no username)'} · ${ROLE_LABELS[user.role] || user.role} · ${STATUS_LABELS[user.account_status]}`;
       const option = new Option(label, user.user_id);
       option.selected = user.user_id === selectedUserId;
       userSelect.append(option);
@@ -146,7 +170,9 @@ export async function initUserAdministration({ root, currentUserId }) {
     confirmation.hidden = true;
     usernameInput.value = user.username || '';
     roleSelect.value = user.role || 'user';
+    accountStatusSelect.value = user.account_status;
     roleSelect.disabled = user.user_id === currentUserId;
+    accountStatusSelect.disabled = user.user_id === currentUserId;
 
     root.querySelector('[data-admin-user-selection-note]').textContent = user.user_id === currentUserId
       ? 'This is your own administrator account. Its role is protected.'
@@ -155,6 +181,7 @@ export async function initUserAdministration({ root, currentUserId }) {
     root.querySelector('[data-admin-user-created]').textContent = formatDate(user.created_at);
     root.querySelector('[data-admin-user-last-login]').textContent = formatDate(user.last_sign_in_at);
     root.querySelector('[data-admin-user-ticks]').textContent = String(Number(user.tick_count) || 0);
+    root.querySelector('[data-admin-user-account-status]').textContent = STATUS_LABELS[user.account_status];
     root.querySelector('[data-admin-user-summary]').hidden = false;
     status.textContent = '';
   }
@@ -168,7 +195,11 @@ export async function initUserAdministration({ root, currentUserId }) {
     try {
       const { data, error } = await supabase.rpc('admin_list_users');
       if (error) throw error;
-      users = (data || []).map(user => ({ ...user, role: user.role || 'user' }));
+      users = (data || []).map(user => ({
+        ...user,
+        role: user.role || 'user',
+        account_status: user.is_suspended ? 'suspended' : 'active'
+      }));
       selectedUserId = previousSelection && users.some(user => user.user_id === previousSelection)
         ? previousSelection
         : null;
@@ -193,6 +224,7 @@ export async function initUserAdministration({ root, currentUserId }) {
 
     const username = usernameInput.value.normalize('NFKC').trim();
     const role = roleSelect.value;
+    const accountStatus = accountStatusSelect.value;
     if (username.length < 3 || username.length > 30 || !USERNAME_PATTERN.test(username)) {
       status.textContent = 'The username must contain 3 to 30 letters, numbers, dots, hyphens or underscores.';
       usernameInput.focus();
@@ -202,22 +234,32 @@ export async function initUserAdministration({ root, currentUserId }) {
       status.textContent = 'Please select a valid role.';
       return;
     }
+    if (!Object.hasOwn(STATUS_LABELS, accountStatus)) {
+      status.textContent = 'Please select a valid account status.';
+      return;
+    }
     if (user.user_id === currentUserId && role !== 'admin') {
       status.textContent = 'You cannot remove the administrator role from your own account.';
+      return;
+    }
+    if (user.user_id === currentUserId && accountStatus !== 'active') {
+      status.textContent = 'You cannot suspend your own administrator account.';
       return;
     }
 
     const usernameChanged = username !== (user.username || '');
     const roleChanged = role !== user.role;
-    if (!usernameChanged && !roleChanged) {
+    const accountStatusChanged = accountStatus !== user.account_status;
+    if (!usernameChanged && !roleChanged && !accountStatusChanged) {
       status.textContent = 'There are no changes to save.';
       return;
     }
 
-    pendingChanges = { username, role, usernameChanged, roleChanged };
+    pendingChanges = { username, role, accountStatus, usernameChanged, roleChanged, accountStatusChanged };
     const descriptions = [];
     if (usernameChanged) descriptions.push(`change the username to “${username}”`);
     if (roleChanged) descriptions.push(`change the role to ${ROLE_LABELS[role]}`);
+    if (accountStatusChanged) descriptions.push(`${accountStatus === 'suspended' ? 'suspend' : 'reactivate'} the account`);
     root.querySelector('[data-admin-user-confirmation-text]').textContent = `Confirm: ${descriptions.join(' and ')}?`;
     confirmation.hidden = false;
     confirmButton.focus();
@@ -247,9 +289,20 @@ export async function initUserAdministration({ root, currentUserId }) {
         });
         if (error) throw error;
       }
+      if (changes.accountStatusChanged) {
+        const { data, error } = await supabase.functions.invoke('admin_user_status', {
+          body: {
+            user_id: user.user_id,
+            suspended: changes.accountStatus === 'suspended'
+          }
+        });
+        if (error || data?.ok !== true) throw error || new Error(data?.error || 'account_status_update_failed');
+      }
 
       user.username = changes.username;
       user.role = changes.role;
+      user.account_status = changes.accountStatus;
+      user.is_suspended = changes.accountStatus === 'suspended';
       pendingChanges = null;
       renderUsers();
       showUser(user.user_id);
@@ -257,21 +310,31 @@ export async function initUserAdministration({ root, currentUserId }) {
     } catch (error) {
       console.error('User could not be saved:', error);
       const message = String(error?.message || '');
+      let errorMessage;
       if (String(error?.code || '') === '23505' || message.includes('username_taken')) {
-        status.textContent = 'This username is already in use.';
+        errorMessage = 'This username is already in use.';
       } else if (message.includes('cannot_change_own_admin_role')) {
-        status.textContent = 'You cannot remove the administrator role from your own account.';
+        errorMessage = 'You cannot remove the administrator role from your own account.';
+      } else if (message.includes('own administrator account')) {
+        errorMessage = 'You cannot suspend your own administrator account.';
       } else {
-        status.textContent = 'The user could not be saved. Please reload the list before trying again.';
+        errorMessage = 'The user could not be saved. The current account data has been reloaded.';
       }
+      await loadUsers({ preserveSelection: true });
+      status.textContent = errorMessage;
     } finally {
       fields.disabled = false;
       roleSelect.disabled = user.user_id === currentUserId;
+      accountStatusSelect.disabled = user.user_id === currentUserId;
       saveButton.disabled = false;
     }
   }
 
   roleFilter.addEventListener('change', () => {
+    clearEditor();
+    renderUsers();
+  });
+  accountStatusFilter.addEventListener('change', () => {
     clearEditor();
     renderUsers();
   });
