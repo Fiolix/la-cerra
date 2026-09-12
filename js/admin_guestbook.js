@@ -51,6 +51,7 @@ export async function initGuestbookAdministration({ root }) {
 
         <div class="admin-route-actions">
           <button type="button" class="secondary-button" data-admin-toggle-guestbook hidden></button>
+          <button type="button" class="btn-danger" data-admin-delete-guestbook hidden>Permanently delete</button>
         </div>
 
         <div class="admin-user-confirmation" data-admin-guestbook-confirmation hidden>
@@ -69,14 +70,16 @@ export async function initGuestbookAdministration({ root }) {
 
   let entries = [];
   let selectedId = null;
-  let pendingHidden = null;
+  let pendingAction = null;
 
   const select = root.querySelector('#admin-guestbook-select');
   const typeFilter = root.querySelector('#admin-guestbook-type');
   const statusFilter = root.querySelector('#admin-guestbook-status');
   const search = root.querySelector('#admin-guestbook-search');
   const toggleButton = root.querySelector('[data-admin-toggle-guestbook]');
+  const deleteButton = root.querySelector('[data-admin-delete-guestbook]');
   const confirmation = root.querySelector('[data-admin-guestbook-confirmation]');
+  const confirmButton = root.querySelector('[data-admin-confirm-guestbook]');
   const status = root.querySelector('[data-admin-guestbook-save-status]');
 
   function selectedEntry() {
@@ -113,11 +116,12 @@ export async function initGuestbookAdministration({ root }) {
 
   function clearDetails(message = '') {
     selectedId = null;
-    pendingHidden = null;
+    pendingAction = null;
     root.querySelector('[data-admin-guestbook-selection]').textContent = 'Select an entry or reply to review it.';
     root.querySelector('[data-admin-guestbook-summary]').hidden = true;
     root.querySelector('[data-admin-guestbook-message]').hidden = true;
     toggleButton.hidden = true;
+    deleteButton.hidden = true;
     confirmation.hidden = true;
     status.textContent = message;
   }
@@ -126,7 +130,7 @@ export async function initGuestbookAdministration({ root }) {
     const entry = entries.find(item => String(item.id) === String(id));
     if (!entry) return;
     selectedId = entry.id;
-    pendingHidden = null;
+    pendingAction = null;
     confirmation.hidden = true;
 
     root.querySelector('[data-admin-guestbook-selection]').textContent = `Reviewing ${entry.parent_id === null ? 'main entry' : 'reply'}`;
@@ -141,6 +145,7 @@ export async function initGuestbookAdministration({ root }) {
     message.hidden = false;
     toggleButton.textContent = entry.is_hidden ? 'Restore entry' : 'Hide entry';
     toggleButton.hidden = false;
+    deleteButton.hidden = false;
     status.textContent = '';
   }
 
@@ -172,22 +177,43 @@ export async function initGuestbookAdministration({ root }) {
   function prepareToggle() {
     const entry = selectedEntry();
     if (!entry) return;
-    pendingHidden = !entry.is_hidden;
-    const action = pendingHidden ? 'hide' : 'restore';
-    const consequence = pendingHidden && entry.parent_id === null
+    const hidden = !entry.is_hidden;
+    pendingAction = { type: 'visibility', hidden };
+    const action = hidden ? 'hide' : 'restore';
+    const consequence = hidden && entry.parent_id === null
       ? ' Its replies will also disappear from the public guestbook.'
       : '';
     root.querySelector('[data-admin-guestbook-confirmation-text]').textContent = `Confirm: ${action} this ${entry.parent_id === null ? 'entry' : 'reply'}?${consequence}`;
+    confirmButton.textContent = 'Confirm';
+    confirmButton.classList.remove('btn-danger');
     confirmation.hidden = false;
-    root.querySelector('[data-admin-confirm-guestbook]').focus();
+    confirmButton.focus();
+  }
+
+  function prepareDelete() {
+    const entry = selectedEntry();
+    if (!entry) return;
+    const replyCount = entry.parent_id === null
+      ? entries.filter(item => String(item.parent_id) === String(entry.id)).length
+      : 0;
+    pendingAction = { type: 'delete' };
+    const consequence = replyCount > 0
+      ? ` This will also permanently delete ${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}.`
+      : '';
+    root.querySelector('[data-admin-guestbook-confirmation-text]').textContent = `Permanently delete this ${entry.parent_id === null ? 'entry' : 'reply'}?${consequence} This cannot be undone.`;
+    confirmButton.textContent = 'Delete permanently';
+    confirmButton.classList.add('btn-danger');
+    confirmation.hidden = false;
+    confirmButton.focus();
   }
 
   async function saveVisibility() {
     const entry = selectedEntry();
-    if (!entry || pendingHidden === null) return;
-    const hidden = pendingHidden;
+    if (!entry || pendingAction?.type !== 'visibility') return;
+    const hidden = pendingAction.hidden;
     confirmation.hidden = true;
     toggleButton.disabled = true;
+    deleteButton.disabled = true;
     status.textContent = hidden ? 'Hiding entry…' : 'Restoring entry…';
     try {
       const { data, error } = await supabase.rpc('set_guestbook_entry_hidden', {
@@ -196,7 +222,7 @@ export async function initGuestbookAdministration({ root }) {
       });
       if (error || data !== true) throw error || new Error('moderation_failed');
       entry.is_hidden = hidden;
-      pendingHidden = null;
+      pendingAction = null;
       renderList();
       showDetails(entry.id);
       status.textContent = hidden ? 'Entry hidden successfully.' : 'Entry restored successfully.';
@@ -206,7 +232,45 @@ export async function initGuestbookAdministration({ root }) {
       status.textContent = 'The entry could not be changed. Current data has been reloaded.';
     } finally {
       toggleButton.disabled = false;
+      deleteButton.disabled = false;
     }
+  }
+
+  async function deleteEntry() {
+    const entry = selectedEntry();
+    if (!entry || pendingAction?.type !== 'delete') return;
+    confirmation.hidden = true;
+    toggleButton.disabled = true;
+    deleteButton.disabled = true;
+    status.textContent = 'Deleting entry permanently…';
+    try {
+      const { data, error } = await supabase.rpc('delete_guestbook_entry', {
+        target_entry_id: entry.id
+      });
+      if (error || !Number.isInteger(Number(data)) || Number(data) < 1) {
+        throw error || new Error('deletion_failed');
+      }
+      const deletedCount = Number(data);
+      await loadGuestbook();
+      status.textContent = deletedCount === 1
+        ? 'Entry permanently deleted.'
+        : `Entry and ${deletedCount - 1} ${deletedCount === 2 ? 'reply' : 'replies'} permanently deleted.`;
+    } catch (error) {
+      console.error('Guestbook entry could not be deleted:', error);
+      await loadGuestbook({ preserveSelection: true });
+      status.textContent = 'The entry could not be deleted. Current data has been reloaded.';
+    } finally {
+      toggleButton.disabled = false;
+      deleteButton.disabled = false;
+    }
+  }
+
+  async function confirmPendingAction() {
+    if (pendingAction?.type === 'delete') {
+      await deleteEntry();
+      return;
+    }
+    await saveVisibility();
   }
 
   [typeFilter, statusFilter].forEach(filter => filter.addEventListener('change', () => {
@@ -220,9 +284,10 @@ export async function initGuestbookAdministration({ root }) {
   select.addEventListener('change', event => showDetails(event.target.value));
   root.querySelector('[data-admin-refresh-guestbook]').addEventListener('click', () => loadGuestbook({ preserveSelection: true }));
   toggleButton.addEventListener('click', prepareToggle);
-  root.querySelector('[data-admin-confirm-guestbook]').addEventListener('click', saveVisibility);
+  deleteButton.addEventListener('click', prepareDelete);
+  confirmButton.addEventListener('click', confirmPendingAction);
   root.querySelector('[data-admin-cancel-guestbook]').addEventListener('click', () => {
-    pendingHidden = null;
+    pendingAction = null;
     confirmation.hidden = true;
     status.textContent = 'Moderation cancelled.';
   });

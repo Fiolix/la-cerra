@@ -52,19 +52,23 @@ async function renderSession(session) {
   let profileData;
   let profileError;
   let isAdmin = false;
+  let canModerateGuestbook = false;
   try {
-    const [profileResult, adminResult] = await Promise.all([
+    const [profileResult, adminResult, moderatorResult] = await Promise.all([
       supabase
         .from('profiles')
         .select('username')
         .eq('user_id', user.id)
         .maybeSingle(),
-      supabase.rpc('is_admin')
+      supabase.rpc('is_admin'),
+      supabase.rpc('can_moderate_guestbook')
     ]);
     profileData = profileResult.data;
     profileError = profileResult.error;
     isAdmin = adminResult.data === true && !adminResult.error;
+    canModerateGuestbook = moderatorResult.data === true && !moderatorResult.error;
     if (adminResult.error) console.error('Admin status request failed:', adminResult.error);
+    if (moderatorResult.error) console.error('Moderator status request failed:', moderatorResult.error);
   } catch (error) {
     console.error('Profile name request failed:', error);
     profileError = error;
@@ -75,7 +79,8 @@ async function renderSession(session) {
   renderLoggedIn(
     profileData?.username || 'User',
     profileError ? 'Your profile name is currently unavailable.' : '',
-    isAdmin
+    isAdmin,
+    canModerateGuestbook
   );
 }
 
@@ -190,14 +195,14 @@ async function signInWithUsername(username, password) {
   });
 }
 
-function renderLoggedIn(username, message = '', isAdmin = false) {
+function renderLoggedIn(username, message = '', isAdmin = false, canModerateGuestbook = false) {
   const loginBlock = document.querySelector('.login-block');
   if (!loginBlock) return;
 
   loginBlock.innerHTML = `
     <p class="signed-in-label">Signed in as: <strong data-auth-username></strong></p>
     <p><a href="#" data-page="profile">My profile</a></p>
-    ${isAdmin ? '<p><a href="#" data-page="admin">Admin area</a></p>' : ''}
+    ${canModerateGuestbook ? `<p><a href="#" data-page="admin">${isAdmin ? 'Admin area' : 'Guestbook moderation'}</a></p>` : ''}
     <button id="logout-button" type="button">Log out</button>
     <p class="login-message" role="status" aria-live="polite"></p>
   `;

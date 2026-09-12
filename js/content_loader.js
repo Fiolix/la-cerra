@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260912-guestbook-1";
+const ASSET_VERSION = "20260912-guestbook-delete-1";
 
 const PAGE_ALIASES = {
   start: "start.html",

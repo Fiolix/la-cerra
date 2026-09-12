@@ -99,7 +99,7 @@ export async function initUserAdministration({ root, currentUserId }) {
           </div>
         </div>
 
-        <p class="form-note">Suspending an account blocks future logins without deleting its profile or ticklist. The moderator role is reserved for future guestbook moderation and currently grants no route or user administration rights.</p>
+        <p class="form-note">Suspending an account blocks future logins without deleting its profile or ticklist. The moderator role grants guestbook moderation only and no route or user administration rights.</p>
         <p class="admin-save-status" data-admin-user-status role="status" aria-live="polite"></p>
       </form>
     </section>

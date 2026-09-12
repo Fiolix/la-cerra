@@ -120,7 +120,7 @@ function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
 
-import { initAuth } from './auth_handler.js?v=20260909-secure-login-1';
+import { initAuth } from './auth_handler.js?v=20260912-guestbook-delete-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

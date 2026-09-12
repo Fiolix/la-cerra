@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
 import { initBlockAdministration } from './admin_blocks.js?v=20260912-admin-blocks-2';
-import { initUserAdministration } from './admin_users.js?v=20260912-account-status-1';
-import { initGuestbookAdministration } from './admin_guestbook.js?v=20260912-guestbook-1';
+import { initUserAdministration } from './admin_users.js?v=20260912-guestbook-delete-1';
+import { initGuestbookAdministration } from './admin_guestbook.js?v=20260912-guestbook-delete-1';
 import { loadSectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-2';
 
 let authListenerBound = false;
@@ -45,16 +45,29 @@ export async function initAdmin() {
       return;
     }
 
-    const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
-    if (adminError) throw adminError;
+    const [adminResult, moderatorResult] = await Promise.all([
+      supabase.rpc('is_admin'),
+      supabase.rpc('can_moderate_guestbook')
+    ]);
+    if (adminResult.error) throw adminResult.error;
+    if (moderatorResult.error) throw moderatorResult.error;
 
-    if (isAdmin !== true) {
+    const isAdmin = adminResult.data === true;
+    const canModerateGuestbook = moderatorResult.data === true;
+    if (!canModerateGuestbook) {
       renderAccessDenied(root);
       return;
     }
 
     renderAdminShell(root);
-    await loadAdminData(root, sessionData.session.user.id);
+    if (isAdmin) {
+      await loadAdminData(root, sessionData.session.user.id);
+    } else {
+      configureModeratorShell(root);
+      await initGuestbookAdministration({
+        root: root.querySelector('[data-admin-guestbook-root]')
+      });
+    }
   } catch (error) {
     console.error('Admin area could not be initialized:', error);
     renderAdminError(root);
@@ -76,8 +89,8 @@ function bindAuthListener() {
 function renderLoginRequired(root) {
   root.innerHTML = `
     <section class="account-notice" role="status">
-      <h2>Administrator login required</h2>
-      <p>Please log in with an administrator account to open this area.</p>
+      <h2>Administration login required</h2>
+      <p>Please log in with an administrator or moderator account to open this area.</p>
       <button type="button" data-admin-login>Log in</button>
     </section>
   `;
@@ -90,7 +103,7 @@ function renderAccessDenied(root) {
   root.innerHTML = `
     <section class="account-notice" role="alert">
       <h2>Access denied</h2>
-      <p>This account does not have administrator rights.</p>
+      <p>This account does not have administrator or moderator rights.</p>
     </section>
   `;
 }
@@ -291,6 +304,14 @@ async function loadAdminData(root, currentUserId) {
   await initGuestbookAdministration({
     root: root.querySelector('[data-admin-guestbook-root]')
   });
+}
+
+function configureModeratorShell(root) {
+  root.querySelector('.admin-header h2').textContent = 'Guestbook moderation';
+  root.querySelector('.admin-header p').textContent = 'Review, hide, restore or delete guestbook entries.';
+  root.querySelectorAll('[data-admin-tab]:not([data-admin-tab="guestbook"])').forEach(tab => tab.remove());
+  root.querySelectorAll('[data-admin-panel]:not([data-admin-panel="guestbook"])').forEach(panel => panel.remove());
+  activateAdminTab(root, 'guestbook');
 }
 
 function activateAdminTab(root, tabName) {
