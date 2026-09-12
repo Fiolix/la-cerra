@@ -272,10 +272,13 @@ export async function initUserAdministration({ root, currentUserId }) {
   }
 
   roleFilter.addEventListener('change', () => {
-    renderUsers();
     clearEditor();
+    renderUsers();
   });
-  search.addEventListener('input', renderUsers);
+  search.addEventListener('input', () => {
+    clearEditor();
+    renderUsers();
+  });
   userSelect.addEventListener('change', event => showUser(event.target.value));
   root.querySelector('[data-admin-refresh-users]').addEventListener('click', () => loadUsers({ preserveSelection: true }));
   root.querySelector('#admin-user-form').addEventListener('submit', prepareSave);

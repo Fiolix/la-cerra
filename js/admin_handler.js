@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
 import { initBlockAdministration } from './admin_blocks.js?v=20260912-admin-blocks-2';
-import { initUserAdministration } from './admin_users.js?v=20260912-admin-users-1';
+import { initUserAdministration } from './admin_users.js?v=20260912-admin-users-2';
 import { loadSectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-2';
 
 let authListenerBound = false;
