@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </ul>
       </li>
       <li><a href="#" data-page="guestbook">Guestbook</a></li>
-      <li><a href="#" data-page="faq">FAQ</a></li>
+      <li><a href="#" data-page="before_you_go">Before You Go</a></li>
     </ul>
 
     <div class="login-block">

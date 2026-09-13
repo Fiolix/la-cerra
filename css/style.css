@@ -997,9 +997,92 @@ canvas {
   margin-top: 1.25rem;
 }
 
+/* Before You Go: guidebook legend, rules and safety notes */
+.before-you-go-section h2,
+.before-you-go-copy h2 {
+  margin-top: 0;
+}
+
+.before-you-go-section > p,
+.before-you-go-copy p,
+.before-you-go-list {
+  line-height: 1.55;
+}
+
+.topo-legend {
+  margin-top: 1.25rem;
+}
+
+.topo-legend-item {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid #e3e7e6;
+}
+
+.topo-legend-item p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.topo-legend-symbol {
+  display: grid;
+  place-items: center;
+  min-height: 70px;
+}
+
+.topo-legend-symbol img {
+  width: 68px;
+  height: 68px;
+  margin: 0;
+  object-fit: contain;
+  border-radius: 0;
+}
+
+.topo-legend-abbreviation {
+  color: #222;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.before-you-go-split {
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+
+.before-you-go-list {
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.before-you-go-list li + li {
+  margin-top: 0.55rem;
+}
+
+.before-you-go-photo {
+  max-height: 620px;
+  object-position: center;
+}
+
+.before-you-go-safety h2 {
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
+
 @media (min-width: 760px) {
   .cerra-info-section {
     grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+  }
+
+  .before-you-go-split {
+    grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  .before-you-go-safety {
+    grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1.15fr);
   }
 }
 
