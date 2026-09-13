@@ -197,6 +197,17 @@ if (dropdown) {
     return;
   }
 
+  // Monte Lu Bagnu is split into the two illustrated sub-sectors Jumble and
+  // Bloc Meadow. Keep the same order as in the printed topo instead of the
+  // alphabetical database order (BM before J).
+  if (sektor === 'monte_lu_bagnu') {
+    const subSectorOrder = number => String(number).startsWith('J-') ? 0 : 1;
+    blocks.sort((a, b) => (
+      subSectorOrder(a.nummer) - subSectorOrder(b.nummer)
+      || String(a.nummer).localeCompare(String(b.nummer), undefined, { numeric: true })
+    ));
+  }
+
   console.log(`ℹ️ ${blocks.length} Blöcke geladen für Sektor '${sektor}'`);
 
   container.innerHTML = '';
