@@ -7,6 +7,18 @@ import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
 
 let authRefreshTimer = null;
 
+const routeDisplayAliases = {
+  second_life: [
+    {
+      targetBlock: '02b',
+      sourceBlock: '01a-02a',
+      sourceRouteLetter: 'B',
+      displayedLetter: 'B',
+      description: 'see Boulder 2a'
+    }
+  ]
+};
+
 document.addEventListener('authStateChanged', () => {
   if (!document.getElementById('boulder-blocks')) return;
 
@@ -19,6 +31,29 @@ document.addEventListener('authStateChanged', () => {
 function toAnchorId(nr) {
   // aus "04/05" wird "04-05"
   return `block-${String(nr).replaceAll('/', '-')}`;
+}
+
+function getDisplayedRoutes(block, blocks, routes, sektor) {
+  const displayedRoutes = routes.filter(route => route.block_id === block.id);
+  const aliases = routeDisplayAliases[sektor] || [];
+
+  for (const alias of aliases.filter(entry => entry.targetBlock === block.nummer)) {
+    const sourceBlock = blocks.find(entry => entry.nummer === alias.sourceBlock);
+    const sourceRoute = routes.find(route => (
+      route.block_id === sourceBlock?.id
+      && String(route.buchstabe).toUpperCase() === alias.sourceRouteLetter.toUpperCase()
+    ));
+
+    if (sourceRoute) {
+      displayedRoutes.push({
+        ...sourceRoute,
+        buchstabe: alias.displayedLetter,
+        beschreibung: alias.description
+      });
+    }
+  }
+
+  return displayedRoutes.sort((a, b) => a.buchstabe.localeCompare(b.buchstabe));
 }
 
 async function getTickedRouteIds() {
@@ -234,9 +269,7 @@ for (const entry of tickStats) {
 
 
   blocks.forEach(block => {
-    const blockRoutes = routes
-      .filter(r => r.block_id === block.id)
-      .sort((a, b) => a.buchstabe.localeCompare(b.buchstabe));
+    const blockRoutes = getDisplayedRoutes(block, blocks, routes, sektor);
     const blockDiv = document.createElement('section');
     blockDiv.className = 'boulder-block';
     blockDiv.id = toAnchorId(block.nummer);
@@ -244,6 +277,7 @@ for (const entry of tickStats) {
     const routesHtml = blockRoutes.map(route => {
   const displayedGrade = String(route.grad ?? '').trim();
   const isProject = isProjectGrade(displayedGrade);
+  const routeDescription = route.beschreibung || (isProject ? 'open project' : '');
   const isTicked = !isProject && tickedRouteIds.has(route.uuid);
   const tickDisabled = isTicked || isProject;
   const routeRatings = ratingMap[route.uuid] || [];
@@ -287,7 +321,7 @@ const ratingDisplay = ratingCount > 0
         ${isTicked ? '<span class="route-completed-mark" title="Already in your ticklist" aria-label="Climbed">✓</span>' : ''}
         <span class=\"route-grade\">${displayedGrade || '?'}</span>
       </div>
-      ${route.beschreibung ? `<p class=\"route-description\"><em>${route.beschreibung}</em></p>` : ''}
+      ${routeDescription ? `<p class=\"route-description\"><em>${routeDescription}</em></p>` : ''}
       <div class=\"route-meta\">
         <div class="meta-row">        
           <div class=\"route-stars\">${ratingDisplay}</div>
