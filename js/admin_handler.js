@@ -1,8 +1,8 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20261005-monte-lu-bagnu-split-1';
+import { initBlockAdministration } from './admin_blocks.js?v=20261005-monte-lu-bagnu-routes-1';
 import { initUserAdministration } from './admin_users.js?v=20260912-guestbook-delete-1';
 import { initGuestbookAdministration } from './admin_guestbook.js?v=20260912-guestbook-delete-1';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-split-1';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-routes-1';
 
 let authListenerBound = false;
 let blocks = [];

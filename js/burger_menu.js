@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-split-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-routes-1';
 
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Menü existiert schon? → nicht erneut einfügen

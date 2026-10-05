@@ -365,6 +365,25 @@ const ratingDisplay = ratingCount > 0
       </div>
     `;
 
+    const blockImage = blockDiv.querySelector('.block-image-toggle img');
+    if (blockImage) {
+      const imageToggle = blockImage.closest('.block-image-toggle');
+
+      // Some Monte Lu Bagnu blocks already have reserved filenames although
+      // their topo images will be supplied later. Keep the routes usable and
+      // reveal the image automatically as soon as the file is added.
+      blockImage.addEventListener('error', () => {
+        imageToggle.hidden = true;
+        imageToggle.classList.add('is-missing');
+      }, { once: true });
+
+      // The source image for Jumble 4A contains a partial caption below the
+      // rounded topo photograph. Crop only that white bottom strip visually.
+      if (block.sektor === 'jumble' && block.bild === 'jumble_04a.jpg') {
+        imageToggle.classList.add('block-image-crop-caption');
+      }
+    }
+
     container.appendChild(blockDiv);
 
     blockDiv.querySelectorAll('[data-block-toggle]').forEach(blockToggle => {
