@@ -925,6 +925,102 @@ canvas {
   font: inherit;
 }
 
+/* Monte Lu Bagnu: illustrated sub-sectors and unpictured video list */
+.monte-featured-sectors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0 2rem;
+}
+
+.monte-featured-sectors a {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #cbd5d2;
+  border-radius: 0.45rem;
+  background: #f6f8f7;
+  color: #384e4d;
+  text-decoration: none;
+}
+
+.monte-featured-sectors a:hover,
+.monte-featured-sectors a:focus-visible {
+  border-color: #384e4d;
+  background: #edf2f0;
+}
+
+.monte-featured-sectors span,
+.monte-remote-intro p {
+  color: #5e6664;
+  font-size: 0.9rem;
+}
+
+.monte-remote-intro {
+  margin: 1.5rem 0 0.8rem;
+}
+
+.monte-remote-intro h2,
+.monte-remote-intro p {
+  margin: 0 0 0.45rem;
+}
+
+.monte-remote-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.monte-route-area {
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.45rem;
+  background: #f9f9f9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.monte-route-area h3 {
+  margin: 0 0 0.6rem;
+  color: #384e4d;
+}
+
+.monte-route-area ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.monte-route-area li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.38rem 0;
+  border-top: 1px solid #e3e7e5;
+}
+
+.monte-route-area li:first-child {
+  border-top: 0;
+}
+
+.monte-route-area a {
+  min-width: 0;
+  color: #384e4d;
+  overflow-wrap: anywhere;
+}
+
+.monte-route-area li > span {
+  font-weight: 600;
+}
+
+@media (max-width: 620px) {
+  .monte-featured-sectors,
+  .monte-remote-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .cerra-info-section {
   display: grid;
   gap: 1rem;

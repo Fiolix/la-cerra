@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20260913-monte-lu-bagnu-1";
+const ASSET_VERSION = "20261005-monte-lu-bagnu-split-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -18,6 +18,8 @@ const PAGE_ALIASES = {
   second_life: "second_life.html",
   "2nd_life": "second_life.html",
   stuntblocs: "stuntblocs.html",
+  jumble: "jumble.html",
+  bloc_meadow: "bloc_meadow.html",
   monte_lu_bagnu: "monte_lu_bagnu.html",
   monte_pulchiana: "monte_pulchiana.html",
   sardinia: "sardinia.html",

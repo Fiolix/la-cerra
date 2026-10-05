@@ -7,8 +7,10 @@ export const SECTORS = [
   { slug: 'bermuda_triangle', label: 'Bermuda Triangle', page: 'bermuda_triangle.html', order: 40 },
   { slug: 'second_life', label: '2nd Life', page: 'second_life.html', order: 50 },
   { slug: 'stuntblocs', label: 'Stuntblocs', page: 'stuntblocs.html', order: 60 },
-  { slug: 'monte_lu_bagnu', label: 'Monte Lu Bagnu', page: 'monte_lu_bagnu.html', order: 70 },
-  { slug: 'monte_pulchiana', label: 'Monte Pulchiana', page: 'monte_pulchiana.html', order: 80 }
+  { slug: 'jumble', label: 'Jumble', page: 'jumble.html', order: 70 },
+  { slug: 'bloc_meadow', label: 'Bloc Meadow', page: 'bloc_meadow.html', order: 80 },
+  { slug: 'monte_lu_bagnu', label: 'Monte Lu Bagnu', page: 'monte_lu_bagnu.html', order: 90 },
+  { slug: 'monte_pulchiana', label: 'Monte Pulchiana', page: 'monte_pulchiana.html', order: 100 }
 ];
 
 let cachedResult = null;

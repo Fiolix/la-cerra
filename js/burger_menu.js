@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-2';
+import { applySectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-split-1';
 
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Menü existiert schon? → nicht erneut einfügen
@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
               <li data-sector-slug="bermuda_triangle"><a href="#" data-page="bermuda_triangle">Bermuda Triangle</a></li>
               <li data-sector-slug="second_life"><a href="#" data-page="second_life">2nd Life</a></li>
               <li data-sector-slug="stuntblocs"><a href="#" data-page="stuntblocs">Stuntblocs</a></li>
+              <li data-sector-slug="jumble"><a href="#" data-page="jumble">Jumble</a></li>
+              <li data-sector-slug="bloc_meadow"><a href="#" data-page="bloc_meadow">Bloc Meadow</a></li>
               <li data-sector-slug="monte_lu_bagnu"><a href="#" data-page="monte_lu_bagnu">Monte Lu Bagnu</a></li>
               <li data-sector-slug="monte_pulchiana"><a href="#" data-page="monte_pulchiana">Monte Pulchiana</a></li>
             </ul>

@@ -4,7 +4,7 @@ import {
   applySectorVisibility,
   invalidateSectorVisibilityCache,
   sectorLabel
-} from './sector_visibility.js?v=20260912-admin-blocks-2';
+} from './sector_visibility.js?v=20261005-monte-lu-bagnu-split-1';
 
 const IMAGE_PATTERN = /^[a-z0-9._-]+\.(?:jpe?g|png|webp)$/i;
 

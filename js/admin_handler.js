@@ -1,8 +1,8 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20260912-admin-blocks-2';
+import { initBlockAdministration } from './admin_blocks.js?v=20261005-monte-lu-bagnu-split-1';
 import { initUserAdministration } from './admin_users.js?v=20260912-guestbook-delete-1';
 import { initGuestbookAdministration } from './admin_guestbook.js?v=20260912-guestbook-delete-1';
-import { loadSectorVisibility } from './sector_visibility.js?v=20260912-admin-blocks-2';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-split-1';
 
 let authListenerBound = false;
 let blocks = [];
@@ -25,6 +25,8 @@ const SECTOR_LABELS = {
   bermuda_triangle: 'Bermuda Triangle',
   second_life: '2nd Life',
   stuntblocs: 'Stuntblocs',
+  jumble: 'Jumble',
+  bloc_meadow: 'Bloc Meadow',
   monte_lu_bagnu: 'Monte Lu Bagnu',
   monte_pulchiana: 'Monte Pulchiana'
 };
