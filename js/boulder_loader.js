@@ -127,6 +127,31 @@ export function setBlockOpen(blockId, open = true) {
   return true;
 }
 
+function revealPersonalProjects(attempt = 0) {
+  const projects = Array.from(document.querySelectorAll('.route-personal-project'));
+
+  if (projects.length === 0) {
+    const routesAreLoading = document.querySelector('#boulder-blocks .data-loading');
+    if (routesAreLoading && attempt < 20) {
+      window.setTimeout(() => revealPersonalProjects(attempt + 1), 100);
+    }
+    return;
+  }
+
+  const projectBlocks = new Set(
+    projects
+      .map(project => project.closest('.boulder-block'))
+      .filter(Boolean)
+  );
+
+  projectBlocks.forEach(block => setBlockOpen(block.id, true));
+  window.requestAnimationFrame(() => {
+    projects[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
+document.addEventListener('showSectorProjects', () => revealPersonalProjects());
+
 function openAndScrollToBlock(blockId) {
   if (!setBlockOpen(blockId, true)) return false;
 

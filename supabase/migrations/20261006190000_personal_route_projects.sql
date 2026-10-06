@@ -23,6 +23,33 @@ drop policy if exists "Users can read their route projects" on public.route_proj
 drop policy if exists "Users can add their route projects" on public.route_projects;
 drop policy if exists "Users can remove their route projects" on public.route_projects;
 
+-- Keep the insert check outside RLS evaluation. Querying routes directly from
+-- this policy would recurse through the archived-project route policy below.
+create or replace function public.can_save_route_project(target_route_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    exists (
+      select 1
+      from public.routes
+      where routes.uuid = target_route_id
+        and routes.archived_at is null
+    )
+    and not exists (
+      select 1
+      from public.ticklist
+      where ticklist.user_id = auth.uid()
+        and ticklist.route_id = target_route_id
+    );
+$$;
+
+revoke all on function public.can_save_route_project(uuid) from public, anon, authenticated;
+grant execute on function public.can_save_route_project(uuid) to authenticated;
+
 create policy "Users can read their route projects"
 on public.route_projects
 for select
@@ -35,18 +62,7 @@ for insert
 to authenticated
 with check (
   user_id = (select auth.uid())
-  and exists (
-    select 1
-    from public.routes
-    where routes.uuid = route_projects.route_id
-      and routes.archived_at is null
-  )
-  and not exists (
-    select 1
-    from public.ticklist
-    where ticklist.user_id = (select auth.uid())
-      and ticklist.route_id = route_projects.route_id
-  )
+  and (select public.can_save_route_project(route_id))
 );
 
 create policy "Users can remove their route projects"

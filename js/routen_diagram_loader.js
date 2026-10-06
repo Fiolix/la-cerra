@@ -41,8 +41,19 @@ function createSectorStats(stats) {
   }
 
   items.forEach(({ label, value, progress }) => {
-    const card = document.createElement('div');
+    const opensProjects = label === 'My projects'
+      && !stats.personal?.projectsUnavailable
+      && Number(value) > 0;
+    const card = document.createElement(opensProjects ? 'button' : 'div');
     card.className = 'sector-route-count';
+    if (opensProjects) {
+      card.type = 'button';
+      card.classList.add('is-actionable');
+      card.setAttribute('aria-label', `Show ${value} personal ${Number(value) === 1 ? 'project' : 'projects'} in this sector`);
+      card.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('showSectorProjects'));
+      });
+    }
     const number = document.createElement('strong');
     number.textContent = String(value);
     const caption = document.createElement('span');

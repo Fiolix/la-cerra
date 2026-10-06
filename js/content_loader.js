@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261006-sector-ux-projects-1";
+const ASSET_VERSION = "20261006-sector-project-jump-1";
 
 const PAGE_ALIASES = {
   start: "start.html",

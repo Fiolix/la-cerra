@@ -854,6 +854,26 @@ img {
   text-align: center;
 }
 
+button.sector-route-count {
+  width: 100%;
+  font: inherit;
+}
+
+.sector-route-count.is-actionable {
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sector-route-count.is-actionable:hover {
+  border-color: #9eafa9;
+  background: #edf3f0;
+}
+
+.sector-route-count.is-actionable:focus-visible {
+  outline: 2px solid #5f806a;
+  outline-offset: 2px;
+}
+
 .sector-route-count strong,
 .sector-route-count span {
   display: block;
