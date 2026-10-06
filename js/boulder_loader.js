@@ -4,6 +4,7 @@ import { getPublicTickStats } from './tick_stats_loader.js?v=20260905-stability-
 
 import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
 import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261006-projects-1';
 
 let authRefreshTimer = null;
 
@@ -61,8 +62,8 @@ async function getTickedRouteIds() {
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     const userId = sessionData?.session?.user?.id;
 
-    if (sessionError) return { ids: new Set(), error: sessionError };
-    if (!userId) return { ids: new Set(), error: null };
+    if (sessionError) return { ids: new Set(), userId: null, error: sessionError };
+    if (!userId) return { ids: new Set(), userId: null, error: null };
 
     const { data, error } = await supabase
       .from('ticklist')
@@ -71,16 +72,17 @@ async function getTickedRouteIds() {
 
     if (error) {
       console.error('Personal route status could not be loaded:', error);
-      return { ids: new Set(), error };
+      return { ids: new Set(), userId, error };
     }
 
     return {
       ids: new Set((data || []).map(entry => entry.route_id).filter(Boolean)),
+      userId,
       error: null
     };
   } catch (error) {
     console.error('Personal route status request failed:', error);
-    return { ids: new Set(), error };
+    return { ids: new Set(), userId: null, error };
   }
 }
 
@@ -124,6 +126,31 @@ export function setBlockOpen(blockId, open = true) {
   block.classList.toggle('is-open', open);
   return true;
 }
+
+function revealPersonalProjects(attempt = 0) {
+  const projects = Array.from(document.querySelectorAll('.route-personal-project'));
+
+  if (projects.length === 0) {
+    const routesAreLoading = document.querySelector('#boulder-blocks .data-loading');
+    if (routesAreLoading && attempt < 20) {
+      window.setTimeout(() => revealPersonalProjects(attempt + 1), 100);
+    }
+    return;
+  }
+
+  const projectBlocks = new Set(
+    projects
+      .map(project => project.closest('.boulder-block'))
+      .filter(Boolean)
+  );
+
+  projectBlocks.forEach(block => setBlockOpen(block.id, true));
+  window.requestAnimationFrame(() => {
+    projects[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
+document.addEventListener('showSectorProjects', () => revealPersonalProjects());
 
 function openAndScrollToBlock(blockId) {
   if (!setBlockOpen(blockId, true)) return false;
@@ -234,11 +261,16 @@ if (dropdown && Array.isArray(blocks)) {
 // ⭐ Neue Bewertungsladung – ersetzt durch View
 const tickStatsResult = await getPublicTickStats();
 const tickedRoutesResult = await getTickedRouteIds();
+const projectRoutesResult = await getPersonalProjectRouteIds(tickedRoutesResult.userId);
 const tickStats = tickStatsResult.data;
 const tickedRouteIds = tickedRoutesResult.ids;
+const projectRouteIds = projectRoutesResult.ids;
+const projectsAvailable = !projectRoutesResult.unavailable;
 const partialDataMessages = [];
 if (tickStatsResult.error) partialDataMessages.push('Community ratings are currently unavailable.');
 if (tickedRoutesResult.error) partialDataMessages.push('Your climbed-route markers could not be loaded.');
+if (projectRoutesResult.error && !projectRoutesResult.unavailable) partialDataMessages.push('Your personal projects could not be loaded.');
+if (projectRoutesResult.unavailable && tickedRoutesResult.userId) partialDataMessages.push('Personal projects will become available after the prepared database update.');
 
 const ratingMap = {};
 const gradeMap = {};
@@ -279,6 +311,7 @@ for (const entry of tickStats) {
   const isProject = isProjectGrade(displayedGrade);
   const routeDescription = route.beschreibung || (isProject ? 'open project' : '');
   const isTicked = !isProject && tickedRouteIds.has(route.uuid);
+  const isPersonalProject = !isTicked && projectRouteIds.has(route.uuid);
   const tickDisabled = isTicked || isProject;
   const routeRatings = ratingMap[route.uuid] || [];
   const ratingCount = routeRatings.length;
@@ -314,11 +347,12 @@ const ratingDisplay = ratingCount > 0
   const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg]} <span style='color:#333; font-size: 0.8em;'>(${gradeCount})</span>` : '';
 
   return `
-    <div class=\"route${isTicked ? ' route-completed' : ''}\">
+    <div class=\"route${isTicked ? ' route-completed' : ''}${isPersonalProject ? ' route-personal-project' : ''}\" data-route-id=\"${route.uuid}\">
       <div class=\"route-title\">
         <span class=\"route-label\">${route.buchstabe}</span>
         <span class=\"route-name\">${route.name ?? ''}</span>
         ${isTicked ? '<span class="route-completed-mark" title="Already in your ticklist" aria-label="Climbed">✓</span>' : ''}
+        ${isPersonalProject ? '<span class="route-project-mark" title="Saved as your project" aria-label="My project">P</span>' : ''}
         <span class=\"route-grade\">${displayedGrade || '?'}</span>
       </div>
       ${routeDescription ? `<p class=\"route-description\"><em>${routeDescription}</em></p>` : ''}
@@ -334,11 +368,18 @@ const ratingDisplay = ratingCount > 0
             ? `<a href=\"${route.video_url}\" target=\"_blank\" rel=\"noopener noreferrer\">Beta video</a>`
             : 'not available'}
         </div>
-        <div class=\"route-tick\">
+        <div class=\"route-actions\">
+          ${!isTicked ? `
+            <button type=\"button\" class=\"route-project-toggle${isPersonalProject ? ' is-saved' : ''}\" data-project-route-id=\"${route.uuid}\" data-project-saved=\"${isPersonalProject}\" ${projectsAvailable ? '' : 'disabled'}>
+              ${isPersonalProject ? 'Remove project' : 'Save project'}
+            </button>
+          ` : ''}
+          <div class=\"route-tick\">
           <label class="route-tick-label${isProject && !isTicked ? ' route-project-label' : ''}">
-            <span>${isTicked ? 'Climbed' : (isProject ? 'Project' : 'Tick route')}</span>
+            <span>${isTicked ? 'Climbed' : (isProject ? 'Open project' : 'Tick route')}</span>
             <input type=\"checkbox\" title=\"${isTicked ? 'Already in your ticklist' : (isProject ? 'Projects cannot be added to the tick list yet' : 'Mark as climbed')}\" data-route-id=\"${route.uuid}\" ${isTicked ? 'checked' : ''} ${tickDisabled ? 'disabled' : ''} />
           </label>
+          </div>
         </div>
       </div>
     </div>
@@ -396,6 +437,35 @@ const ratingDisplay = ratingCount > 0
     // Add click listener to 'Add to ticklist' button
     const tickButton = blockDiv.querySelector(".ticklist-button button");
     const actionMessage = blockDiv.querySelector('.block-action-message');
+
+    blockDiv.querySelectorAll('[data-project-route-id]').forEach(projectButton => {
+      projectButton.addEventListener('click', async () => {
+        actionMessage.textContent = '';
+        projectButton.disabled = true;
+        const shouldSave = projectButton.dataset.projectSaved !== 'true';
+        const result = await setPersonalProject(projectButton.dataset.projectRouteId, shouldSave);
+
+        if (result.loginRequired) {
+          actionMessage.textContent = 'Please log in to manage your personal projects.';
+          projectButton.disabled = false;
+          window.setTimeout(() => document.dispatchEvent(new CustomEvent('openLoginMenu')), 0);
+          return;
+        }
+
+        if (!result.ok) {
+          console.error('Personal project update failed:', result.error);
+          actionMessage.textContent = result.unavailable
+            ? 'Personal projects require the prepared database update.'
+            : 'Your personal project could not be saved. Please try again.';
+          projectButton.disabled = false;
+          return;
+        }
+
+        sessionStorage.setItem('scrollY', window.scrollY);
+        document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+      });
+    });
+
     tickButton?.addEventListener("click", async () => {
       actionMessage.textContent = '';
       tickButton.disabled = true;

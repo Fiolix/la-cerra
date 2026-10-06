@@ -412,6 +412,22 @@ img {
   line-height: 1;
 }
 
+.route-project-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.45rem;
+  border: 1px solid #384e4d;
+  border-radius: 0.2rem;
+  background: #fff;
+  color: #384e4d;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .route-meta {
   display: block;
   margin-top: 0.25rem;
@@ -452,6 +468,38 @@ img {
 .route-tick {
   flex-shrink: 0;
   text-align: right;
+}
+
+.route-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  margin-left: auto;
+}
+
+.route-project-toggle {
+  width: auto;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #aebdb9;
+  border-radius: 0.3rem;
+  background: #f5f8f7;
+  color: #384e4d;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.route-project-toggle:hover,
+.route-project-toggle:focus-visible,
+.route-project-toggle.is-saved {
+  border-color: #384e4d;
+  background: #e2ebe8;
+}
+
+.route-project-toggle:disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 
 .route-tick-label {
@@ -737,19 +785,25 @@ img {
    max-height: 4.5em;
 }
 
-/* Ergänzungen für funktionierende Darstellung von Chart.js-Datalabels */
+/* Responsive route statistics and grade chart */
 #routen-diagramm.diagramm-container,
 #la-cerra-routen-diagramm.diagramm-container {
-  height: 115px;
+  min-height: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-#routen-diagramm.diagramm-container canvas,
-#la-cerra-routen-diagramm.diagramm-container canvas {
-  height: 100% !important;
-  width: 100% !important;
+.route-chart-frame {
+  position: relative;
+  width: 100%;
+  height: clamp(170px, 18vw, 195px);
+  min-height: 170px;
+}
+
+.route-chart-frame canvas {
   display: block;
+  width: 100% !important;
+  height: 100% !important;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -765,18 +819,131 @@ img {
 }
 
 .la-cerra-overview-counts {
-  display: flex;
-  justify-content: center;
-  gap: clamp(0.75rem, 5vw, 3.5rem);
-  margin-bottom: 0.65rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.2rem;
   color: #384e4d;
   font-size: 0.95rem;
+  text-align: center;
+}
+
+.la-cerra-overview-counts span {
+  min-width: 0;
+}
+
+.sector-route-counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.55rem;
+  padding: 0.85rem 0.85rem 0;
+}
+
+.sector-route-count {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  height: 3.7rem;
+  padding: 0.55rem 0.65rem;
+  box-sizing: border-box;
+  border: 1px solid #e2e8e6;
+  border-radius: 0.45rem;
+  background: #f7f9f8;
+  color: #384e4d;
+  text-align: center;
+}
+
+button.sector-route-count {
+  width: 100%;
+  font: inherit;
+}
+
+.sector-route-count.is-actionable {
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sector-route-count.is-actionable:hover {
+  border-color: #9eafa9;
+  background: #edf3f0;
+}
+
+.sector-route-count.is-actionable:focus-visible {
+  outline: 2px solid #5f806a;
+  outline-offset: 2px;
+}
+
+.sector-route-count strong,
+.sector-route-count span {
+  display: block;
+}
+
+.sector-route-count strong {
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.sector-route-count span {
+  margin-top: 0.15rem;
+  color: #66716f;
+  font-size: 0.78rem;
+}
+
+.sector-route-count.has-progress {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.sector-route-count.has-progress strong {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.sector-route-count.has-progress > span {
+  margin-top: 0.1rem;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.sector-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.sector-progress-track {
+  flex: 1 1 auto;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce4e1;
+}
+
+.sector-progress-track .sector-progress-fill {
+  display: block;
+  height: 100%;
+  margin: 0;
+  border-radius: inherit;
+  background: #5f806a;
+}
+
+.sector-progress-row .sector-progress-value {
+  flex: 0 0 auto;
+  min-width: 2.1rem;
+  margin: 0;
+  color: #384e4d;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: right;
 }
 
 .diagram-axis-prefix {
   position: absolute;
-  left: 0;
-  bottom: 7px;
+  left: 7px;
+  bottom: 10px;
   z-index: 2;
   color: #666;
   font-family: Arial, sans-serif;
@@ -789,22 +956,7 @@ img {
 .diagramm-container {
   overflow: visible !important;
   position: relative;
-  min-height: 0px;
-}
-
-.diagramm-container canvas {
-  display: block;
-  width: 100% !important;
-  height: auto !important;
-  overflow: visible !important;
-  position: relative;
-  z-index: 1;
-}
-
-canvas {
-  overflow: visible !important;
-  position: relative;
-  z-index: 1;
+  min-height: 0;
 }
 
 /* Breadcrumb-Navigation */
@@ -1330,6 +1482,10 @@ button.secondary-button:focus-visible {
   font-size: clamp(1.1rem, 4.5vw, 1.8rem);
 }
 
+.profile-stats.quick-profile-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .account-loading,
 .account-message {
   color: #666;
@@ -1434,7 +1590,7 @@ button.secondary-button:focus-visible {
 /* Stats als Kachel-Grid (auto volle Breite, responsive) */
 .profile-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 gleich breite Spalten über die ganze Breite */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1460,6 +1616,98 @@ button.secondary-button:focus-visible {
   color: #666;
   margin-top: 4px;
   text-align: left;      /* links */
+}
+
+.profile-list-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  background: #e8eeec;
+}
+
+.profile-list-tabs button {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #4d5b58;
+}
+
+.profile-list-tabs button[aria-selected="true"] {
+  background: #fff;
+  color: #384e4d;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.09);
+  font-weight: 600;
+}
+
+.profile-projects-heading {
+  margin-bottom: 0.75rem;
+}
+
+.profile-projects-heading h2,
+.profile-projects-heading p {
+  margin: 0;
+}
+
+.profile-projects-heading p,
+.profile-projects-empty {
+  margin-top: 0.2rem;
+  color: #66716f;
+}
+
+.profile-project-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-project-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #e1e7e5;
+  border-radius: 0.45rem;
+  background: #fff;
+}
+
+.profile-project-copy {
+  min-width: 0;
+}
+
+.profile-project-copy strong,
+.profile-project-copy > span:not(.ticklist-archived) {
+  display: block;
+}
+
+.profile-project-copy > span:not(.ticklist-archived) {
+  margin-top: 0.2rem;
+  color: #66716f;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.profile-project-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.profile-project-actions button {
+  width: auto;
+  margin: 0;
+}
+
+.profile-project-climbed {
+  padding: 0.42rem 0.65rem;
 }
 
 /* ===== Ticklist: Bedienleiste & Anzeige-Panel ===== */
@@ -2031,6 +2279,40 @@ button.secondary-button:focus-visible {
 }
 
 @media (max-width: 759px) {
+  .profile-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-project-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-project-actions {
+    justify-content: flex-start;
+  }
+
+  .route-chart-frame {
+    height: 170px;
+    min-height: 170px;
+  }
+
+  .sector-route-counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0.7rem 0.7rem 0;
+  }
+
+  .la-cerra-overview-counts {
+    gap: 0.25rem;
+    font-size: 0.78rem;
+  }
+
+  .route-actions {
+    align-items: flex-end;
+    flex-direction: column-reverse;
+    gap: 0.35rem;
+  }
+
   .admin-workspace,
   .admin-filters,
   .admin-form-grid {

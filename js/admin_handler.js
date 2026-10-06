@@ -138,7 +138,7 @@ function renderAdminShell(root) {
     </section>
 
     <section data-admin-panel="routes">
-      <p class="admin-panel-intro">Create, edit and archive routes. Archived routes remain in existing ticklists.</p>
+      <p class="admin-panel-intro">Create, edit and archive routes. Archived routes remain in existing ticklists and personal projects.</p>
       <div class="admin-workspace">
       <div class="admin-browser">
         <div class="admin-browser-heading">
@@ -659,11 +659,13 @@ async function permanentlyDeleteSelectedRoute() {
     resetEditor('Route permanently deleted.');
   } catch (error) {
     console.error('Route could not be permanently deleted:', error);
-    const hasTicks = String(error?.message || '').includes('route_has_ticklist_entries');
+    const errorMessage = String(error?.message || '');
+    const hasTicks = errorMessage.includes('route_has_ticklist_entries')
+      || errorMessage.includes('route_has_user_entries');
     setText(
       '[data-admin-save-status]',
       hasTicks
-        ? 'This route is now used in a ticklist and cannot be permanently deleted.'
+        ? 'This route is used in a ticklist or personal project and cannot be permanently deleted.'
         : 'The route could not be permanently deleted. No ticklist data was removed.'
     );
     if (hasTicks) await loadTickUsage(route.uuid);
@@ -688,8 +690,8 @@ async function loadTickUsage(routeId) {
     setText(
       '[data-admin-tick-usage]',
       count === 0
-        ? 'No ticklists reference this route. Permanent deletion is available.'
-        : `${count} ${count === 1 ? 'ticklist entry references' : 'ticklist entries reference'} this route. It will remain archived to preserve user data.`
+        ? 'No personal lists reference this route. Permanent deletion is available.'
+        : `${count} ${count === 1 ? 'personal list entry references' : 'personal list entries reference'} this route. It will remain archived to preserve user data.`
     );
     if (deleteButton) deleteButton.disabled = count !== 0;
   } catch (error) {
