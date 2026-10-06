@@ -840,8 +840,13 @@ img {
 }
 
 .sector-route-count {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-width: 0;
+  height: 3.7rem;
   padding: 0.55rem 0.65rem;
+  box-sizing: border-box;
   border: 1px solid #e2e8e6;
   border-radius: 0.45rem;
   background: #f7f9f8;
@@ -863,6 +868,56 @@ img {
   margin-top: 0.15rem;
   color: #66716f;
   font-size: 0.78rem;
+}
+
+.sector-route-count.has-progress {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.sector-route-count.has-progress strong {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.sector-route-count.has-progress > span {
+  margin-top: 0.1rem;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.sector-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.sector-progress-track {
+  flex: 1 1 auto;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce4e1;
+}
+
+.sector-progress-track .sector-progress-fill {
+  display: block;
+  height: 100%;
+  margin: 0;
+  border-radius: inherit;
+  background: #5f806a;
+}
+
+.sector-progress-row .sector-progress-value {
+  flex: 0 0 auto;
+  min-width: 2.1rem;
+  margin: 0;
+  color: #384e4d;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: right;
 }
 
 .diagram-axis-prefix {

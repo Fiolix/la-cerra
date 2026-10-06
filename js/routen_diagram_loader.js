@@ -23,18 +23,24 @@ function createSectorStats(stats) {
   row.className = 'sector-route-counts';
 
   const items = [
-    ['Routes', stats.routes],
-    ['Open projects', stats.openProjects]
+    { label: 'Routes', value: stats.routes },
+    { label: 'Open projects', value: stats.openProjects }
   ];
 
   if (stats.personal) {
     items.push(
-      ['Climbed', stats.personal.climbed === '—' ? '—' : `${stats.personal.climbed} / ${stats.routes}`],
-      ['My projects', stats.personal.projectsUnavailable ? '—' : stats.personal.projects]
+      {
+        label: 'Climbed',
+        value: stats.personal.climbed === '—' ? '—' : `${stats.personal.climbed} / ${stats.routes}`,
+        progress: stats.personal.climbed === '—'
+          ? null
+          : (stats.routes > 0 ? Math.round((stats.personal.climbed / stats.routes) * 100) : 0)
+      },
+      { label: 'My projects', value: stats.personal.projectsUnavailable ? '—' : stats.personal.projects }
     );
   }
 
-  items.forEach(([label, value]) => {
+  items.forEach(({ label, value, progress }) => {
     const card = document.createElement('div');
     card.className = 'sector-route-count';
     const number = document.createElement('strong');
@@ -42,6 +48,29 @@ function createSectorStats(stats) {
     const caption = document.createElement('span');
     caption.textContent = label;
     card.append(number, caption);
+
+    if (progress !== undefined && progress !== null) {
+      card.classList.add('has-progress');
+      const progressRow = document.createElement('div');
+      progressRow.className = 'sector-progress-row';
+      const progressTrack = document.createElement('div');
+      progressTrack.className = 'sector-progress-track';
+      progressTrack.setAttribute('role', 'progressbar');
+      progressTrack.setAttribute('aria-label', 'Routes climbed in this sector');
+      progressTrack.setAttribute('aria-valuemin', '0');
+      progressTrack.setAttribute('aria-valuemax', '100');
+      progressTrack.setAttribute('aria-valuenow', String(progress));
+      const progressFill = document.createElement('span');
+      progressFill.className = 'sector-progress-fill';
+      progressFill.style.width = `${progress}%`;
+      const progressValue = document.createElement('span');
+      progressValue.className = 'sector-progress-value';
+      progressValue.textContent = `${progress}%`;
+      progressTrack.appendChild(progressFill);
+      progressRow.append(progressTrack, progressValue);
+      card.appendChild(progressRow);
+    }
+
     row.appendChild(card);
   });
 
