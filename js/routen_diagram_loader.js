@@ -128,7 +128,7 @@ function renderRouteDiagram(diagramContainer, routes, { sectorStats = null } = {
           data: anzahl,
           backgroundColor: "#384e4d",
           borderRadius: 7,
-          borderSkipped: false,
+          borderSkipped: "bottom",
           barPercentage: 0.62,
           categoryPercentage: 0.76,
           maxBarThickness: 34
