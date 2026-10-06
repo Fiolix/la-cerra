@@ -4,6 +4,9 @@ import { supabase } from './supabase.js';
 
 import { initTicklistTable } from './ticklist_table.js?v=20260909-admin-routes-1';
 import { summarizeTicks } from './profile_stats.js?v=20260905-stability-1';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261006-projects-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
+import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
 
 let authListenerBound = false;
 
@@ -43,10 +46,14 @@ export async function initProfile() {
     document.getElementById("profile-email").textContent = user.email || "-";
     document.getElementById("profile-since").textContent = new Date(user.created_at).toLocaleDateString();
 
+    const projectsPromise = loadPersonalProjects(user.id);
     await initTicklistTable(user.id, ticks => renderProfileStats(ticks));
+    const projectsResult = await projectsPromise;
+    renderPersonalProjects(projectsResult);
     showProfileContent();
 
     // Modals erst JETZT binden – HTML ist sicher im DOM
+    initProfileListTabs();
     initProfileModals();
   } catch (error) {
     console.error('Profile initialization failed:', error);
@@ -95,6 +102,160 @@ function renderProfileStats(ticks) {
   document.getElementById("tick-count").textContent = stats.routeCount;
   document.getElementById("highest-grade").textContent = stats.highestGrade;
   document.getElementById("highest-flash").textContent = stats.highestFlash;
+}
+
+function sectorPage(slug) {
+  const aliases = {
+    'sushi-free': 'sushi_free',
+    la_sportiva: 'la_sportiva'
+  };
+  return `${aliases[slug] || slug || 'la_cerra'}.html`;
+}
+
+function blockAnchor(number) {
+  return `block-${String(number || '').replaceAll('/', '-')}`;
+}
+
+function renderPersonalProjects(result) {
+  const count = document.getElementById('project-count');
+  const container = document.getElementById('profile-project-list');
+  if (!count || !container) return;
+
+  if (result.unavailable) {
+    count.textContent = '—';
+    container.innerHTML = `
+      <div class="data-load-message compact" role="status">
+        <p>Personal projects will become available after the prepared database update.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (result.error) {
+    console.error('Personal projects could not be loaded:', result.error);
+    count.textContent = '—';
+    container.innerHTML = `
+      <div class="data-load-message compact" role="alert">
+        <p>Your personal projects could not be loaded.</p>
+        <button type="button" class="text-link small as-link" data-projects-retry>Try again</button>
+      </div>
+    `;
+    container.querySelector('[data-projects-retry]')?.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+    });
+    return;
+  }
+
+  const projects = result.data || [];
+  count.textContent = String(projects.length);
+  container.innerHTML = '';
+
+  if (projects.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'profile-projects-empty';
+    empty.textContent = 'You have not saved any personal projects yet.';
+    container.appendChild(empty);
+    return;
+  }
+
+  const list = document.createElement('ul');
+  list.className = 'profile-project-list';
+
+  projects.forEach(project => {
+    const route = project.route;
+    const block = route?.block;
+    const item = document.createElement('li');
+    item.className = 'profile-project-card';
+
+    const copy = document.createElement('div');
+    copy.className = 'profile-project-copy';
+    const title = document.createElement('strong');
+    title.textContent = route?.name || 'Unknown route';
+    const meta = document.createElement('span');
+    const sector = String(block?.sektor || '').replaceAll('_', ' ');
+    meta.textContent = `${sector || 'Unknown sector'} · ${block?.name || `Block ${block?.nummer || '—'}`} · Fb ${route?.grad || '—'}`;
+    copy.append(title, meta);
+
+    if (route?.archived_at) {
+      const archived = document.createElement('span');
+      archived.className = 'ticklist-archived';
+      archived.textContent = 'Archived';
+      copy.appendChild(archived);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'profile-project-actions';
+
+    if (!route?.archived_at && block?.sektor) {
+      const view = document.createElement('button');
+      view.type = 'button';
+      view.className = 'text-link small as-link';
+      view.textContent = 'View route';
+      view.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('navigateToPage', {
+          detail: `${sectorPage(block.sektor)}#${blockAnchor(block.nummer)}`
+        }));
+      });
+      actions.appendChild(view);
+    }
+
+    if (!route?.archived_at && !isProjectGrade(route?.grad)) {
+      const climbed = document.createElement('button');
+      climbed.type = 'button';
+      climbed.className = 'secondary-button profile-project-climbed';
+      climbed.textContent = 'Mark as climbed';
+      climbed.addEventListener('click', () => {
+        showTicklistPopup({
+          mode: 'add',
+          entry: {
+            route_id: project.route_id,
+            route_name: route?.name || 'Unknown route',
+            grad: route?.grad || '?'
+          },
+          onSuccess: () => document.dispatchEvent(new CustomEvent('reloadCurrentPage'))
+        });
+      });
+      actions.appendChild(climbed);
+    }
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'text-link small danger as-link';
+    remove.textContent = 'Remove project';
+    remove.addEventListener('click', async () => {
+      if (!window.confirm(`Remove “${route?.name || 'this route'}” from your projects?`)) return;
+      remove.disabled = true;
+      const update = await setPersonalProject(project.route_id, false);
+      if (!update.ok) {
+        remove.disabled = false;
+        window.alert('The personal project could not be removed. Please try again.');
+        return;
+      }
+      document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+    });
+    actions.appendChild(remove);
+
+    item.append(copy, actions);
+    list.appendChild(item);
+  });
+
+  container.appendChild(list);
+}
+
+function initProfileListTabs() {
+  const tabs = Array.from(document.querySelectorAll('[data-profile-list-tab]'));
+  const panels = Array.from(document.querySelectorAll('[data-profile-list-panel]'));
+  if (!tabs.length || !panels.length) return;
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const selected = tab.dataset.profileListTab;
+      tabs.forEach(entry => entry.setAttribute('aria-selected', String(entry === tab)));
+      panels.forEach(panel => {
+        panel.hidden = panel.dataset.profileListPanel !== selected;
+      });
+    });
+  });
 }
 
 function bindAuthListener() {

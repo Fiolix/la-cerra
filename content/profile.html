@@ -16,7 +16,11 @@
 <div id="profile-stats" class="profile-stats">
   <div class="stat-card">
     <div class="stat-value" id="tick-count">—</div>
-    <div class="stat-label">Routes</div>
+    <div class="stat-label">Climbed routes</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="project-count">—</div>
+    <div class="stat-label">My projects</div>
   </div>
   <div class="stat-card">
     <div class="stat-value" id="highest-grade">—</div>
@@ -28,6 +32,12 @@
   </div>
 </div>
 
+<div class="profile-list-tabs" role="tablist" aria-label="Personal routes">
+  <button type="button" role="tab" aria-selected="true" data-profile-list-tab="climbed">Climbed</button>
+  <button type="button" role="tab" aria-selected="false" data-profile-list-tab="projects">My projects</button>
+</div>
+
+<div data-profile-list-panel="climbed">
   <!-- Ticklist-Bereich (Schritt 2: Filter & Anzeigeoptionen) -->
 <section class="profile-ticklist">
   <!-- Bedienleiste -->
@@ -65,6 +75,19 @@
     <!-- Pagination -->
   <div id="pagination-controls"></div>
 </section>
+</div>
+
+<div data-profile-list-panel="projects" hidden>
+  <section class="profile-projects" aria-labelledby="profile-projects-title">
+    <div class="profile-projects-heading">
+      <h2 id="profile-projects-title">My projects</h2>
+      <p>Routes you want to climb next.</p>
+    </div>
+    <div id="profile-project-list" aria-live="polite">
+      <p class="data-loading">Loading personal projects…</p>
+    </div>
+  </section>
+</div>
 
 <!-- ===== Modals: Password & Delete ===== -->
 
