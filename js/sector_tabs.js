@@ -22,6 +22,7 @@ export function activateSectorTab(name, { focus = false } = {}) {
   root.querySelectorAll('[data-sector-panel]').forEach(panel => {
     panel.hidden = panel !== selectedPanel;
   });
+  root.dataset.activeSectorTab = name;
 
   if (focus) selectedButton.focus();
   window.dispatchEvent(new Event('resize'));
@@ -54,7 +55,9 @@ export function setupSectorTabs(anchor = '') {
     });
   });
 
-  activateSectorTab(anchor.startsWith('block-') ? 'boulders' : 'overview');
+  const anchorTarget = anchor ? document.getElementById(anchor) : null;
+  const anchorPanel = anchorTarget?.closest('[data-sector-panel]')?.dataset.sectorPanel;
+  activateSectorTab(anchorPanel || (anchor.startsWith('block-') ? 'boulders' : 'overview'));
 
   if (!projectListenerBound) {
     document.addEventListener('showSectorProjects', () => activateSectorTab('boulders'));

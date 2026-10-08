@@ -81,6 +81,132 @@
   background: rgba(0, 0, 0, 0.19);
 }
 
+.slide-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-menu .menu-heading {
+  flex: 0 0 auto;
+  min-height: 92px;
+  padding: 22px 20px 16px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.slide-menu .menu-primary-list {
+  flex: 0 0 auto;
+  padding: 12px 10px;
+}
+
+.slide-menu .menu-primary-list > li {
+  margin: 2px 0;
+}
+
+.slide-menu .menu-primary-list a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 48px;
+  padding: 0.7rem 0.85rem;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.93);
+  font-size: 0.98rem;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.slide-menu .menu-primary-list a:hover,
+.slide-menu .menu-primary-list a:focus-visible {
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+  outline: none;
+}
+
+.menu-item-icon {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.menu-toggle-mark {
+  margin-left: auto;
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: transform 180ms ease;
+}
+
+.slide-menu li.open > a > .menu-toggle-mark {
+  transform: rotate(180deg);
+}
+
+.slide-menu .menu-primary-list ul {
+  margin: 2px 0 6px;
+  border-radius: 8px;
+}
+
+.slide-menu .menu-primary-list ul a {
+  min-height: 43px;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.slide-menu .login-block {
+  margin-top: auto;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  font-size: 0.9rem;
+}
+
+.slide-menu .login-block p {
+  margin: 0.45rem 0;
+}
+
+.slide-menu .login-block a {
+  display: inline-flex;
+  width: auto;
+  min-height: 36px;
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.slide-menu .login-block button {
+  min-height: 42px;
+  border-radius: 7px;
+}
+
+.slide-menu .language-switcher {
+  padding: 10px 20px;
+}
+
+.slide-menu .language-switcher img {
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  border-radius: 50%;
+}
+
+.menu-utility-links {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding: 8px 16px 18px;
+}
+
+.slide-menu .menu-utility-links a {
+  display: inline-flex;
+  width: auto;
+  min-height: 32px;
+  padding: 4px 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.72rem;
+}
+
 .menu-backdrop {
   position: fixed;
   inset: 0;

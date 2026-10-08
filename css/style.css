@@ -499,6 +499,23 @@ footer a {
   color: #fff;
 }
 
+.la-cerra-page[data-active-sector-tab]:not([data-active-sector-tab="overview"]) .area-overview-details {
+  display: none;
+}
+
+.la-cerra-page .sector-directory,
+.la-cerra-page .overview-map {
+  margin-top: 0;
+}
+
+.sector-card-copy {
+  justify-content: center;
+}
+
+.sector-card-copy strong {
+  font-size: 0.95rem;
+}
+
 @media (min-width: 700px) {
   .start-primary-actions {
     grid-template-columns: minmax(0, 280px) minmax(0, 220px);
