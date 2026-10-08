@@ -4,16 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bouldering La Cerra</title>
-  <link rel="stylesheet" href="css/style.css?v=20261006-sector-stats-align-1" />
-  <link rel="stylesheet" href="css/burger_menu_style.css?v=20261006-sector-ux-projects-1" />
-  <script defer src="js/content_loader.js?v=20261006-sector-project-jump-1"></script>
+  <link rel="stylesheet" href="css/style.css?v=20261008-mobile-prototype-1" />
+  <link rel="stylesheet" href="css/burger_menu_style.css?v=20261008-mobile-prototype-1" />
+  <script defer src="js/content_loader.js?v=20261008-mobile-prototype-1"></script>
 </head>
 <body>
-  <button class="menu-icon" type="button" aria-label="Open menu" aria-controls="slide-menu" aria-expanded="false">☰</button>
+  <div class="site-bar">
+    <button class="menu-icon" type="button" aria-label="Open menu" aria-controls="slide-menu" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+    <a href="#" class="site-brand" data-page="start.html" aria-label="La Cerra home">
+      <span>BOULDERING</span>
+      <strong>LA CERRA</strong>
+    </a>
+  </div>
 
   <header class="hero">
     <img src="img/header_index.jpg" alt="La Cerra" class="header-image" />
-    <h1 style="text-shadow: 1px 1px 4px rgba(0,0,0,0.6);">BOULDERING<br />LA CERRA</h1>
+    <div class="hero-copy">
+      <span>SARDINIA · ITALY</span>
+      <h1>LA CERRA</h1>
+      <p>GRANITE · NATURE · BOULDERING</p>
+    </div>
   </header>
 
   <main id="content">
@@ -31,6 +41,6 @@
   </footer>
 
 <!-- Burger-Menu nur einmalig laden -->
-<script type="module" src="/la-cerra/js/burger_menu.js?v=20261005-monte-lu-bagnu-routes-1"></script>
+<script type="module" src="/la-cerra/js/burger_menu.js?v=20261008-mobile-prototype-1"></script>
 </body>
 </html>

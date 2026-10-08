@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-routes-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261008-mobile-prototype-1';
 
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Menü existiert schon? → nicht erneut einfügen
@@ -10,11 +10,15 @@ document.addEventListener("DOMContentLoaded", function () {
   navMenu.classList.add("slide-menu");
   navMenu.id = "slide-menu";
   navMenu.innerHTML = `
-    <button class="menu-close" type="button" aria-label="Close menu">×</button>
-    <div class="home-icon-wrapper">
-      <a href="#" data-page="start" title="Home"><img src="img/home_icon.png" alt="Home" style="width: 48px; height: 48px;" /></a>
+    <div class="menu-heading">
+      <a href="#" class="menu-brand" data-page="start" title="Home">
+        <span>BOULDERING</span>
+        <strong>LA CERRA</strong>
+      </a>
+      <button class="menu-close" type="button" aria-label="Close menu">×</button>
     </div>
     <ul>
+      <li><a href="#" data-page="start">Home</a></li>
       <li><a href="#" data-page="news">News</a></li>
       <li><a href="#" data-page="agriturismo">Agriturismo La Cerra</a></li>
       <li><a href="#" data-page="sardinia">Sardinia</a></li>
@@ -39,8 +43,8 @@ document.addEventListener("DOMContentLoaded", function () {
           <li><a href="#" data-page="gallura">Gallura</a></li>
         </ul>
       </li>
-      <li><a href="#" data-page="guestbook">Guestbook</a></li>
       <li><a href="#" data-page="before_you_go">Before You Go</a></li>
+      <li><a href="#" data-page="guestbook">Guestbook</a></li>
     </ul>
 
     <div class="login-block">
@@ -55,6 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
   `;
 
+  const backdrop = document.createElement('button');
+  backdrop.type = 'button';
+  backdrop.className = 'menu-backdrop';
+  backdrop.setAttribute('aria-label', 'Close menu');
+  document.body.insertBefore(backdrop, document.body.firstChild);
   document.body.insertBefore(navMenu, document.body.firstChild);
   applySectorVisibility(navMenu);
   const menuClose = navMenu.querySelector(".menu-close");
@@ -75,6 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
     menuIcon.classList.toggle("is-hidden", open);
     menuIcon.setAttribute("aria-hidden", String(open));
     menuIcon.tabIndex = open ? -1 : 0;
+    backdrop.classList.toggle('is-visible', open);
+    document.body.classList.toggle('menu-is-open', open);
   }
 
   navMenu.querySelectorAll("a[data-page]").forEach(link => {
@@ -91,6 +102,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   menuClose?.addEventListener("click", function () {
+    setMenuOpen(false);
+    menuIcon.focus();
+  });
+
+  backdrop.addEventListener('click', () => {
     setMenuOpen(false);
     menuIcon.focus();
   });
@@ -122,7 +138,7 @@ function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
 
-import { initAuth } from './auth_handler.js?v=20260912-guestbook-delete-1';
+import { initAuth } from './auth_handler.js?v=20261008-mobile-prototype-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
