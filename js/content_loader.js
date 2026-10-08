@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261008-mobile-prototype-3";
+const ASSET_VERSION = "20261008-mobile-prototype-4";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -133,6 +133,10 @@ async function loadPage(page) {
     }
 
     if (basePage === "start.html") {
+      const statsModule = await import(`/la-cerra/js/area_stats.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await statsModule.initStartAreaStats();
+
       const module = await import(`/la-cerra/js/start_account.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.initStartAccount();

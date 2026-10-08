@@ -1,5 +1,7 @@
 import { supabase } from './supabase.js';
 import { summarizeTicks } from './profile_stats.js?v=20260905-stability-1';
+import { loadAreaStats } from './area_stats.js?v=20261008-mobile-prototype-4';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261006-projects-1';
 
 let renderId = 0;
 let authListenerBound = false;
@@ -66,47 +68,68 @@ function showLoggedOut(container) {
 }
 
 async function showLoggedIn(container, user, currentRenderId) {
-  const [profileResult, ticksResult] = await Promise.all([
+  const [profileResult, ticksResult, areaStatsResult, projectResult] = await Promise.all([
     supabase.from('profiles').select('username').eq('user_id', user.id).maybeSingle(),
-    supabase.from('ticklist').select('flash, route:route_id(grad)').eq('user_id', user.id)
+    supabase.from('ticklist').select('route_id, flash, route:route_id(grad)').eq('user_id', user.id),
+    loadAreaStats().then(data => ({ data, error: null })).catch(error => ({ data: null, error })),
+    getPersonalProjectRouteIds(user.id)
   ]);
 
   if (currentRenderId !== renderId || !document.getElementById('start-account')) return;
 
-  if (profileResult.error || ticksResult.error) {
+  if (profileResult.error || ticksResult.error || areaStatsResult.error) {
     showAccountError(container);
     return;
   }
 
   const username = profileResult.data?.username || 'My profile';
-  const stats = summarizeTicks(ticksResult.data);
-  const routeLabel = stats.routeCount === 1 ? '1 route' : `${stats.routeCount} routes`;
+  const areaStats = areaStatsResult.data;
+  const activeTicks = (ticksResult.data || []).filter(tick => areaStats.gradedRouteIds.has(tick.route_id));
+  const stats = summarizeTicks(activeTicks);
+  const climbedCount = new Set(
+    activeTicks
+      .map(tick => tick.route_id)
+      .filter(Boolean)
+  ).size;
+  const progress = areaStats.routes > 0
+    ? Math.round((climbedCount / areaStats.routes) * 100)
+    : 0;
+  const personalProjects = projectResult.unavailable || projectResult.error
+    ? '—'
+    : Array.from(projectResult.ids).filter(routeId => areaStats.activeRouteIds.has(routeId)).length;
 
   container.innerHTML = `
     <div class="start-account-heading">
-      <h2>Your overview</h2>
+      <h2 data-start-username></h2>
       <button type="button" class="text-link small as-link" data-page="profile">Open profile</button>
     </div>
-    <div class="profile-stats quick-profile-stats">
-      <div class="stat-card">
-        <div class="stat-value" data-quick-username></div>
-        <div class="stat-label" data-quick-route-count></div>
+    <div class="sector-route-counts start-personal-stats">
+      <div class="sector-route-count has-progress">
+        <strong>${climbedCount} / ${areaStats.routes}</strong>
+        <span>Climbed</span>
+        <div class="sector-progress-row">
+          <div class="sector-progress-track" role="progressbar" aria-label="Routes climbed at La Cerra" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}">
+            <span class="sector-progress-fill" style="width: ${progress}%"></span>
+          </div>
+          <span class="sector-progress-value">${progress}%</span>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value" data-quick-highest-grade></div>
-        <div class="stat-label">Highest grade</div>
+      <div class="sector-route-count">
+        <strong>${personalProjects}</strong>
+        <span>My projects</span>
       </div>
-      <div class="stat-card">
-        <div class="stat-value" data-quick-highest-flash></div>
-        <div class="stat-label">Highest flash</div>
+      <div class="sector-route-count">
+        <strong>${stats.highestGrade}</strong>
+        <span>Highest grade</span>
+      </div>
+      <div class="sector-route-count">
+        <strong>${stats.highestFlash}</strong>
+        <span>Highest flash</span>
       </div>
     </div>
   `;
 
-  container.querySelector('[data-quick-username]').textContent = username;
-  container.querySelector('[data-quick-route-count]').textContent = routeLabel;
-  container.querySelector('[data-quick-highest-grade]').textContent = stats.highestGrade;
-  container.querySelector('[data-quick-highest-flash]').textContent = stats.highestFlash;
+  container.querySelector('[data-start-username]').textContent = username;
 }
 
 function showAccountError(container) {
