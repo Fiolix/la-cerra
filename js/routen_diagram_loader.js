@@ -187,7 +187,7 @@ function renderRouteDiagram(diagramContainer, routes, { sectorStats = null } = {
             anchor: 'start',
             offset: 2,
             color: '#384e4d',
-            font: { weight: '600', size: 13 },
+            font: { family: 'Inter', weight: '600', size: 13 },
             clamp: true,
             clip: true,
             formatter: value => value > 0 ? value : ''
@@ -206,7 +206,7 @@ function renderRouteDiagram(diagramContainer, routes, { sectorStats = null } = {
             ticks: {
               color: "#666",
               padding: 7,
-              font: { family: "Arial", size: 13, weight: "normal" }
+              font: { family: "Inter", size: 13, weight: "normal" }
             }
           }
         }

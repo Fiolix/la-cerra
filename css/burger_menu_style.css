@@ -207,6 +207,27 @@
   font-size: 0.72rem;
 }
 
+.slide-menu,
+.slide-menu input,
+.slide-menu button {
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+.slide-menu .menu-primary-list a {
+  font-size: 0.98rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+}
+
+.slide-menu .menu-primary-list ul a {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.slide-menu .menu-utility-links a {
+  font-size: 0.78rem;
+}
+
 .menu-backdrop {
   position: fixed;
   inset: 0;
