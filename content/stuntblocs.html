@@ -1,15 +1,33 @@
-<div class="sector-page" data-sektor="stuntblocs">
+<div class="sector-page sector-page-prototype" data-sektor="stuntblocs" data-sector-tabs>
   <nav class="breadcrumb">
     <a href="#" data-page="bouldering.html">Bouldering</a> ›
     <a href="#" data-page="la_cerra.html">La Cerra</a> ›
     <a href="#" data-page="stuntblocs.html">Stuntblocs</a>
   </nav>
-  <section class="sector-summary">
-    <div class="text-preview">The Stuntblocs sector is the direct neighbor to the 2nd Life sector and therefore also about 30 minutes walking distance away from the campsite (and from the day parking). Guidance should not be a problem thanks to the signposts in blue and yellow. The sector offers a wide range of route difficulties from Fb 3 to even 7b and some unfinished projects. For La Cerra standards, the number of problems is very high, with easy slabs, nice technical and powerful routes and also some high balls for those of you interested in that. The large sun deck invites to extended bouldering breaks to restore your energy. From this central place you can dive into the labyrinth of boulders. The sector is family friendly and offers an exciting environment for children who want to explore. Equally, for adults, there is still the possibility to open up a lot of new routes.</div>
-    <button class="toggle-summary" type="button">Show more</button>
-  </section>
-  <section id="routen-diagramm" class="diagramm-container"></section>
-  <section class="map"><img src="img/bouldering/la_cerra/stuntblocs/stuntblocs_map.jpg" alt="Map of the Stuntblocs bouldering sector" /></section>
-  <nav class="block-nav"><label for="block-select">Jump to block:</label><select id="block-select"><option value="">-- Select a block --</option></select></nav>
-  <section id="boulder-blocks"></section>
+  <header class="sector-heading">
+    <span class="section-eyebrow">La Cerra sector</span>
+    <h1>Stuntblocs</h1>
+  </header>
+  <nav class="sector-tabs" aria-label="Sector content">
+    <button type="button" data-sector-tab="overview" aria-controls="sector-panel-overview">Overview</button>
+    <button type="button" data-sector-tab="boulders" aria-controls="sector-panel-boulders">Boulders</button>
+    <button type="button" data-sector-tab="map" aria-controls="sector-panel-map">Map</button>
+  </nav>
+
+  <div id="sector-panel-overview" class="sector-tab-panel" data-sector-panel="overview">
+    <section class="sector-summary">
+      <div class="text-preview">The Stuntblocs sector is the direct neighbor to the 2nd Life sector and therefore also about 30 minutes walking distance away from the campsite (and from the day parking). Guidance should not be a problem thanks to the signposts in blue and yellow. The sector offers a wide range of route difficulties from Fb 3 to even 7b and some unfinished projects. For La Cerra standards, the number of problems is very high, with easy slabs, nice technical and powerful routes and also some high balls for those of you interested in that. The large sun deck invites to extended bouldering breaks to restore your energy. From this central place you can dive into the labyrinth of boulders. The sector is family friendly and offers an exciting environment for children who want to explore. Equally, for adults, there is still the possibility to open up a lot of new routes.</div>
+      <button class="toggle-summary" type="button">Show more</button>
+    </section>
+    <section id="routen-diagramm" class="diagramm-container"></section>
+  </div>
+
+  <div id="sector-panel-boulders" class="sector-tab-panel" data-sector-panel="boulders" hidden>
+    <nav class="block-nav"><label for="block-select" class="visually-hidden">Jump to block</label><select id="block-select"><option value="">Select block…</option></select></nav>
+    <section id="boulder-blocks"></section>
+  </div>
+
+  <div id="sector-panel-map" class="sector-tab-panel" data-sector-panel="map" hidden>
+    <section class="map"><img src="/la-cerra/img/bouldering/la_cerra/stuntblocs/stuntblocs_map.jpg" alt="Map of the Stuntblocs bouldering sector" /></section>
+  </div>
 </div>

@@ -1,15 +1,33 @@
-<div class="sector-page" data-sektor="monte_pulchiana">
+<div class="sector-page sector-page-prototype" data-sektor="monte_pulchiana" data-sector-tabs>
   <nav class="breadcrumb">
     <a href="#" data-page="bouldering.html">Bouldering</a> ›
     <a href="#" data-page="la_cerra.html">La Cerra</a> ›
     <a href="#" data-page="monte_pulchiana.html">Monte Pulchiana</a>
   </nav>
-  <section class="sector-summary">
-    <div class="text-preview">This sector has incredible potential and only a small portion is shown here. La Sportiva listed more boulders and problems in the free guidebook from 2013 which can be found online. Unfortunately, a lot of them were reclaimed by nature since the initial cleaning. So if you are in the mood for new boulders, crazy rock shapes, green meadows and maybe some cleaning, this is the place to be. Some boulders are a bit higher but drop zones are good. Grades are mostly from Fb 6a to 7c with Grappini (Fb 8a) representing to upper limit so far. Please note that the bouldering is on private property (outside of La Cerra). At the time this book was released, access to the boulders was allowed but absolutely requires polite behavior. You should estimate a walking time of 45 to 60 minutes from the campsite - from the day parking on the other hand, the first blocks are more or less in line of sight.</div>
-    <button class="toggle-summary" type="button">Show more</button>
-  </section>
-  <section id="routen-diagramm" class="diagramm-container"></section>
-  <section class="map"><img src="img/bouldering/la_cerra/monte_pulchiana/monte_pulchiana_map.jpg" alt="Map of the Monte Pulchiana bouldering sector" /></section>
-  <nav class="block-nav"><label for="block-select">Jump to block:</label><select id="block-select"><option value="">-- Select a block --</option></select></nav>
-  <section id="boulder-blocks"></section>
+  <header class="sector-heading">
+    <span class="section-eyebrow">La Cerra sector</span>
+    <h1>Monte Pulchiana</h1>
+  </header>
+  <nav class="sector-tabs" aria-label="Sector content">
+    <button type="button" data-sector-tab="overview" aria-controls="sector-panel-overview">Overview</button>
+    <button type="button" data-sector-tab="boulders" aria-controls="sector-panel-boulders">Boulders</button>
+    <button type="button" data-sector-tab="map" aria-controls="sector-panel-map">Map</button>
+  </nav>
+
+  <div id="sector-panel-overview" class="sector-tab-panel" data-sector-panel="overview">
+    <section class="sector-summary">
+      <div class="text-preview">This sector has incredible potential and only a small portion is shown here. La Sportiva listed more boulders and problems in the free guidebook from 2013 which can be found online. Unfortunately, a lot of them were reclaimed by nature since the initial cleaning. So if you are in the mood for new boulders, crazy rock shapes, green meadows and maybe some cleaning, this is the place to be. Some boulders are a bit higher but drop zones are good. Grades are mostly from Fb 6a to 7c with Grappini (Fb 8a) representing to upper limit so far. Please note that the bouldering is on private property (outside of La Cerra). At the time this book was released, access to the boulders was allowed but absolutely requires polite behavior. You should estimate a walking time of 45 to 60 minutes from the campsite - from the day parking on the other hand, the first blocks are more or less in line of sight.</div>
+      <button class="toggle-summary" type="button">Show more</button>
+    </section>
+    <section id="routen-diagramm" class="diagramm-container"></section>
+  </div>
+
+  <div id="sector-panel-boulders" class="sector-tab-panel" data-sector-panel="boulders" hidden>
+    <nav class="block-nav"><label for="block-select" class="visually-hidden">Jump to block</label><select id="block-select"><option value="">Select block…</option></select></nav>
+    <section id="boulder-blocks"></section>
+  </div>
+
+  <div id="sector-panel-map" class="sector-tab-panel" data-sector-panel="map" hidden>
+    <section class="map"><img src="/la-cerra/img/bouldering/la_cerra/monte_pulchiana/monte_pulchiana_map.jpg" alt="Map of the Monte Pulchiana bouldering sector" /></section>
+  </div>
 </div>

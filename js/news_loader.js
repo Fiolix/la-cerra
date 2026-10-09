@@ -52,7 +52,10 @@ function createArticle(item) {
   article.className = 'news-card';
   article.id = `news-${item.id}`;
 
-  if (item.image) article.appendChild(createImage(item));
+  if (item.image) {
+    article.classList.add('has-image');
+    article.appendChild(createImage(item));
+  }
 
   const content = document.createElement('div');
   content.className = 'news-card-content';
@@ -82,8 +85,8 @@ function createArticle(item) {
   });
 
   details.append(summary, body);
-  content.append(date, title, teaser, details);
-  article.appendChild(content);
+  content.append(date, title, teaser);
+  article.append(content, details);
   return article;
 }
 

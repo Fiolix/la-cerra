@@ -187,7 +187,7 @@ function renderRouteDiagram(diagramContainer, routes, { sectorStats = null } = {
             anchor: 'start',
             offset: 2,
             color: '#384e4d',
-            font: { weight: '600', size: 13 },
+            font: { family: 'Inter', weight: '600', size: 13 },
             clamp: true,
             clip: true,
             formatter: value => value > 0 ? value : ''
@@ -206,7 +206,7 @@ function renderRouteDiagram(diagramContainer, routes, { sectorStats = null } = {
             ticks: {
               color: "#666",
               padding: 7,
-              font: { family: "Arial", size: 13, weight: "normal" }
+              font: { family: "Inter", size: 13, weight: "normal" }
             }
           }
         }
@@ -294,16 +294,17 @@ export async function loadRoutenDiagramm(sektorName) {
 
 export async function loadLaCerraDiagramm() {
   const overview = document.querySelector('.la-cerra-route-overview');
+  const statsContainer = document.querySelector('[data-la-cerra-stats]');
   const diagramContainer = document.getElementById('la-cerra-routen-diagramm');
-  if (!overview || !diagramContainer) return;
+  if (!overview || !statsContainer || !diagramContainer) return;
 
-  const sectors = String(overview.dataset.sectors || '')
+  const sectors = String(statsContainer.dataset.sectors || '')
     .split(',')
     .map(sector => sector.trim())
     .filter(Boolean);
-  const sectorCount = overview.querySelector('[data-sector-count]');
-  const routeCount = overview.querySelector('[data-route-count]');
-  const projectCount = overview.querySelector('[data-project-count]');
+  const sectorCount = statsContainer.querySelector('[data-sector-count]');
+  const routeCount = statsContainer.querySelector('[data-route-count]');
+  const projectCount = statsContainer.querySelector('[data-project-count]');
 
   sectorCount.textContent = String(sectors.length);
   routeCount.textContent = '…';

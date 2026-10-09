@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261006-sector-project-jump-1";
+const ASSET_VERSION = "20261009-mobile-prototype-10";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -105,6 +105,7 @@ async function loadPage(page) {
     if (loadId !== activeLoadId) return;
 
     contentElement.innerHTML = html;
+    document.body.dataset.currentPage = basePage.replace('.html', '');
 
     let handledScroll = false;
     let sectorUnavailable = false;
@@ -113,6 +114,18 @@ async function loadPage(page) {
     if (loadId !== activeLoadId) return;
     await sectorModule.applySectorVisibility(contentElement);
 
+    if (html.includes('data-sector-overview')) {
+      const overviewModule = await import(`/la-cerra/js/sector_overview.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await overviewModule.initSectorOverview();
+    }
+
+    if (html.includes('data-sector-tabs')) {
+      const tabsModule = await import(`/la-cerra/js/sector_tabs.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      tabsModule.setupSectorTabs(anchor);
+    }
+
     const sectorSlug = contentElement.querySelector('[data-sektor]')?.dataset.sektor;
     if (sectorSlug && !(await sectorModule.isSectorVisible(sectorSlug))) {
       showSectorUnavailable(contentElement, sectorModule.sectorLabel(sectorSlug));
@@ -120,6 +133,10 @@ async function loadPage(page) {
     }
 
     if (basePage === "start.html") {
+      const statsModule = await import(`/la-cerra/js/area_stats.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await statsModule.initStartAreaStats();
+
       const module = await import(`/la-cerra/js/start_account.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       await module.initStartAccount();
@@ -212,6 +229,11 @@ async function loadPage(page) {
     const factsModule = await import(`/la-cerra/js/facts_loader.js?v=${ASSET_VERSION}`);
     if (loadId !== activeLoadId) return;
     await factsModule.showNextFact();
+
+    if (anchor && !handledScroll) {
+      scrollToAnchor(anchor);
+      handledScroll = true;
+    }
 
     if (!handledScroll) restoreScrollPosition();
     document.activeElement?.blur();

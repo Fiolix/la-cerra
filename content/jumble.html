@@ -1,15 +1,33 @@
-<div class="sector-page" data-sektor="jumble">
+<div class="sector-page sector-page-prototype" data-sektor="jumble" data-sector-tabs>
   <nav class="breadcrumb">
     <a href="#" data-page="bouldering.html">Bouldering</a> ›
     <a href="#" data-page="la_cerra.html">La Cerra</a> ›
     <a href="#" data-page="jumble.html">Jumble</a>
   </nav>
-  <section class="sector-summary">
-    <div class="text-preview">Jumble is one of the two easily accessible sectors around Monte Lu Bagnu. It lies directly beside the hiking trail and offers granite boulders around 3 to 5 metres high, with mostly good but not always perfect landings. The problems range from pleasant warm-ups to powerful and technical lines up to Fb 7b.</div>
-    <button class="toggle-summary" type="button">Show more</button>
-  </section>
-  <section id="routen-diagramm" class="diagramm-container"></section>
-  <section class="map"><img src="/la-cerra/img/bouldering/la_cerra/jumble/jumble_map.jpg" alt="Map of the Monte Lu Bagnu area used for the Jumble sector" /></section>
-  <nav class="block-nav"><label for="block-select">Jump to block:</label><select id="block-select"><option value="">-- Select a block --</option></select></nav>
-  <section id="boulder-blocks"></section>
+  <header class="sector-heading">
+    <span class="section-eyebrow">La Cerra sector</span>
+    <h1>Jumble</h1>
+  </header>
+  <nav class="sector-tabs" aria-label="Sector content">
+    <button type="button" data-sector-tab="overview" aria-controls="sector-panel-overview">Overview</button>
+    <button type="button" data-sector-tab="boulders" aria-controls="sector-panel-boulders">Boulders</button>
+    <button type="button" data-sector-tab="map" aria-controls="sector-panel-map">Map</button>
+  </nav>
+
+  <div id="sector-panel-overview" class="sector-tab-panel" data-sector-panel="overview">
+    <section class="sector-summary">
+      <div class="text-preview">Jumble is one of the two easily accessible sectors around Monte Lu Bagnu. It lies directly beside the hiking trail and offers granite boulders around 3 to 5 metres high, with mostly good but not always perfect landings. The problems range from pleasant warm-ups to powerful and technical lines up to Fb 7b.</div>
+      <button class="toggle-summary" type="button">Show more</button>
+    </section>
+    <section id="routen-diagramm" class="diagramm-container"></section>
+  </div>
+
+  <div id="sector-panel-boulders" class="sector-tab-panel" data-sector-panel="boulders" hidden>
+    <nav class="block-nav"><label for="block-select" class="visually-hidden">Jump to block</label><select id="block-select"><option value="">Select block…</option></select></nav>
+    <section id="boulder-blocks"></section>
+  </div>
+
+  <div id="sector-panel-map" class="sector-tab-panel" data-sector-panel="map" hidden>
+    <section class="map"><img src="/la-cerra/img/bouldering/la_cerra/jumble/jumble_map.jpg" alt="Map of the Monte Lu Bagnu area used for the Jumble sector" /></section>
+  </div>
 </div>
