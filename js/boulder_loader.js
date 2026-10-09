@@ -177,7 +177,7 @@ if (dropdown) {
   dropdown.innerHTML = '';
   const opt0 = document.createElement('option');
   opt0.value = '';
-  opt0.textContent = '-- Select a block --';
+  opt0.textContent = 'Select block…';
   dropdown.appendChild(opt0);
 }
 

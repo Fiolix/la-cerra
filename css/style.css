@@ -462,11 +462,29 @@ body[data-current-page="start"] .news-teaser-card {
 }
 
 .sector-page-prototype #routen-diagramm,
-.sector-page-prototype .map,
-.sector-page-prototype .block-nav {
+.sector-page-prototype .map {
   border: 1px solid var(--cerra-line);
   background: var(--cerra-card);
   box-shadow: none;
+}
+
+.sector-page-prototype .block-nav {
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+.sector-page-prototype .block-nav select {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 38px 9px 12px;
+  border-color: #bfc7c3;
+  border-radius: 8px;
+  background-color: var(--cerra-card);
 }
 
 .sector-page-prototype #routen-diagramm {

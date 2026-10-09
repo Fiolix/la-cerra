@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261009-mobile-prototype-9";
+const ASSET_VERSION = "20261009-mobile-prototype-10";
 
 const PAGE_ALIASES = {
   start: "start.html",
