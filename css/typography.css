@@ -87,7 +87,6 @@ main p a,
 
 .start-highlights strong,
 .sector-route-count strong,
-.la-cerra-overview-counts strong,
 .stat-value,
 .route-grade {
   font-variant-numeric: tabular-nums;
@@ -166,11 +165,6 @@ figcaption,
 
 .route-grade {
   font-weight: 760;
-}
-
-.la-cerra-overview-counts {
-  color: #40524b;
-  font-size: 0.86rem;
 }
 
 .diagram-axis-prefix {

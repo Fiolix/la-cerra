@@ -294,16 +294,17 @@ export async function loadRoutenDiagramm(sektorName) {
 
 export async function loadLaCerraDiagramm() {
   const overview = document.querySelector('.la-cerra-route-overview');
+  const statsContainer = document.querySelector('[data-la-cerra-stats]');
   const diagramContainer = document.getElementById('la-cerra-routen-diagramm');
-  if (!overview || !diagramContainer) return;
+  if (!overview || !statsContainer || !diagramContainer) return;
 
-  const sectors = String(overview.dataset.sectors || '')
+  const sectors = String(statsContainer.dataset.sectors || '')
     .split(',')
     .map(sector => sector.trim())
     .filter(Boolean);
-  const sectorCount = overview.querySelector('[data-sector-count]');
-  const routeCount = overview.querySelector('[data-route-count]');
-  const projectCount = overview.querySelector('[data-project-count]');
+  const sectorCount = statsContainer.querySelector('[data-sector-count]');
+  const routeCount = statsContainer.querySelector('[data-route-count]');
+  const projectCount = statsContainer.querySelector('[data-project-count]');
 
   sectorCount.textContent = String(sectors.length);
   routeCount.textContent = '…';

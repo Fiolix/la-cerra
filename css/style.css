@@ -1373,18 +1373,8 @@ img {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-.la-cerra-overview-counts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.65rem;
-  margin-bottom: 0.2rem;
-  color: #384e4d;
-  font-size: 0.95rem;
-  text-align: center;
-}
-
-.la-cerra-overview-counts span {
-  min-width: 0;
+.area-highlights {
+  margin: 0 0 16px;
 }
 
 .sector-route-counts {
@@ -2907,11 +2897,6 @@ footer a {
   .sector-route-counts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 0.7rem 0.7rem 0;
-  }
-
-  .la-cerra-overview-counts {
-    gap: 0.25rem;
-    font-size: 0.78rem;
   }
 
   .route-actions {
