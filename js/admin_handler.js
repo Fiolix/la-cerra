@@ -126,7 +126,8 @@ function renderAdminShell(root) {
 
   root.innerHTML = `
     <section class="admin-header">
-      <h2>Administration</h2>
+      <span class="section-eyebrow">Site management</span>
+      <h1>Administration</h1>
       <p>Manage routes, blocks, sectors, user accounts and guestbook entries.</p>
       <div class="admin-tabs" role="tablist" aria-label="Administration areas">
         <button type="button" role="tab" aria-selected="true" data-admin-tab="routes">Routes</button>
@@ -309,7 +310,7 @@ async function loadAdminData(root, currentUserId) {
 }
 
 function configureModeratorShell(root) {
-  root.querySelector('.admin-header h2').textContent = 'Guestbook moderation';
+  root.querySelector('.admin-header h1').textContent = 'Guestbook moderation';
   root.querySelector('.admin-header p').textContent = 'Review, hide, restore or delete guestbook entries.';
   root.querySelectorAll('[data-admin-tab]:not([data-admin-tab="guestbook"])').forEach(tab => tab.remove());
   root.querySelectorAll('[data-admin-panel]:not([data-admin-panel="guestbook"])').forEach(panel => panel.remove());

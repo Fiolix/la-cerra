@@ -3352,6 +3352,192 @@ button.text-link.as-link:focus { outline: none; }
   }
 }
 
+/* ===== Mobile design rollout: administration ===== */
+.admin-page .admin-header {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.admin-page .admin-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-weight: 760;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.admin-page .admin-header p {
+  max-width: 44rem;
+  margin: 8px 0 0;
+  color: var(--cerra-muted);
+}
+
+.admin-page .admin-tabs {
+  position: sticky;
+  top: 60px;
+  z-index: 18;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0;
+  margin: 18px -16px 0;
+  padding: 0 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--cerra-line);
+  background: rgba(244, 240, 232, 0.96);
+  backdrop-filter: blur(8px);
+  scrollbar-width: none;
+}
+
+.admin-page .admin-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-page .admin-tabs button {
+  position: relative;
+  flex: 0 0 auto;
+  min-height: 48px;
+  margin: 0;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--cerra-muted);
+  font-size: 0.88rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.admin-page .admin-tabs button[aria-selected="true"] {
+  background: transparent;
+  color: var(--cerra-green-950);
+}
+
+.admin-page .admin-tabs button[aria-selected="true"]::after {
+  position: absolute;
+  right: 10px;
+  bottom: -1px;
+  left: 10px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  content: "";
+  background: var(--cerra-green-800);
+}
+
+.admin-page [data-admin-panel] {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.admin-page .admin-panel-intro {
+  margin: 0 0 14px;
+  color: var(--cerra-muted);
+}
+
+.admin-page .admin-workspace {
+  gap: 14px;
+}
+
+.admin-page .admin-browser,
+.admin-page .admin-route-form,
+.admin-page .admin-settings-card,
+.admin-page .admin-user-summary,
+.admin-page .admin-guestbook-message {
+  padding: 16px;
+  border: 1px solid var(--cerra-line);
+  border-radius: var(--cerra-radius);
+  background: var(--cerra-card);
+  box-shadow: none;
+}
+
+.admin-page .admin-browser-heading button,
+.admin-page .admin-route-actions button,
+.admin-page .admin-sector-row button {
+  min-height: 42px;
+  border-radius: 8px;
+}
+
+.admin-page .admin-filters input,
+.admin-page .admin-filters select,
+.admin-page .admin-route-form input,
+.admin-page .admin-route-form select,
+.admin-page .admin-route-form textarea {
+  min-height: 46px;
+  padding: 10px 12px;
+  border-color: #bfc7c3;
+  border-radius: 8px;
+}
+
+.admin-page .admin-filters input:focus,
+.admin-page .admin-filters select:focus,
+.admin-page .admin-route-form input:focus,
+.admin-page .admin-route-form select:focus,
+.admin-page .admin-route-form textarea:focus,
+.admin-page .admin-route-select:focus {
+  border-color: var(--cerra-green-600);
+  outline: 3px solid rgba(89, 123, 104, 0.16);
+}
+
+.admin-page .admin-route-select {
+  border-color: #bfc7c3;
+  border-radius: 8px;
+}
+
+.admin-page .admin-block-preview {
+  border-color: var(--cerra-line);
+  border-radius: 10px;
+  background: #f0eee8;
+}
+
+.admin-page .admin-sector-row,
+.admin-page .admin-user-confirmation,
+.admin-page .admin-sector-confirmation,
+.admin-page .admin-guestbook-summary {
+  border-color: var(--cerra-line);
+  border-radius: 8px;
+  background: #f0eee8;
+}
+
+@media (max-width: 759px) {
+  .admin-page .admin-workspace,
+  .admin-page .admin-filters,
+  .admin-page .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-page .admin-route-select {
+    min-height: 15rem;
+  }
+
+  .admin-page .admin-route-actions button {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}
+
+@media (min-width: 760px) {
+  .admin-page .admin-tabs {
+    margin-right: 0;
+    margin-left: 0;
+    padding: 0;
+    border: 1px solid var(--cerra-line);
+    border-radius: 10px 10px 0 0;
+  }
+
+  .admin-page .admin-browser,
+  .admin-page .admin-route-form,
+  .admin-page .admin-settings-card,
+  .admin-page .admin-user-summary,
+  .admin-page .admin-guestbook-message {
+    padding: 20px;
+  }
+}
+
 /* Fix: Modal-Close-Button darf nicht full-width sein */
 .modal-close {
   position: absolute; top: 8px; right: 10px;
