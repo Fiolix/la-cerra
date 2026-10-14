@@ -1,8 +1,8 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261014-interactive-map-3';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261014-interactive-map-4';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261014-interactive-map-3';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261014-interactive-map-4';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
@@ -41,7 +41,59 @@ function showFallback(container, message = 'The interactive map is currently una
   const status = container.closest('.interactive-map-card')?.querySelector('[data-map-status]');
   if (status) {
     status.hidden = false;
+    status.classList.remove('is-location-error');
     status.textContent = message;
+  }
+}
+
+function setLocationStatus(container, message = '') {
+  const status = container.closest('.interactive-map-card')?.querySelector('[data-map-status]');
+  if (!status) return;
+  status.textContent = message;
+  status.hidden = !message;
+  status.classList.toggle('is-location-error', Boolean(message));
+}
+
+function locationErrorMessage(error) {
+  if (error?.code === 1) {
+    return 'Location access was not allowed. You can enable it in your browser settings.';
+  }
+  if (error?.code === 2) {
+    return 'Your current location could not be determined.';
+  }
+  if (error?.code === 3) {
+    return 'Locating your position took too long. Please try again.';
+  }
+  return 'Your current location could not be displayed.';
+}
+
+function addLocationControl(map, container) {
+  if (!('geolocation' in navigator)) {
+    setLocationStatus(container, 'Location services are not supported by this browser.');
+    return;
+  }
+
+  const control = new maplibregl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true,
+      timeout: 12000,
+      maximumAge: 30000
+    },
+    fitBoundsOptions: { maxZoom: 15.5 },
+    trackUserLocation: false,
+    showAccuracyCircle: true,
+    showUserLocation: true,
+    showUserHeading: false
+  });
+
+  map.addControl(control, 'top-right');
+  control.on('geolocate', () => setLocationStatus(container));
+  control.on('error', event => setLocationStatus(container, locationErrorMessage(event?.error || event)));
+
+  const button = container.querySelector('.maplibregl-ctrl-geolocate');
+  if (button) {
+    button.setAttribute('aria-label', 'Show my location');
+    button.title = 'Show my location';
   }
 }
 
@@ -176,6 +228,7 @@ async function createMap(container) {
     activeMaps.set(container, map);
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    addLocationControl(map, container);
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
 
     const timeout = window.setTimeout(() => {
