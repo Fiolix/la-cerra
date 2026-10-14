@@ -1,8 +1,8 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261014-interactive-map-2';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261014-interactive-map-3';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261014-interactive-map-2';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261014-interactive-map-3';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
