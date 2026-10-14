@@ -28,6 +28,14 @@
   </div>
 
   <div id="sector-panel-map" class="sector-tab-panel" data-sector-panel="map" hidden>
-    <section class="map"><img src="/la-cerra/img/bouldering/la_cerra/sushi-free/sushi-free_map.png" alt="Map of the Sushi-Free sector" /></section>
+    <section class="map static-topo-map" aria-labelledby="sushi-free-topo-title">
+      <div class="map-card-heading"><h2 id="sushi-free-topo-title">Boulder Orientation</h2></div>
+      <img src="/la-cerra/img/bouldering/la_cerra/sushi-free/sushi-free_map.png" alt="Map of the Sushi-Free sector" />
+    </section>
+    <section class="interactive-map-card sector-location-map" aria-labelledby="sushi-free-location-title">
+      <div class="map-card-heading"><h2 id="sushi-free-location-title">Interactive map</h2></div>
+      <div class="interactive-map-frame" data-interactive-map data-selected-sector="sushi-free" role="region" aria-label="Interactive location map for Sushi-Free"></div>
+      <p class="interactive-map-status" data-map-status role="status" hidden></p>
+    </section>
   </div>
 </div>
