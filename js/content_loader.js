@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261014-interactive-map-3";
+const ASSET_VERSION = "20261014-interactive-map-4";
 
 const PAGE_ALIASES = {
   start: "start.html",

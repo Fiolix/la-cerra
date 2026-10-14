@@ -1688,6 +1688,10 @@ button.sector-route-count {
   font-size: 0.82rem;
 }
 
+.interactive-map-status.is-location-error {
+  color: var(--cerra-ink);
+}
+
 .static-topo-map > img,
 .static-topo-map .interactive-sector-map > img {
   display: block;
