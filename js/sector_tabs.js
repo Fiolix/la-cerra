@@ -25,6 +25,9 @@ export function activateSectorTab(name, { focus = false } = {}) {
   root.dataset.activeSectorTab = name;
 
   if (focus) selectedButton.focus();
+  document.dispatchEvent(new CustomEvent('sectorTabChanged', {
+    detail: { name }
+  }));
   window.dispatchEvent(new Event('resize'));
   return true;
 }

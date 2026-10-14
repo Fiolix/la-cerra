@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261009-mobile-prototype-10";
+const ASSET_VERSION = "20261014-interactive-map-2";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -104,6 +104,7 @@ async function loadPage(page) {
     const html = await response.text();
     if (loadId !== activeLoadId) return;
 
+    document.dispatchEvent(new Event("beforePageContentReplace"));
     contentElement.innerHTML = html;
     document.body.dataset.currentPage = basePage.replace('.html', '');
 
@@ -124,6 +125,12 @@ async function loadPage(page) {
       const tabsModule = await import(`/la-cerra/js/sector_tabs.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       tabsModule.setupSectorTabs(anchor);
+    }
+
+    if (html.includes('data-interactive-map')) {
+      const mapModule = await import(`/la-cerra/js/interactive_map.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      mapModule.initInteractiveMaps();
     }
 
     const sectorSlug = contentElement.querySelector('[data-sektor]')?.dataset.sektor;
