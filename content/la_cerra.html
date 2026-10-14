@@ -58,8 +58,12 @@
   </div>
 
   <div id="area-panel-map" class="sector-tab-panel" data-sector-panel="map" hidden>
-  <section id="area-map" class="map overview-map" aria-labelledby="la-cerra-map-title">
-    <h2 id="la-cerra-map-title" class="visually-hidden">La Cerra sector map</h2>
+  <section id="area-map" class="interactive-map-card" aria-label="Interactive map of the La Cerra bouldering sectors">
+    <div class="interactive-map-frame" data-interactive-map role="region" aria-label="Interactive map of the La Cerra bouldering sectors"></div>
+    <p class="interactive-map-status" data-map-status role="status" hidden></p>
+  </section>
+
+  <section class="map overview-map static-topo-map" aria-label="Static map of the La Cerra bouldering sectors">
     <div class="interactive-sector-map">
       <img src="/la-cerra/img/bouldering/la_cerra/la_cerra_map.jpg" alt="Map of the La Cerra bouldering sectors" />
 
