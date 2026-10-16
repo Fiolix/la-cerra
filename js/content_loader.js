@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261016-map-points-2";
+const ASSET_VERSION = "20261016-map-labels-1";
 
 const PAGE_ALIASES = {
   start: "start.html",

@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261016-map-points-2';
+import { applySectorVisibility } from './sector_visibility.js?v=20261016-map-labels-1';
 
 function menuItemIcon(name) {
   const paths = {
