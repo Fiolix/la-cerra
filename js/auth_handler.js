@@ -118,12 +118,66 @@ function renderLoggedOut(message = '') {
       <button id="login-button" type="submit">Log in</button>
     </form>
     <p><a href="#" data-page="register" class="register-link">New here? Create an account</a></p>
+    <p><button type="button" class="auth-link-button" data-forgot-password>Forgot password?</button></p>
     <p class="login-message" role="status" aria-live="polite"></p>
   `;
 
   const status = loginBlock.querySelector('.login-message');
   status.textContent = message;
   loginBlock.querySelector('#login-form')?.addEventListener('submit', handleLogin);
+  loginBlock.querySelector('[data-forgot-password]')?.addEventListener('click', renderPasswordRecovery);
+}
+
+function renderPasswordRecovery() {
+  const loginBlock = document.querySelector('.login-block');
+  if (!loginBlock) return;
+
+  loginBlock.innerHTML = `
+    <h3>Reset password</h3>
+    <p class="form-note">Enter the email address connected to your account.</p>
+    <form id="password-recovery-form" novalidate>
+      <input type="email" id="recovery-email" name="email" placeholder="Email address" autocomplete="email" required />
+      <button type="submit">Send reset link</button>
+    </form>
+    <p><button type="button" class="auth-link-button" data-back-to-login>Back to login</button></p>
+    <p class="login-message" role="status" aria-live="polite"></p>
+  `;
+
+  loginBlock.querySelector('#password-recovery-form')?.addEventListener('submit', handlePasswordRecovery);
+  loginBlock.querySelector('[data-back-to-login]')?.addEventListener('click', () => renderLoggedOut());
+  loginBlock.querySelector('#recovery-email')?.focus();
+}
+
+async function handlePasswordRecovery(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const email = form.querySelector('#recovery-email')?.value.trim();
+  const button = form.querySelector('button[type="submit"]');
+  const status = form.parentElement?.querySelector('.login-message');
+  if (!email || !button || !status) {
+    if (status) status.textContent = 'Please enter your email address.';
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = 'Sending reset link…';
+
+  try {
+    const redirectUrl = new URL(window.location.href);
+    redirectUrl.search = '?p=reset_password.html';
+    redirectUrl.hash = '';
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl.toString()
+    });
+    if (error) throw error;
+    status.textContent = 'If an account exists for this email address, a reset link has been sent.';
+    form.reset();
+  } catch (error) {
+    console.error('Password recovery request failed:', error);
+    status.textContent = 'The reset link could not be sent. Please try again later.';
+  } finally {
+    button.disabled = false;
+  }
 }
 
 async function handleLogin(event) {

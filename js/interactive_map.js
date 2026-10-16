@@ -1,8 +1,8 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261016-map-points-2';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261016-map-labels-1';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261016-map-points-2';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261016-map-labels-1';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
@@ -152,7 +152,7 @@ function addSectorLayers(map, collection, selectedSlug) {
     source: 'la-cerra-sectors',
     filter: ['!=', ['get', 'kind'], 'sector'],
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 5, 14, 8, 16, 10],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4, 14, 6.5, 16, 8],
       'circle-color': [
         'match', ['get', 'kind'],
         'parking', '#3f7392',
@@ -162,8 +162,8 @@ function addSectorLayers(map, collection, selectedSlug) {
         '#66756f'
       ],
       'circle-stroke-color': '#fffaf2',
-      'circle-stroke-width': 2.5,
-      'circle-opacity': 0.96
+      'circle-stroke-width': 2,
+      'circle-opacity': 0.84
     }
   });
 
@@ -171,9 +171,10 @@ function addSectorLayers(map, collection, selectedSlug) {
     id: 'sector-labels',
     type: 'symbol',
     source: 'la-cerra-sectors',
+    filter: ['==', ['get', 'kind'], 'sector'],
     layout: {
       'text-field': ['get', 'label'],
-      'text-size': ['interpolate', ['linear'], ['zoom'], 11, 11, 15, 13],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 11, 11.5, 15, 14],
       'text-font': ['Noto Sans Regular'],
       'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
       'text-radial-offset': 1.05,
@@ -185,6 +186,30 @@ function addSectorLayers(map, collection, selectedSlug) {
       'text-color': '#173c32',
       'text-halo-color': '#fffaf2',
       'text-halo-width': 1.5
+    }
+  });
+
+  map.addLayer({
+    id: 'map-labels-of-interest',
+    type: 'symbol',
+    source: 'la-cerra-sectors',
+    minzoom: 13.4,
+    filter: ['!=', ['get', 'kind'], 'sector'],
+    layout: {
+      'text-field': ['get', 'label'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 13.4, 10, 16, 11.5],
+      'text-font': ['Noto Sans Regular'],
+      'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+      'text-radial-offset': 0.95,
+      'text-justify': 'auto',
+      'text-allow-overlap': false,
+      'text-optional': true
+    },
+    paint: {
+      'text-color': '#50615b',
+      'text-halo-color': '#fffaf2',
+      'text-halo-width': 1.4,
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0, 13.8, 0.9]
     }
   });
 

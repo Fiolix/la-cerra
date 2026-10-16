@@ -529,6 +529,45 @@ footer a {
   color: #fff;
 }
 
+.legal-page {
+  display: grid;
+  gap: 16px;
+}
+
+.legal-page .content-page-header {
+  margin-bottom: 0;
+}
+
+.legal-card {
+  padding: 18px;
+  border: 1px solid var(--cerra-line);
+  border-radius: var(--cerra-radius);
+  background: var(--cerra-card);
+}
+
+.legal-card h2 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+}
+
+.legal-card p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-placeholder {
+  padding: 12px;
+  border-left: 3px solid #b6653c;
+  background: #f8eee7;
+  color: var(--cerra-ink);
+}
+
+#reset-password-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 .la-cerra-page[data-active-sector-tab]:not([data-active-sector-tab="overview"]) .area-overview-details {
   display: none;
 }
