@@ -65,7 +65,7 @@ export async function applySectorVisibility(root = document) {
     if (element instanceof HTMLOptionElement) element.disabled = !isVisible;
   });
 
-  const overview = root.querySelector('.la-cerra-route-overview');
+  const overview = root.querySelector('[data-la-cerra-stats], .la-cerra-route-overview[data-sectors]');
   if (overview) {
     const listed = String(overview.dataset.sectors || '')
       .split(',')
