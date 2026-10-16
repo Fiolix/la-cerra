@@ -1,11 +1,12 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261014-interactive-map-4";
+const ASSET_VERSION = "20261016-navigation-2";
 
 const PAGE_ALIASES = {
   start: "start.html",
   news: "news.html",
-  bouldering: "bouldering.html",
+  bouldering: "sardinia.html",
+  "bouldering.html": "sardinia.html",
   la_cerra: "la_cerra.html",
   "la-cerra": "la_cerra.html",
   "la-cerra.html": "la_cerra.html",
@@ -23,7 +24,8 @@ const PAGE_ALIASES = {
   monte_lu_bagnu: "monte_lu_bagnu.html",
   monte_pulchiana: "monte_pulchiana.html",
   sardinia: "sardinia.html",
-  gallura: "gallura.html",
+  gallura: "sardinia.html",
+  "gallura.html": "sardinia.html",
   register: "register.html",
   profile: "profile.html",
   guestbook: "guestbook.html",

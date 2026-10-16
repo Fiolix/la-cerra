@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261008-mobile-prototype-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261016-navigation-2';
 
 function menuItemIcon(name) {
   const paths = {
@@ -33,27 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <ul class="menu-primary-list">
       <li><a href="#" data-page="start">${menuItemIcon('home')}<span>Home</span></a></li>
       <li><a href="#" data-page="news">${menuItemIcon('news')}<span>News</span></a></li>
-      <li class="toggleable">
-        <a href="#" data-page="bouldering">${menuItemIcon('bouldering')}<span>Bouldering</span><span class="menu-toggle-mark" aria-hidden="true">⌄</span></a>
-        <ul>
-          <li class="toggleable">
-            <a href="#" data-page="la_cerra"><span>La Cerra</span><span class="menu-toggle-mark" aria-hidden="true">⌄</span></a>
-            <ul>
-              <li data-sector-slug="somewhere"><a href="#" data-page="somewhere">Somewhere</a></li>
-              <li data-sector-slug="la_sportiva"><a href="#" data-page="la_sportiva">La Sportiva</a></li>
-              <li data-sector-slug="sushi-free"><a href="#" data-page="sushi_free">Sushi-Free</a></li>
-              <li data-sector-slug="bermuda_triangle"><a href="#" data-page="bermuda_triangle">Bermuda Triangle</a></li>
-              <li data-sector-slug="second_life"><a href="#" data-page="second_life">2nd Life</a></li>
-              <li data-sector-slug="stuntblocs"><a href="#" data-page="stuntblocs">Stuntblocs</a></li>
-              <li data-sector-slug="jumble"><a href="#" data-page="jumble">Jumble</a></li>
-              <li data-sector-slug="bloc_meadow"><a href="#" data-page="bloc_meadow">Bloc Meadow</a></li>
-              <li data-sector-slug="monte_lu_bagnu"><a href="#" data-page="monte_lu_bagnu">Monte Lu Bagnu</a></li>
-              <li data-sector-slug="monte_pulchiana"><a href="#" data-page="monte_pulchiana">Monte Pulchiana</a></li>
-            </ul>
-          </li>
-          <li><a href="#" data-page="gallura">Gallura</a></li>
-        </ul>
-      </li>
+      <li><a href="#" data-page="la_cerra">${menuItemIcon('bouldering')}<span>Bouldering La Cerra</span></a></li>
       <li><a href="#" data-page="sardinia">${menuItemIcon('sardinia')}<span>Sardinia</span></a></li>
       <li><a href="#" data-page="before_you_go">${menuItemIcon('guide')}<span>Before You Go</span></a></li>
       <li><a href="https://agriturismolacerra.it" target="_blank" rel="noopener noreferrer">${menuItemIcon('stay')}<span>Agriturismo</span></a></li>
