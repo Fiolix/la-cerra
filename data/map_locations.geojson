@@ -1,125 +1,24 @@
 {
   "type": "FeatureCollection",
   "features": [
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.12470, 40.99409] },
-      "properties": {
-        "kind": "sector",
-        "slug": "somewhere",
-        "label": "Somewhere",
-        "page": "somewhere.html",
-        "positionStatus": "topo",
-        "positionNote": "GPS access point from the printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.12322, 40.99451] },
-      "properties": {
-        "kind": "sector",
-        "slug": "la_sportiva",
-        "label": "La Sportiva",
-        "page": "la_sportiva.html",
-        "positionStatus": "topo",
-        "positionNote": "GPS access point from the printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.12193, 40.98809] },
-      "properties": {
-        "kind": "sector",
-        "slug": "sushi-free",
-        "label": "Sushi-Free",
-        "page": "sushi_free.html",
-        "positionStatus": "topo",
-        "positionNote": "GPS access point from the printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.12156, 40.99086] },
-      "properties": {
-        "kind": "sector",
-        "slug": "bermuda_triangle",
-        "label": "Bermuda Triangle",
-        "page": "bermuda_triangle.html",
-        "positionStatus": "topo",
-        "positionNote": "GPS access point from the printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.11479, 40.99312] },
-      "properties": {
-        "kind": "sector",
-        "slug": "second_life",
-        "label": "2nd Life",
-        "page": "second_life.html",
-        "positionStatus": "topo",
-        "positionNote": "GPS access point from the printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.11518, 40.99233] },
-      "properties": {
-        "kind": "sector",
-        "slug": "stuntblocs",
-        "label": "Stuntblocs",
-        "page": "stuntblocs.html",
-        "positionStatus": "topo",
-        "positionNote": "GPS access point from the printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.11565, 40.99368] },
-      "properties": {
-        "kind": "sector",
-        "slug": "jumble",
-        "label": "Jumble",
-        "page": "jumble.html",
-        "positionStatus": "approximate",
-        "positionNote": "Approximate position derived from the scaled printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.11725, 40.99455] },
-      "properties": {
-        "kind": "sector",
-        "slug": "bloc_meadow",
-        "label": "Bloc Meadow",
-        "page": "bloc_meadow.html",
-        "positionStatus": "approximate",
-        "positionNote": "Approximate position derived from the scaled printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.11635, 40.99575] },
-      "properties": {
-        "kind": "sector",
-        "slug": "monte_lu_bagnu",
-        "label": "Monte Lu Bagnu",
-        "page": "monte_lu_bagnu.html",
-        "positionStatus": "approximate",
-        "positionNote": "Approximate central position derived from the scaled printed topo"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [9.11563, 40.98765] },
-      "properties": {
-        "kind": "sector",
-        "slug": "monte_pulchiana",
-        "label": "Monte Pulchiana",
-        "page": "monte_pulchiana.html",
-        "positionStatus": "topo",
-        "positionNote": "GPS access and parking point from the printed topo"
-      }
-    }
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12470, 40.99409] }, "properties": { "kind": "sector", "slug": "somewhere", "label": "Somewhere", "page": "somewhere.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12322, 40.99451] }, "properties": { "kind": "sector", "slug": "la_sportiva", "label": "La Sportiva", "page": "la_sportiva.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12193, 40.98809] }, "properties": { "kind": "sector", "slug": "sushi-free", "label": "Sushi-Free", "page": "sushi_free.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12156, 40.99086] }, "properties": { "kind": "sector", "slug": "bermuda_triangle", "label": "Bermuda Triangle", "page": "bermuda_triangle.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.11479, 40.99312] }, "properties": { "kind": "sector", "slug": "second_life", "label": "2nd Life", "page": "second_life.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.11518, 40.99233] }, "properties": { "kind": "sector", "slug": "stuntblocs", "label": "Stuntblocs", "page": "stuntblocs.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.118000, 40.997531] }, "properties": { "kind": "sector", "slug": "jumble", "label": "Jumble", "page": "jumble.html", "positionStatus": "provided" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.118886, 40.998653] }, "properties": { "kind": "sector", "slug": "bloc_meadow", "label": "Bloc Meadow", "page": "bloc_meadow.html", "positionStatus": "provided" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.11635, 40.99575] }, "properties": { "kind": "sector", "slug": "monte_lu_bagnu", "label": "Monte Lu Bagnu", "page": "monte_lu_bagnu.html", "positionStatus": "approximate" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.11563, 40.98765] }, "properties": { "kind": "sector", "slug": "monte_pulchiana", "label": "Monte Pulchiana", "page": "monte_pulchiana.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.1212500, 40.9921111] }, "properties": { "kind": "sector", "slug": "where_the_wild_things_are", "label": "Where the Wild Things Are", "page": "where_the_wild_things_are.html", "positionStatus": "provided" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.1179550, 40.9908500] }, "properties": { "kind": "sector", "slug": "la_tartaruga", "label": "La Tartaruga", "page": "la_tartaruga.html", "positionStatus": "provided" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.1187450, 40.9953880] }, "properties": { "kind": "sector", "slug": "piru_ruju", "label": "Piru Ruju", "page": "piru_ruju.html", "positionStatus": "provided" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.1223330, 40.9953410] }, "properties": { "kind": "sector", "slug": "boulderplanet", "label": "Boulderplanet", "page": "boulderplanet.html", "positionStatus": "provided" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.113969, 40.987890] }, "properties": { "kind": "parking", "label": "Day Parking", "categoryLabel": "Parking" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.126978, 40.995738] }, "properties": { "kind": "food", "label": "Restaurant La Cerra", "categoryLabel": "Restaurant" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.126565, 40.995022] }, "properties": { "kind": "accommodation", "label": "Camping La Cerra", "categoryLabel": "Accommodation" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.125614, 40.994311] }, "properties": { "kind": "accommodation", "label": "La Cerra Guesthouse", "categoryLabel": "Accommodation" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.113625, 40.991985] }, "properties": { "kind": "landmark", "label": "Monte Pulchiana", "categoryLabel": "Monolith / hiking" } }
   ]
 }

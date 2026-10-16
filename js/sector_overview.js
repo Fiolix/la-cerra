@@ -1,7 +1,11 @@
 function addCardStructure(card) {
   const name = card.querySelector('span')?.textContent || '';
+  card.classList.toggle('sector-card-without-image', !card.dataset.sectorImage);
+  const image = card.dataset.sectorImage
+    ? `<img src="${card.dataset.sectorImage}" alt="" loading="lazy" />`
+    : '';
   card.innerHTML = `
-    <img src="${card.dataset.sectorImage}" alt="" loading="lazy" />
+    ${image}
     <span class="sector-card-copy">
       <strong>${name}</strong>
     </span>

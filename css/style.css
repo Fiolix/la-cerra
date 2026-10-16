@@ -358,6 +358,10 @@ body[data-current-page="start"] .news-teaser-card {
   object-fit: cover;
 }
 
+.sector-card.sector-card-without-image {
+  grid-template-columns: minmax(0, 1fr) 24px;
+}
+
 .sector-card-copy {
   display: flex;
   min-width: 0;
@@ -1711,6 +1715,11 @@ button.sector-route-count {
 .sector-map-popup strong {
   padding-right: 18px;
   font-size: 0.95rem;
+}
+
+.sector-map-popup .map-popup-category {
+  color: var(--cerra-muted);
+  font-size: 0.75rem;
 }
 
 .sector-map-popup a {

@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261016-navigation-2";
+const ASSET_VERSION = "20261016-map-points-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -23,6 +23,13 @@ const PAGE_ALIASES = {
   bloc_meadow: "bloc_meadow.html",
   monte_lu_bagnu: "monte_lu_bagnu.html",
   monte_pulchiana: "monte_pulchiana.html",
+  where_the_wild_things_are: "where_the_wild_things_are.html",
+  "where-the-wild-things-are": "where_the_wild_things_are.html",
+  la_tartaruga: "la_tartaruga.html",
+  "la-tartaruga": "la_tartaruga.html",
+  piru_ruju: "piru_ruju.html",
+  "piru-ruju": "piru_ruju.html",
+  boulderplanet: "boulderplanet.html",
   sardinia: "sardinia.html",
   gallura: "sardinia.html",
   "gallura.html": "sardinia.html",

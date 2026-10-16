@@ -10,8 +10,16 @@ export const SECTORS = [
   { slug: 'jumble', label: 'Jumble', page: 'jumble.html', order: 70 },
   { slug: 'bloc_meadow', label: 'Bloc Meadow', page: 'bloc_meadow.html', order: 80 },
   { slug: 'monte_lu_bagnu', label: 'Monte Lu Bagnu', page: 'monte_lu_bagnu.html', order: 90 },
-  { slug: 'monte_pulchiana', label: 'Monte Pulchiana', page: 'monte_pulchiana.html', order: 100 }
+  { slug: 'monte_pulchiana', label: 'Monte Pulchiana', page: 'monte_pulchiana.html', order: 100 },
+  { slug: 'where_the_wild_things_are', label: 'Where the Wild Things Are', page: 'where_the_wild_things_are.html', order: 110, defaultVisible: false },
+  { slug: 'la_tartaruga', label: 'La Tartaruga', page: 'la_tartaruga.html', order: 120, defaultVisible: false },
+  { slug: 'piru_ruju', label: 'Piru Ruju', page: 'piru_ruju.html', order: 130, defaultVisible: false },
+  { slug: 'boulderplanet', label: 'Boulderplanet', page: 'boulderplanet.html', order: 140, defaultVisible: false }
 ];
+
+function defaultVisibility(sector) {
+  return sector.defaultVisible !== false;
+}
 
 let cachedResult = null;
 
@@ -41,14 +49,16 @@ export async function loadSectorVisibility({ force = false } = {}) {
       sectors: SECTORS.map(sector => ({
         ...sector,
         ...(bySlug.get(sector.slug) || {}),
-        is_visible: bySlug.get(sector.slug)?.is_visible !== false
+        is_visible: bySlug.has(sector.slug)
+          ? bySlug.get(sector.slug).is_visible !== false
+          : defaultVisibility(sector)
       }))
     };
   } catch (error) {
-    console.warn('Sector visibility settings are unavailable; all sectors remain visible.', error);
+    console.warn('Sector visibility settings are unavailable; local visibility defaults are active.', error);
     cachedResult = {
       available: false,
-      sectors: SECTORS.map(sector => ({ ...sector, is_visible: true }))
+      sectors: SECTORS.map(sector => ({ ...sector, is_visible: defaultVisibility(sector) }))
     };
   }
 
@@ -81,6 +91,6 @@ export async function applySectorVisibility(root = document) {
 
 export async function isSectorVisible(slug) {
   const result = await loadSectorVisibility();
-  if (!result.available) return true;
-  return result.sectors.find(sector => sector.slug === slug)?.is_visible !== false;
+  const sector = result.sectors.find(item => item.slug === slug);
+  return sector ? sector.is_visible : true;
 }
