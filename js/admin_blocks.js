@@ -325,7 +325,9 @@ function renderSectorAdministration({ root, sectorSettings, settingsAvailable })
   const settings = SECTORS.map(sector => ({
     ...sector,
     ...(sectorSettings.find(item => item.slug === sector.slug) || {}),
-    is_visible: sectorSettings.find(item => item.slug === sector.slug)?.is_visible !== false
+    is_visible: sectorSettings.some(item => item.slug === sector.slug)
+      ? sectorSettings.find(item => item.slug === sector.slug).is_visible !== false
+      : sector.defaultVisible !== false
   }));
 
   panel.innerHTML = `

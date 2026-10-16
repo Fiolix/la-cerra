@@ -1,8 +1,8 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261016-navigation-2';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261016-map-points-1';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261016-navigation-2';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261016-map-points-1';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
@@ -28,7 +28,10 @@ async function loadLocations() {
 
       return {
         ...collection,
-        features: collection.features.filter(feature => visibleSectors.has(feature.properties?.slug))
+        features: collection.features.filter(feature => (
+          feature.properties?.kind !== 'sector'
+          || visibleSectors.has(feature.properties?.slug)
+        ))
       };
     });
   }
@@ -105,11 +108,20 @@ function createPopupContent(feature) {
   title.textContent = feature.properties.label;
   wrapper.append(title);
 
-  const link = document.createElement('a');
-  link.href = '#';
-  link.dataset.page = feature.properties.page;
-  link.textContent = 'Open sector';
-  wrapper.append(link);
+  if (feature.properties.categoryLabel) {
+    const category = document.createElement('span');
+    category.className = 'map-popup-category';
+    category.textContent = feature.properties.categoryLabel;
+    wrapper.append(category);
+  }
+
+  if (feature.properties.page) {
+    const link = document.createElement('a');
+    link.href = '#';
+    link.dataset.page = feature.properties.page;
+    link.textContent = 'Open sector';
+    wrapper.append(link);
+  }
 
   return wrapper;
 }
@@ -124,9 +136,31 @@ function addSectorLayers(map, collection, selectedSlug) {
     id: 'sector-points',
     type: 'circle',
     source: 'la-cerra-sectors',
+    filter: ['==', ['get', 'kind'], 'sector'],
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 6, 14, 10, 16, 13],
       'circle-color': '#2f6b59',
+      'circle-stroke-color': '#fffaf2',
+      'circle-stroke-width': 2.5,
+      'circle-opacity': 0.96
+    }
+  });
+
+  map.addLayer({
+    id: 'map-points-of-interest',
+    type: 'circle',
+    source: 'la-cerra-sectors',
+    filter: ['!=', ['get', 'kind'], 'sector'],
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 5, 14, 8, 16, 10],
+      'circle-color': [
+        'match', ['get', 'kind'],
+        'parking', '#3f7392',
+        'food', '#b6653c',
+        'accommodation', '#a07a39',
+        'landmark', '#75628a',
+        '#66756f'
+      ],
       'circle-stroke-color': '#fffaf2',
       'circle-stroke-width': 2.5,
       'circle-opacity': 0.96
@@ -169,19 +203,21 @@ function addSectorLayers(map, collection, selectedSlug) {
     });
   }
 
-  map.on('mouseenter', 'sector-points', () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
-  map.on('mouseleave', 'sector-points', () => {
-    map.getCanvas().style.cursor = '';
-  });
-  map.on('click', 'sector-points', event => {
-    const feature = event.features?.[0];
-    if (!feature) return;
-    new maplibregl.Popup({ offset: 14, maxWidth: '240px' })
-      .setLngLat(feature.geometry.coordinates)
-      .setDOMContent(createPopupContent(feature))
-      .addTo(map);
+  ['sector-points', 'map-points-of-interest'].forEach(layerId => {
+    map.on('mouseenter', layerId, () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', layerId, () => {
+      map.getCanvas().style.cursor = '';
+    });
+    map.on('click', layerId, event => {
+      const feature = event.features?.[0];
+      if (!feature) return;
+      new maplibregl.Popup({ offset: 14, maxWidth: '240px' })
+        .setLngLat(feature.geometry.coordinates)
+        .setDOMContent(createPopupContent(feature))
+        .addTo(map);
+    });
   });
 }
 
