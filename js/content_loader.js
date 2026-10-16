@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261016-map-labels-1";
+const ASSET_VERSION = "20261016-legal-recovery-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -40,6 +40,11 @@ const PAGE_ALIASES = {
   before_you_go: "before_you_go.html",
   "before-you-go": "before_you_go.html",
   "before-you-go.html": "before_you_go.html",
+  contact: "contact.html",
+  imprint: "imprint.html",
+  privacy: "privacy.html",
+  reset_password: "reset_password.html",
+  "reset-password": "reset_password.html",
   admin: "admin.html"
 };
 
@@ -240,6 +245,12 @@ async function loadPage(page) {
       const module = await import(`/la-cerra/js/register_handler.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
       module.initRegisterForm();
+    }
+
+    if (basePage === "reset_password.html") {
+      const module = await import(`/la-cerra/js/reset_password_handler.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await module.initResetPassword();
     }
 
     const factsModule = await import(`/la-cerra/js/facts_loader.js?v=${ASSET_VERSION}`);

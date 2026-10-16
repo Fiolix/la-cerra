@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261016-map-labels-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261016-legal-recovery-1';
 
 function menuItemIcon(name) {
   const paths = {
@@ -51,9 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
       <img src="img/flag_de.png" alt="DE" title="Deutsch" onclick="setLanguage('de')" />
     </div>
     <div class="menu-utility-links">
-      <a href="#">Contact</a>
-      <a href="#">Imprint</a>
-      <a href="#" data-page="admin">Admin</a>
+      <a href="#" data-page="contact">Contact</a>
+      <a href="#" data-page="imprint">Imprint</a>
+      <a href="#" data-page="privacy">Privacy</a>
     </div>
   `;
 
@@ -136,7 +136,7 @@ function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
 
-import { initAuth } from './auth_handler.js?v=20261008-mobile-prototype-1';
+import { initAuth } from './auth_handler.js?v=20261016-legal-recovery-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
