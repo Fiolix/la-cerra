@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261017-boulder-buttons-1";
+const ASSET_VERSION = "20261017-new-sector-content-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -174,7 +174,9 @@ async function loadPage(page) {
     }
 
     const sectorSlug = contentElement.querySelector('[data-sektor]')?.dataset.sektor;
-    if (sectorSlug && !(await sectorModule.isSectorVisible(sectorSlug))) {
+    const localHiddenSectorPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      && new URL(window.location.href).searchParams.has('preview');
+    if (sectorSlug && !localHiddenSectorPreview && !(await sectorModule.isSectorVisible(sectorSlug))) {
       showSectorUnavailable(contentElement, sectorModule.sectorLabel(sectorSlug));
       sectorUnavailable = true;
     }

@@ -52,6 +52,22 @@ const routeDisplayAliases = {
       displayedLetter: 'B',
       description: 'see Boulder 2a'
     }
+  ],
+  bermuda_triangle: [
+    {
+      targetBlock: '07b',
+      sourceBlock: '07a',
+      sourceRouteLetter: 'C',
+      displayedLetter: 'C',
+      description: 'SD, tricky sit start; also shown in the previous view of Boulder 7'
+    },
+    {
+      targetBlock: '07b',
+      sourceBlock: '07a',
+      sourceRouteLetter: 'D',
+      displayedLetter: 'D',
+      description: 'SD, top out to the right; also shown in the previous view of Boulder 7'
+    }
   ]
 };
 
