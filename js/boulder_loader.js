@@ -410,7 +410,7 @@ const ratingDisplay = ratingCount > 0
         <div class=\"route-actions\">
           ${!isTicked ? `
             <button type=\"button\" class=\"route-project-toggle${isPersonalProject ? ' is-saved' : ''}\" data-project-route-id=\"${route.uuid}\" data-project-saved=\"${isPersonalProject}\" ${projectsAvailable ? '' : 'disabled'}>
-              ${isPersonalProject ? 'Remove project' : 'Save project'}
+              ${isPersonalProject ? 'Remove project' : 'Save as project'}
             </button>
           ` : ''}
           <div class=\"route-tick\">
@@ -439,7 +439,7 @@ const ratingDisplay = ratingCount > 0
       <div class="block-content" id="${blockDiv.id}-routes" hidden>
         ${routesHtml}
         <div class="ticklist-button">
-          <button type="button">Add to tick list</button>
+          <button type="button">Save</button>
         </div>
         <p class="block-action-message" role="status" aria-live="polite"></p>
       </div>
@@ -479,7 +479,7 @@ const ratingDisplay = ratingCount > 0
       });
     });
 
-    // Add click listener to 'Add to ticklist' button
+    // Add click listener to the ticklist save button
     const tickButton = blockDiv.querySelector(".ticklist-button button");
     const actionMessage = blockDiv.querySelector('.block-action-message');
 
