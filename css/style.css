@@ -2991,6 +2991,36 @@ footer a {
   text-align: center;
 }
 
+.admin-map-visibility {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 1rem 0 0.35rem;
+  font-weight: 650;
+  color: #263f3b;
+}
+
+.admin-map-visibility input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: #2f6b59;
+}
+
+.admin-map-external-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 2.65rem;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.admin-save-status.is-error {
+  color: #9b3028;
+}
+
 .admin-list-label {
   display: block;
   margin-bottom: 0.25rem;

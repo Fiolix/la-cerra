@@ -1,9 +1,10 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261017-somewhere-gps-1';
+import { supabase } from './supabase.js';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261017-admin-maps-1';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261017-somewhere-gps-1';
-const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261017-somewhere-gps-1';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261017-admin-maps-1';
+const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261017-admin-maps-1';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
@@ -21,8 +22,10 @@ async function loadLocations() {
         if (!response.ok) throw new Error(`Map data could not be loaded (HTTP ${response.status}).`);
         return response.json();
       }),
-      loadSectorVisibility()
-    ]).then(([collection, visibility]) => {
+      loadSectorVisibility(),
+      loadDatabaseLocations()
+    ]).then(([fallbackCollection, visibility, databaseCollection]) => {
+      const collection = databaseCollection || fallbackCollection;
       const visibleSectors = new Set(
         visibility.sectors.filter(sector => sector.is_visible).map(sector => sector.slug)
       );
@@ -38,6 +41,40 @@ async function loadLocations() {
   }
 
   return locationsPromise;
+}
+
+async function loadDatabaseLocations() {
+  const { data, error } = await supabase
+    .from('map_locations')
+    .select('slug, kind, label, longitude, latitude, page, category_label, is_visible, display_order')
+    .order('display_order');
+
+  if (error) {
+    console.info('Database map locations are not available; using repository fallback data.');
+    return null;
+  }
+
+  if (!data?.length) return null;
+  return {
+    type: 'FeatureCollection',
+    features: data
+      .filter(location => location.is_visible !== false)
+      .map(location => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [Number(location.longitude), Number(location.latitude)]
+        },
+        properties: {
+          kind: location.kind,
+          slug: location.slug,
+          label: location.label,
+          page: location.page || null,
+          categoryLabel: location.category_label || null,
+          positionStatus: 'database'
+        }
+      }))
+  };
 }
 
 function showFallback(container, message = 'The interactive map is currently unavailable. The static topo remains available below.') {

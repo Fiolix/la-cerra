@@ -3,6 +3,7 @@ import { initBlockAdministration } from './admin_blocks.js?v=20261005-monte-lu-b
 import { initUserAdministration } from './admin_users.js?v=20260912-guestbook-delete-1';
 import { initGuestbookAdministration } from './admin_guestbook.js?v=20260912-guestbook-delete-1';
 import { loadSectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-routes-1';
+import { initMapAdministration } from './admin_map.js?v=20261017-admin-maps-1';
 
 let authListenerBound = false;
 let blocks = [];
@@ -128,11 +129,12 @@ function renderAdminShell(root) {
     <section class="admin-header">
       <span class="section-eyebrow">Site management</span>
       <h1>Administration</h1>
-      <p>Manage routes, blocks, sectors, user accounts and guestbook entries.</p>
+      <p>Manage routes, blocks, sectors, map locations, user accounts and guestbook entries.</p>
       <div class="admin-tabs" role="tablist" aria-label="Administration areas">
         <button type="button" role="tab" aria-selected="true" data-admin-tab="routes">Routes</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="blocks">Blocks</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="sectors">Sectors</button>
+        <button type="button" role="tab" aria-selected="false" data-admin-tab="map">Map</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="users">Users</button>
         <button type="button" role="tab" aria-selected="false" data-admin-tab="guestbook">Guestbook</button>
       </div>
@@ -234,6 +236,10 @@ function renderAdminShell(root) {
 
     <section data-admin-panel="sectors" data-admin-sector-settings hidden></section>
 
+    <section data-admin-panel="map" hidden>
+      <div data-admin-map-root></div>
+    </section>
+
     <section data-admin-panel="users" hidden>
       <div data-admin-users-root></div>
     </section>
@@ -303,6 +309,9 @@ async function loadAdminData(root, currentUserId) {
   await initUserAdministration({
     root: root.querySelector('[data-admin-users-root]'),
     currentUserId
+  });
+  await initMapAdministration({
+    root: root.querySelector('[data-admin-map-root]')
   });
   await initGuestbookAdministration({
     root: root.querySelector('[data-admin-guestbook-root]')

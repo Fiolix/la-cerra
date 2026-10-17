@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261017-somewhere-gps-1";
+const ASSET_VERSION = "20261017-admin-maps-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
