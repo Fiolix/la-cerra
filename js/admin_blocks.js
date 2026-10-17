@@ -4,7 +4,7 @@ import {
   applySectorVisibility,
   invalidateSectorVisibilityCache,
   sectorLabel
-} from './sector_visibility.js?v=20261005-monte-lu-bagnu-routes-1';
+} from './sector_visibility.js?v=20261018-sector-profile-1';
 
 const IMAGE_PATTERN = /^[a-z0-9._-]+\.(?:jpe?g|png|webp)$/i;
 
@@ -331,93 +331,124 @@ function renderSectorAdministration({ root, sectorSettings, settingsAvailable })
   }));
 
   panel.innerHTML = `
-    <section class="admin-settings-card">
-      <h3>Sector visibility</h3>
-      <p>Hidden sectors remain stored and can be restored at any time. Their blocks and routes are not deleted.</p>
-      ${settingsAvailable ? '' : '<p class="data-load-message compact" role="status">The database extension is not active yet. Visibility cannot be changed.</p>'}
-      <div class="admin-sector-list">
-        ${settings.map(sector => `
-          <article class="admin-sector-row" data-admin-sector-row="${sector.slug}">
-            <div>
-              <strong>${sector.label}</strong>
-              <span class="admin-sector-state">${sector.is_visible ? 'Visible' : 'Hidden'}</span>
-            </div>
-            <div class="admin-sector-controls">
-              <button type="button" class="secondary-button" data-admin-toggle-sector="${sector.slug}" ${settingsAvailable ? '' : 'disabled'}>
-                ${sector.is_visible ? 'Hide sector' : 'Show sector'}
-              </button>
-              <div class="admin-sector-confirmation" data-admin-sector-confirmation="${sector.slug}" hidden>
-                <p>${sector.is_visible ? 'Hide' : 'Show'} ${sector.label} on the public website?</p>
-                <div class="admin-sector-confirmation-actions">
-                  <button type="button" data-admin-confirm-sector="${sector.slug}">
-                    ${sector.is_visible ? 'Confirm hide' : 'Confirm show'}
-                  </button>
-                  <button type="button" class="secondary-button" data-admin-cancel-sector="${sector.slug}">Cancel</button>
-                </div>
-              </div>
-            </div>
-          </article>
-        `).join('')}
+    <section class="admin-workspace admin-sector-workspace">
+      <div class="admin-browser">
+        <div class="admin-browser-heading">
+          <h3>Sectors</h3>
+        </div>
+        <p class="admin-panel-intro">Select a sector to edit its public name, description or visibility.</p>
+        <label for="admin-sector-settings-select" class="admin-list-label">Sector</label>
+        <select id="admin-sector-settings-select" class="admin-route-select" size="10"></select>
       </div>
-      <p class="admin-save-status" data-admin-sector-status role="status" aria-live="polite"></p>
+
+      <form class="admin-route-form" data-admin-sector-form novalidate>
+        <h3>Sector details</h3>
+        <p class="form-note">The page address and existing blocks remain unchanged.</p>
+        ${settingsAvailable ? '' : '<p class="data-load-message compact" role="status">The database extension is not active yet. Sector details cannot be changed.</p>'}
+        <fieldset class="admin-route-fields" data-admin-sector-fields ${settingsAvailable ? '' : 'disabled'}>
+          <div class="admin-form-grid">
+            <div class="form-field admin-field-wide">
+              <label for="admin-sector-label">Public name</label>
+              <input id="admin-sector-label" type="text" maxlength="120" required />
+            </div>
+            <div class="form-field admin-field-wide">
+              <label for="admin-sector-description">Description</label>
+              <textarea id="admin-sector-description" rows="8" maxlength="4000" placeholder="Leave empty to use the description stored in the page file."></textarea>
+              <p class="form-note">Plain text only. If left empty, the existing description in the website remains visible.</p>
+            </div>
+            <label class="admin-sector-visibility" for="admin-sector-visible">
+              <input id="admin-sector-visible" type="checkbox" />
+              <span><strong>Visible on the public website</strong><small>Hidden sectors, blocks and routes remain stored and can be restored.</small></span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="admin-route-actions">
+          <button type="submit" data-admin-save-sector ${settingsAvailable ? '' : 'disabled'}>Save sector</button>
+        </div>
+        <p class="admin-save-status" data-admin-sector-status role="status" aria-live="polite"></p>
+      </form>
     </section>
   `;
 
-  panel.querySelectorAll('[data-admin-toggle-sector]').forEach(button => {
-    const slug = button.dataset.adminToggleSector;
-    const confirmation = panel.querySelector(`[data-admin-sector-confirmation="${slug}"]`);
-    const confirmButton = panel.querySelector(`[data-admin-confirm-sector="${slug}"]`);
-    const cancelButton = panel.querySelector(`[data-admin-cancel-sector="${slug}"]`);
+  const select = panel.querySelector('#admin-sector-settings-select');
+  const form = panel.querySelector('[data-admin-sector-form]');
+  const label = panel.querySelector('#admin-sector-label');
+  const description = panel.querySelector('#admin-sector-description');
+  const visible = panel.querySelector('#admin-sector-visible');
+  const save = panel.querySelector('[data-admin-save-sector]');
+  const status = panel.querySelector('[data-admin-sector-status]');
+  let selectedSlug = settings[0]?.slug || '';
 
-    button.addEventListener('click', () => {
-      panel.querySelectorAll('[data-admin-sector-confirmation]').forEach(item => {
-        item.hidden = item !== confirmation;
-      });
-      confirmation.hidden = false;
-      confirmButton.focus();
-    });
-
-    cancelButton?.addEventListener('click', () => {
-      confirmation.hidden = true;
-      button.focus();
-    });
-
-    confirmButton?.addEventListener('click', async () => {
-      const sector = settings.find(item => item.slug === slug);
-      if (!sector) return;
-      const nextVisible = !sector.is_visible;
-
-      button.disabled = true;
-      confirmButton.disabled = true;
-      cancelButton.disabled = true;
-      const status = panel.querySelector('[data-admin-sector-status]');
-      status.textContent = `${nextVisible ? 'Showing' : 'Hiding'} sector…`;
-      try {
-        const { data, error } = await supabase
-          .from('sector_settings')
-          .update({ is_visible: nextVisible })
-          .eq('slug', sector.slug)
-          .select('slug, is_visible')
-          .single();
-        if (error) throw error;
-        sector.is_visible = data.is_visible;
-        const row = panel.querySelector(`[data-admin-sector-row="${sector.slug}"]`);
-        row.querySelector('.admin-sector-state').textContent = sector.is_visible ? 'Visible' : 'Hidden';
-        button.textContent = sector.is_visible ? 'Hide sector' : 'Show sector';
-        confirmation.querySelector('p').textContent = `${sector.is_visible ? 'Hide' : 'Show'} ${sector.label} on the public website?`;
-        confirmButton.textContent = sector.is_visible ? 'Confirm hide' : 'Confirm show';
-        confirmation.hidden = true;
-        status.textContent = `${sector.label} is now ${sector.is_visible ? 'visible' : 'hidden'}.`;
-        invalidateSectorVisibilityCache();
-        await applySectorVisibility(document);
-      } catch (error) {
-        console.error('Sector visibility could not be changed:', error);
-        status.textContent = 'Sector visibility could not be changed. No sector data was deleted.';
-      } finally {
-        button.disabled = false;
-        confirmButton.disabled = false;
-        cancelButton.disabled = false;
-      }
-    });
+  settings.forEach(sector => {
+    const option = new Option(`${sector.label} · ${sector.is_visible ? 'Visible' : 'Hidden'}`, sector.slug);
+    select.append(option);
   });
+
+  function selectedSector() {
+    return settings.find(item => item.slug === selectedSlug);
+  }
+
+  function showSector(slug) {
+    const sector = settings.find(item => item.slug === slug);
+    if (!sector) return;
+    selectedSlug = sector.slug;
+    select.value = sector.slug;
+    label.value = sector.label || '';
+    description.value = sector.description || '';
+    visible.checked = sector.is_visible !== false;
+    status.textContent = '';
+  }
+
+  select.addEventListener('change', () => showSector(select.value));
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const sector = selectedSector();
+    const nextLabel = label.value.trim();
+    const nextDescription = description.value.trim();
+    const nextVisible = visible.checked;
+    if (!sector || !nextLabel) {
+      status.textContent = 'Please enter a public sector name.';
+      label.focus();
+      return;
+    }
+
+    if (sector.is_visible !== nextVisible) {
+      const action = nextVisible ? 'show' : 'hide';
+      if (!window.confirm(`${action === 'hide' ? 'Hide' : 'Show'} ${nextLabel} on the public website? No blocks or routes will be deleted.`)) {
+        visible.checked = sector.is_visible;
+        status.textContent = 'The visibility change was cancelled.';
+        return;
+      }
+    }
+
+    save.disabled = true;
+    status.textContent = 'Saving sector…';
+    try {
+      const { data, error } = await supabase
+        .from('sector_settings')
+        .update({
+          label: nextLabel,
+          description: nextDescription || null,
+          is_visible: nextVisible
+        })
+        .eq('slug', sector.slug)
+        .select('slug, label, description, is_visible')
+        .single();
+      if (error) throw error;
+
+      Object.assign(sector, data);
+      const option = Array.from(select.options).find(item => item.value === sector.slug);
+      if (option) option.textContent = `${sector.label} · ${sector.is_visible ? 'Visible' : 'Hidden'}`;
+      invalidateSectorVisibilityCache();
+      await applySectorVisibility(document);
+      status.textContent = `${sector.label} was saved successfully.`;
+    } catch (error) {
+      console.error('Sector details could not be saved:', error);
+      status.textContent = 'The sector could not be saved. No blocks or routes were changed.';
+    } finally {
+      save.disabled = !settingsAvailable;
+    }
+  });
+
+  if (selectedSlug) showSector(selectedSlug);
 }

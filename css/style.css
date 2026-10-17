@@ -4074,6 +4074,209 @@ button.text-link.as-link:focus { outline: none; }
   }
 }
 
+/* ===== Admin navigation, sector editor and profile refinement ===== */
+.admin-page,
+.admin-page .admin-root,
+.admin-page .admin-header,
+.admin-page [data-admin-panel] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.admin-page .admin-tabs {
+  box-sizing: border-box;
+  width: calc(100% + 32px);
+  max-width: none;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-page .admin-tabs button {
+  scroll-snap-align: start;
+}
+
+.admin-sector-workspace .admin-route-select {
+  min-height: 22rem;
+}
+
+.admin-sector-visibility {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--cerra-line);
+  border-radius: 10px;
+  background: #f4f6f3;
+  cursor: pointer;
+}
+
+.admin-sector-visibility input {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  min-height: 0 !important;
+  margin: 1px 0 0;
+}
+
+.admin-sector-visibility span,
+.admin-sector-visibility small {
+  display: block;
+}
+
+.admin-sector-visibility small {
+  margin-top: 3px;
+  color: var(--cerra-muted);
+  font-weight: 400;
+}
+
+.profile-page .profile-header {
+  gap: 16px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(31, 75, 61, 0.07), transparent 54%),
+    var(--cerra-card);
+}
+
+.profile-page .profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.profile-page .profile-avatar {
+  display: grid;
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--cerra-green-900);
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.profile-page .profile-identity-copy {
+  min-width: 0;
+}
+
+.profile-page .profile-identity-label {
+  display: block;
+  color: var(--cerra-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-page .profile-identity-copy h2 {
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: var(--cerra-green-950);
+  font-size: clamp(1.45rem, 6vw, 2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-page .profile-meta {
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--cerra-line);
+}
+
+.profile-page .profile-meta .profile-line {
+  grid-template-columns: minmax(108px, 0.42fr) minmax(0, 1fr);
+}
+
+.profile-page .profile-meta .profile-line > span:last-child {
+  overflow-wrap: anywhere;
+}
+
+.profile-page .profile-actions {
+  width: 100%;
+  margin-top: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--cerra-line);
+}
+
+.profile-page .profile-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.profile-page .stat-card {
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profile-page .stat-card-primary {
+  border-color: rgba(31, 75, 61, 0.28);
+  background: rgba(31, 75, 61, 0.07);
+}
+
+.profile-page .profile-list-tabs {
+  overflow: hidden;
+}
+
+.profile-page .ticklist-controls {
+  gap: 14px;
+}
+
+@media (max-width: 599px) {
+  .profile-page .ticklist-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .profile-page .controls-left {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-page .controls-select {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .profile-page .controls-right {
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 760px) {
+  .admin-page .admin-tabs {
+    width: 100%;
+  }
+
+  .profile-page .profile-header {
+    grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.1fr);
+    align-items: center;
+  }
+
+  .profile-page .profile-meta {
+    padding: 0 0 0 20px;
+    border-top: 0;
+    border-left: 1px solid var(--cerra-line);
+  }
+
+  .profile-page .profile-actions {
+    grid-column: 1 / -1;
+  }
+
+  .profile-page .profile-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 /* Fix: Modal-Close-Button darf nicht full-width sein */
 .modal-close {
   position: absolute; top: 8px; right: 10px;

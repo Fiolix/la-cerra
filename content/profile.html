@@ -12,10 +12,16 @@
 <p class="account-loading" data-profile-loading role="status">Loading profile…</p>
 <div data-profile-content hidden>
 <div class="profile-header">
-  <div class="profile-meta">
-    <div class="profile-line"><span class="label">Username:</span> <span id="profile-username">—</span></div>
-    <div class="profile-line"><span class="label">E-Mail:</span> <span id="profile-email">—</span></div>
-    <div class="profile-line"><span class="label">User since:</span> <span id="profile-since">—</span></div>
+  <div class="profile-identity">
+    <div class="profile-avatar" aria-hidden="true"><span id="profile-initial">—</span></div>
+    <div class="profile-identity-copy">
+      <span class="profile-identity-label">Climber profile</span>
+      <h2 id="profile-username">—</h2>
+    </div>
+  </div>
+  <div class="profile-meta" aria-label="Account details">
+    <div class="profile-line"><span class="label">E-Mail</span> <span id="profile-email">—</span></div>
+    <div class="profile-line"><span class="label">Member since</span> <span id="profile-since">—</span></div>
   </div>
   <div class="profile-actions under-meta">
     <button type="button" id="link-change-password" class="text-link small as-link">Change password</button>
@@ -24,7 +30,7 @@
 </div>
 
 <div id="profile-stats" class="profile-stats">
-  <div class="stat-card">
+  <div class="stat-card stat-card-primary">
     <div class="stat-value" id="tick-count">—</div>
     <div class="stat-label">Climbed routes</div>
   </div>

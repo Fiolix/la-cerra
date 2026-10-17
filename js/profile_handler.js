@@ -43,6 +43,8 @@ export async function initProfile() {
     const username = profileData?.username || "-";
 
     document.getElementById("profile-username").textContent = username;
+    const initial = document.getElementById("profile-initial");
+    if (initial) initial.textContent = username.trim().charAt(0).toUpperCase() || '—';
     document.getElementById("profile-email").textContent = user.email || "-";
     document.getElementById("profile-since").textContent = new Date(user.created_at).toLocaleDateString();
 

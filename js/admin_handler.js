@@ -1,8 +1,8 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20261005-monte-lu-bagnu-routes-1';
+import { initBlockAdministration } from './admin_blocks.js?v=20261018-sector-profile-1';
 import { initUserAdministration } from './admin_users.js?v=20260912-guestbook-delete-1';
 import { initGuestbookAdministration } from './admin_guestbook.js?v=20260912-guestbook-delete-1';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261005-monte-lu-bagnu-routes-1';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261018-sector-profile-1';
 import { initMapAdministration } from './admin_map.js?v=20261017-admin-maps-1';
 
 let authListenerBound = false;
@@ -327,14 +327,21 @@ function configureModeratorShell(root) {
 }
 
 function activateAdminTab(root, tabName) {
+  let activeTab = null;
   root.querySelectorAll('[data-admin-tab]').forEach(tab => {
     const active = tab.dataset.adminTab === tabName;
     tab.setAttribute('aria-selected', String(active));
     tab.tabIndex = active ? 0 : -1;
+    if (active) activeTab = tab;
   });
   root.querySelectorAll('[data-admin-panel]').forEach(panel => {
     panel.hidden = panel.dataset.adminPanel !== tabName;
   });
+  const tabList = activeTab?.closest('.admin-tabs');
+  if (tabList && activeTab) {
+    const left = activeTab.offsetLeft - ((tabList.clientWidth - activeTab.offsetWidth) / 2);
+    tabList.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+  }
 }
 
 function populateSectorControls() {

@@ -24,7 +24,8 @@ function defaultVisibility(sector) {
 let cachedResult = null;
 
 export function sectorLabel(slug) {
-  return SECTORS.find(sector => sector.slug === slug)?.label
+  return cachedResult?.sectors?.find(sector => sector.slug === slug)?.label
+    || SECTORS.find(sector => sector.slug === slug)?.label
     || String(slug || '-').replaceAll('_', ' ');
 }
 
@@ -38,7 +39,7 @@ export async function loadSectorVisibility({ force = false } = {}) {
   try {
     const { data, error } = await supabase
       .from('sector_settings')
-      .select('slug, label, is_visible, display_order')
+      .select('slug, label, description, is_visible, display_order')
       .order('display_order');
 
     if (error) throw error;
@@ -65,14 +66,45 @@ export async function loadSectorVisibility({ force = false } = {}) {
   return cachedResult;
 }
 
+export async function applySectorContent(root = document, slug = '') {
+  if (!slug) return null;
+  const result = await loadSectorVisibility();
+  const sector = result.sectors.find(item => item.slug === slug);
+  if (!sector) return null;
+
+  const heading = root.querySelector('.sector-heading h1');
+  if (heading && sector.label) heading.textContent = sector.label;
+
+  const currentBreadcrumb = root.querySelector('.breadcrumb a:last-child');
+  if (currentBreadcrumb && sector.label) currentBreadcrumb.textContent = sector.label;
+
+  const description = String(sector.description || '').trim();
+  const summary = root.querySelector('.sector-summary .text-preview');
+  if (summary && description) summary.textContent = description;
+
+  return sector;
+}
+
 export async function applySectorVisibility(root = document) {
   const result = await loadSectorVisibility();
   const visible = new Set(result.sectors.filter(sector => sector.is_visible).map(sector => sector.slug));
+  const bySlug = new Map(result.sectors.map(sector => [sector.slug, sector]));
 
   root.querySelectorAll('[data-sector-slug]').forEach(element => {
-    const isVisible = visible.has(element.dataset.sectorSlug);
+    const slug = element.dataset.sectorSlug;
+    const sector = bySlug.get(slug);
+    const isVisible = visible.has(slug);
     element.hidden = !isVisible;
     if (element instanceof HTMLOptionElement) element.disabled = !isVisible;
+
+    if (sector?.label) {
+      if (element instanceof HTMLOptionElement) {
+        element.textContent = sector.label;
+      } else if (element.classList.contains('sector-card')) {
+        const label = element.querySelector('span');
+        if (label) label.textContent = sector.label;
+      }
+    }
   });
 
   const overview = root.querySelector('[data-la-cerra-stats], .la-cerra-route-overview[data-sectors]');
