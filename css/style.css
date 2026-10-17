@@ -2804,6 +2804,127 @@ img[loading="lazy"] {
   }
 }
 
+/* ===== Information and Agriturismo content structure ===== */
+.start-origin-note {
+  max-width: 44rem;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--cerra-green-700);
+  background: rgba(31, 75, 61, 0.06);
+  color: var(--cerra-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.information-page .topo-legend {
+  margin-top: 14px;
+}
+
+.information-page .topo-legend-item {
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 12px;
+  min-height: 62px;
+  padding: 9px 0;
+}
+
+.information-page .topo-legend-symbol {
+  width: 48px;
+  min-height: 48px;
+  border-radius: 10px;
+  background: #f0eee8;
+}
+
+.information-page .topo-legend-symbol img {
+  width: 38px;
+  height: 38px;
+}
+
+.information-page .topo-legend-abbreviation {
+  font-size: 0.86rem;
+}
+
+.information-page .topo-legend-item p,
+.information-page .before-you-go-list,
+.information-page .information-safety p {
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.information-rule-list {
+  display: grid;
+  gap: 8px;
+  padding-left: 1.2rem;
+}
+
+.information-rule-list li + li {
+  margin-top: 0;
+}
+
+.information-safety p:last-child,
+.information-season p:last-child,
+.agriturismo-intro p:last-of-type,
+.agriturismo-activities article p:last-child {
+  margin-bottom: 0;
+}
+
+.agriturismo-intro {
+  border-color: rgba(31, 75, 61, 0.24);
+  background:
+    linear-gradient(135deg, rgba(31, 75, 61, 0.08), transparent 64%),
+    var(--cerra-card);
+}
+
+.agriturismo-cta {
+  display: inline-flex;
+  width: auto;
+  margin-top: 18px;
+}
+
+.agriturismo-activities > h2 {
+  margin-top: 0;
+}
+
+.activity-card-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.activity-card-grid article {
+  padding: 14px;
+  border: 1px solid var(--cerra-line);
+  border-radius: 10px;
+  background: #f7f4ee;
+}
+
+.activity-card-grid h3 {
+  margin: 0 0 5px;
+  color: var(--cerra-green-900);
+  font-size: 1rem;
+}
+
+.activity-card-grid p {
+  margin: 0;
+  color: var(--cerra-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 760px) {
+  .information-page {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .information-page > .breadcrumb,
+  .information-page > .content-page-intro,
+  .information-page > .before-you-go-section:nth-last-child(-n + 2) {
+    grid-column: 1 / -1;
+  }
+
+  .activity-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Prototype cascade overrides kept at the end of the legacy stylesheet. */
 body {
   background: var(--cerra-cream);

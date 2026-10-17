@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
       <li><a href="#" data-page="news">${menuItemIcon('news')}<span>News</span></a></li>
       <li><a href="#" data-page="la_cerra">${menuItemIcon('bouldering')}<span>Bouldering La Cerra</span></a></li>
       <li><a href="#" data-page="sardinia">${menuItemIcon('sardinia')}<span>Sardinia</span></a></li>
-      <li><a href="#" data-page="before_you_go">${menuItemIcon('guide')}<span>Before You Go</span></a></li>
-      <li><a href="https://agriturismolacerra.it" target="_blank" rel="noopener noreferrer">${menuItemIcon('stay')}<span>Agriturismo</span></a></li>
+      <li><a href="#" data-page="before_you_go">${menuItemIcon('guide')}<span>Information</span></a></li>
+      <li><a href="#" data-page="agriturismo">${menuItemIcon('stay')}<span>Agriturismo</span></a></li>
       <li><a href="#" data-page="guestbook">${menuItemIcon('guestbook')}<span>Guestbook</span></a></li>
     </ul>
 

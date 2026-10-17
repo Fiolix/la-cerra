@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261018-sector-profile-1";
+const ASSET_VERSION = "20261018-information-restructure-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -40,6 +40,9 @@ const PAGE_ALIASES = {
   before_you_go: "before_you_go.html",
   "before-you-go": "before_you_go.html",
   "before-you-go.html": "before_you_go.html",
+  information: "before_you_go.html",
+  "information.html": "before_you_go.html",
+  agriturismo: "agriturismo.html",
   contact: "contact.html",
   imprint: "imprint.html",
   privacy: "privacy.html",
