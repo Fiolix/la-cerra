@@ -1,7 +1,7 @@
 {
   "type": "FeatureCollection",
   "features": [
-    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12470, 40.99409] }, "properties": { "kind": "sector", "slug": "somewhere", "label": "Somewhere", "page": "somewhere.html", "positionStatus": "topo" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.124329, 40.994591] }, "properties": { "kind": "sector", "slug": "somewhere", "label": "Somewhere", "page": "somewhere.html", "positionStatus": "provided" } },
     { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12322, 40.99451] }, "properties": { "kind": "sector", "slug": "la_sportiva", "label": "La Sportiva", "page": "la_sportiva.html", "positionStatus": "topo" } },
     { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12193, 40.98809] }, "properties": { "kind": "sector", "slug": "sushi-free", "label": "Sushi-Free", "page": "sushi_free.html", "positionStatus": "topo" } },
     { "type": "Feature", "geometry": { "type": "Point", "coordinates": [9.12156, 40.99086] }, "properties": { "kind": "sector", "slug": "bermuda_triangle", "label": "Bermuda Triangle", "page": "bermuda_triangle.html", "positionStatus": "topo" } },

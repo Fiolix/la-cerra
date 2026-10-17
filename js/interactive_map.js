@@ -1,8 +1,9 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261016-map-labels-1';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261017-somewhere-gps-1';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261016-map-labels-1';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261017-somewhere-gps-1';
+const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261017-somewhere-gps-1';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
@@ -98,6 +99,132 @@ function addLocationControl(map, container) {
     button.setAttribute('aria-label', 'Show my location');
     button.title = 'Show my location';
   }
+}
+
+function addOrientationControl(map, container) {
+  map.addControl(new maplibregl.NavigationControl({
+    showCompass: true,
+    showZoom: true,
+    visualizePitch: false
+  }), 'top-right');
+
+  const compass = container.querySelector('.maplibregl-ctrl-compass');
+  if (compass) {
+    compass.setAttribute('aria-label', 'Reset map to north');
+    compass.title = 'Reset map to north';
+  }
+}
+
+function addPathLayers(map) {
+  // OpenFreeMap uses the OpenMapTiles transportation schema. These overlays
+  // make mapped tracks and footpaths readable earlier without presenting them
+  // as verified La Cerra approaches.
+  if (map.getSource('openmaptiles')) {
+    map.addLayer({
+      id: 'la-cerra-osm-tracks',
+      type: 'line',
+      source: 'openmaptiles',
+      'source-layer': 'transportation',
+      minzoom: 11.8,
+      filter: [
+        'all',
+        ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
+        ['==', ['get', 'class'], 'track']
+      ],
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      paint: {
+        'line-color': '#9b7b52',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11.8, 1, 14, 1.8, 16, 2.7],
+        'line-dasharray': [2.4, 1.6],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 11.8, 0.45, 13, 0.78]
+      }
+    });
+
+    map.addLayer({
+      id: 'la-cerra-osm-footpaths',
+      type: 'line',
+      source: 'openmaptiles',
+      'source-layer': 'transportation',
+      minzoom: 12.4,
+      filter: [
+        'all',
+        ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
+        ['match', ['get', 'class'], ['path', 'pedestrian'], true, false]
+      ],
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      paint: {
+        'line-color': '#537762',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 12.4, 1.1, 14, 1.8, 16, 2.8],
+        'line-dasharray': [1.25, 1.35],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 12.4, 0.4, 13.5, 0.9]
+      }
+    });
+  }
+
+  // This empty GeoJSON source is intentionally separate from OSM paths. GPX
+  // tracks verified on site can later be converted and added here without
+  // changing the map code or confusing them with general mapped trails.
+  map.addSource('la-cerra-access-paths', {
+    type: 'geojson',
+    data: ACCESS_PATH_DATA
+  });
+
+  map.addLayer({
+    id: 'la-cerra-access-path-casing',
+    type: 'line',
+    source: 'la-cerra-access-paths',
+    minzoom: 11.5,
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    },
+    paint: {
+      'line-color': '#fffaf2',
+      'line-width': ['interpolate', ['linear'], ['zoom'], 11.5, 3.6, 15, 6.2],
+      'line-opacity': 0.92
+    }
+  });
+
+  map.addLayer({
+    id: 'la-cerra-access-paths',
+    type: 'line',
+    source: 'la-cerra-access-paths',
+    minzoom: 11.5,
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    },
+    paint: {
+      'line-color': '#1f6a4c',
+      'line-width': ['interpolate', ['linear'], ['zoom'], 11.5, 2, 15, 3.8],
+      'line-dasharray': [2.2, 1.25]
+    }
+  });
+
+  map.addLayer({
+    id: 'la-cerra-access-path-labels',
+    type: 'symbol',
+    source: 'la-cerra-access-paths',
+    minzoom: 14,
+    layout: {
+      'symbol-placement': 'line',
+      'text-field': ['get', 'name'],
+      'text-size': 10.5,
+      'text-font': ['Noto Sans Regular'],
+      'text-optional': true
+    },
+    paint: {
+      'text-color': '#173c32',
+      'text-halo-color': '#fffaf2',
+      'text-halo-width': 1.4
+    }
+  });
 }
 
 function createPopupContent(feature) {
@@ -288,7 +415,7 @@ async function createMap(container) {
     });
     activeMaps.set(container, map);
 
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    addOrientationControl(map, container);
     addLocationControl(map, container);
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
 
@@ -304,6 +431,7 @@ async function createMap(container) {
         return;
       }
 
+      addPathLayers(map);
       addSectorLayers(map, collection, selectedSlug);
       fitMap(map, collection, selectedSlug);
       container.dataset.mapState = 'ready';

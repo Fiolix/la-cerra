@@ -1,0 +1,6 @@
+{
+  "type": "FeatureCollection",
+  "name": "Verified La Cerra access paths",
+  "description": "Reserved for on-site verified approach tracks converted from GPX. General OpenStreetMap paths are rendered separately.",
+  "features": []
+}
