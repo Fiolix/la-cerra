@@ -2,7 +2,7 @@ function addCardStructure(card) {
   const name = card.querySelector('span')?.textContent || '';
   card.classList.toggle('sector-card-without-image', !card.dataset.sectorImage);
   const image = card.dataset.sectorImage
-    ? `<img src="${card.dataset.sectorImage}" alt="" loading="lazy" />`
+    ? `<img src="${card.dataset.sectorImage}" alt="" loading="lazy" decoding="async" />`
     : '';
   card.innerHTML = `
     ${image}

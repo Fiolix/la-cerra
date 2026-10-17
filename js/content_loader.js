@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261016-legal-recovery-1";
+const ASSET_VERSION = "20261017-performance-desktop-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -50,6 +50,7 @@ const PAGE_ALIASES = {
 
 let activeLoadId = 0;
 let activeController = null;
+let deferredMapListener = null;
 
 window.addEventListener("beforeunload", () => {
   sessionStorage.setItem("scrollY", window.scrollY);
@@ -105,6 +106,10 @@ async function loadPage(page) {
 
   activeController?.abort();
   activeController = new AbortController();
+  if (deferredMapListener) {
+    document.removeEventListener("sectorTabChanged", deferredMapListener);
+    deferredMapListener = null;
+  }
 
   localStorage.setItem("lastPage", basePage);
   contentElement.setAttribute("aria-busy", "true");
@@ -119,7 +124,13 @@ async function loadPage(page) {
     if (loadId !== activeLoadId) return;
 
     document.dispatchEvent(new Event("beforePageContentReplace"));
-    contentElement.innerHTML = html;
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    template.content.querySelectorAll("img").forEach(image => {
+      if (!image.hasAttribute("loading")) image.loading = "lazy";
+      if (!image.hasAttribute("decoding")) image.decoding = "async";
+    });
+    contentElement.replaceChildren(template.content.cloneNode(true));
     document.body.dataset.currentPage = basePage.replace('.html', '');
 
     let handledScroll = false;
@@ -142,9 +153,24 @@ async function loadPage(page) {
     }
 
     if (html.includes('data-interactive-map')) {
-      const mapModule = await import(`/la-cerra/js/interactive_map.js?v=${ASSET_VERSION}`);
-      if (loadId !== activeLoadId) return;
-      mapModule.initInteractiveMaps();
+      const initializeMaps = async () => {
+        const mapModule = await import(`/la-cerra/js/interactive_map.js?v=${ASSET_VERSION}`);
+        if (loadId !== activeLoadId) return;
+        mapModule.initInteractiveMaps();
+      };
+
+      const activeTab = contentElement.querySelector('[data-sector-tabs]')?.dataset.activeSectorTab;
+      if (activeTab === 'map' || !contentElement.querySelector('[data-sector-tabs]')) {
+        await initializeMaps();
+      } else {
+        deferredMapListener = event => {
+          if (event.detail?.name !== 'map' || loadId !== activeLoadId) return;
+          document.removeEventListener("sectorTabChanged", deferredMapListener);
+          deferredMapListener = null;
+          initializeMaps();
+        };
+        document.addEventListener("sectorTabChanged", deferredMapListener);
+      }
     }
 
     const sectorSlug = contentElement.querySelector('[data-sektor]')?.dataset.sektor;
@@ -202,10 +228,10 @@ async function loadPage(page) {
         module.setBlockOpen(anchor, true);
       }
 
-      await waitForImages(document.querySelectorAll("#boulder-blocks img"));
-      if (loadId !== activeLoadId) return;
-
       if (anchor) {
+        const anchorImage = document.getElementById(anchor)?.querySelector("img");
+        await waitForImage(anchorImage);
+        if (loadId !== activeLoadId) return;
         scrollToAnchor(anchor);
         handledScroll = true;
       } else if (sessionStorage.getItem("forceTop") === "1") {
@@ -275,21 +301,19 @@ async function loadPage(page) {
   }
 }
 
-function waitForImages(images) {
-  return Promise.all(Array.from(images).map(image => {
-    if (image.complete) return Promise.resolve();
+function waitForImage(image) {
+  if (!image || image.complete) return Promise.resolve();
 
-    return new Promise(resolve => {
-      const timeout = window.setTimeout(resolve, 10000);
-      const finish = () => {
-        window.clearTimeout(timeout);
-        resolve();
-      };
+  return new Promise(resolve => {
+    const timeout = window.setTimeout(resolve, 4000);
+    const finish = () => {
+      window.clearTimeout(timeout);
+      resolve();
+    };
 
-      image.addEventListener("load", finish, { once: true });
-      image.addEventListener("error", finish, { once: true });
-    });
-  }));
+    image.addEventListener("load", finish, { once: true });
+    image.addEventListener("error", finish, { once: true });
+  });
 }
 
 function scrollToAnchor(anchor) {

@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261016-legal-recovery-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261017-performance-desktop-1';
 
 function menuItemIcon(name) {
   const paths = {
@@ -136,7 +136,7 @@ function setLanguage(lang) {
   alert('Sprache wechseln zu: ' + lang);
 }
 
-import { initAuth } from './auth_handler.js?v=20261016-legal-recovery-1';
+import { initAuth } from './auth_handler.js?v=20261017-performance-desktop-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

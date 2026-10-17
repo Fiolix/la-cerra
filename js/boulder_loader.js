@@ -7,6 +7,41 @@ import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
 import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261006-projects-1';
 
 let authRefreshTimer = null;
+let blockImageObserver = null;
+
+function loadBlockImage(image) {
+  const source = image?.dataset?.src;
+  if (!source) return image;
+
+  image.src = source;
+  delete image.dataset.src;
+  blockImageObserver?.unobserve(image);
+  return image;
+}
+
+function observeBlockImage(image) {
+  if (!image) return;
+
+  if (!('IntersectionObserver' in window)) {
+    loadBlockImage(image);
+    return;
+  }
+
+  if (!blockImageObserver) {
+    blockImageObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) loadBlockImage(entry.target);
+      });
+    }, { rootMargin: '800px 0px' });
+  }
+
+  blockImageObserver.observe(image);
+}
+
+document.addEventListener('beforePageContentReplace', () => {
+  blockImageObserver?.disconnect();
+  blockImageObserver = null;
+});
 
 const routeDisplayAliases = {
   second_life: [
@@ -124,6 +159,7 @@ export function setBlockOpen(blockId, open = true) {
   toggles.forEach(toggle => toggle.setAttribute('aria-expanded', String(open)));
   content.hidden = !open;
   block.classList.toggle('is-open', open);
+  if (open) loadBlockImage(block.querySelector('.block-image-toggle img'));
   return true;
 }
 
@@ -171,6 +207,9 @@ export async function loadBlocks() {
 
   const container = document.getElementById('boulder-blocks');
   const dropdown = document.getElementById('block-select');
+
+  blockImageObserver?.disconnect();
+  blockImageObserver = null;
 
 // Dropdown leeren und Start-Option setzen
 if (dropdown) {
@@ -395,7 +434,7 @@ const ratingDisplay = ratingCount > 0
         <span class="block-height">Height: ${block.hoehe ?? ''}</span>
       </button>
       <button class="block-image-toggle" type="button" data-block-toggle aria-expanded="false" aria-controls="${blockDiv.id}-routes" aria-label="Show or hide routes for ${block.name || `Block ${block.nummer}`}">
-        <img src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" alt="${block.name || `Block ${block.nummer}`}" />
+        <img data-src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" class="is-pending" alt="${block.name || `Block ${block.nummer}`}" loading="lazy" decoding="async" />
       </button>
       <div class="block-content" id="${blockDiv.id}-routes" hidden>
         ${routesHtml}
@@ -414,8 +453,13 @@ const ratingDisplay = ratingCount > 0
       // their topo images will be supplied later. Keep the routes usable and
       // reveal the image automatically as soon as the file is added.
       blockImage.addEventListener('error', () => {
+        blockImage.classList.remove('is-pending');
         imageToggle.hidden = true;
         imageToggle.classList.add('is-missing');
+      }, { once: true });
+
+      blockImage.addEventListener('load', () => {
+        blockImage.classList.remove('is-pending');
       }, { once: true });
 
       // The source image for Jumble 4A contains a partial caption below the
@@ -426,6 +470,7 @@ const ratingDisplay = ratingCount > 0
     }
 
     container.appendChild(blockDiv);
+    observeBlockImage(blockImage);
 
     blockDiv.querySelectorAll('[data-block-toggle]').forEach(blockToggle => {
       blockToggle.addEventListener('click', () => {

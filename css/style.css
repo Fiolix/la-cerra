@@ -964,6 +964,13 @@ img {
   margin: 0;
 }
 
+.block-image-toggle img.is-pending {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #edf0eb;
+}
+
 .block-id {
   margin-right: 0.5rem;
   flex-shrink: 0;
@@ -2561,6 +2568,242 @@ button.secondary-button:focus-visible {
 }
 .modal-close:hover { color: #000; }
 
+/* ===== Performance and desktop refinement ===== */
+img[loading="lazy"] {
+  content-visibility: auto;
+}
+
+@media (min-width: 1024px) {
+  .site-bar {
+    min-height: 68px;
+    padding-right: max(28px, calc((100% - 1180px) / 2));
+    padding-left: max(28px, calc((100% - 1180px) / 2));
+  }
+
+  .site-bar .menu-icon {
+    margin-left: -8px;
+  }
+
+  header.hero {
+    height: 168px;
+  }
+
+  body[data-current-page="start"] header.hero {
+    height: clamp(300px, 28vw, 390px);
+  }
+
+  .hero-copy {
+    bottom: 34px;
+    left: max(32px, calc((100% - 1120px) / 2));
+  }
+
+  .hero-copy h1 {
+    font-size: 4rem;
+  }
+
+  main {
+    width: min(calc(100% - 48px), 1180px);
+    padding: 28px 0 56px;
+  }
+
+  .did-you-know {
+    width: min(calc(100% - 48px), 1180px);
+    padding: 20px 24px;
+  }
+
+  body[data-current-page="start"] main {
+    grid-template-columns: minmax(0, 1.55fr) minmax(340px, 0.75fr);
+    gap: 26px;
+  }
+
+  body[data-current-page="start"] main > .news,
+  body[data-current-page="start"] main > .start-account {
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .sector-tabs,
+  .profile-page .profile-list-tabs {
+    top: 68px;
+  }
+
+  .sector-page-prototype #sector-panel-overview {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.35fr);
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  .sector-page-prototype #sector-panel-overview > .sector-summary,
+  .sector-page-prototype #sector-panel-overview > #routen-diagramm {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .sector-page-prototype #sector-panel-overview > .sector-summary {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 22px;
+  }
+
+  .sector-page-prototype #sector-panel-overview .toggle-summary {
+    align-self: flex-start;
+  }
+
+  .sector-page-prototype #sector-panel-overview .route-chart-frame {
+    height: 220px;
+  }
+
+  .la-cerra-page #area-panel-overview {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.6fr);
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .la-cerra-page #area-panel-overview > .sector-summary {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 20px 22px;
+  }
+
+  .la-cerra-page #area-panel-overview > .area-highlights,
+  .la-cerra-page #area-panel-overview > .la-cerra-route-overview {
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .la-cerra-page #area-panel-overview > .area-highlights {
+    align-self: stretch;
+    grid-template-columns: 1fr;
+    padding: 12px 18px;
+    border: 1px solid var(--cerra-line);
+    border-radius: var(--cerra-radius);
+    background: var(--cerra-card);
+  }
+
+  .la-cerra-page #area-panel-overview > .area-highlights div {
+    justify-content: center;
+    min-height: 54px;
+  }
+
+  .la-cerra-page #area-panel-overview > .area-highlights div + div {
+    border-top: 1px solid var(--cerra-line);
+    border-left: 0;
+  }
+
+  .la-cerra-page #area-panel-overview .route-chart-frame {
+    height: 236px;
+  }
+
+  .sector-card-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .sector-card {
+    grid-template-columns: 92px minmax(0, 1fr) 26px;
+    min-height: 82px;
+  }
+
+  .sector-card > img {
+    width: 92px;
+    height: 82px;
+  }
+
+  .sector-page-prototype #sector-panel-map,
+  .la-cerra-page #area-panel-map {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+  }
+
+  .sector-page-prototype #sector-panel-map[hidden],
+  .la-cerra-page #area-panel-map[hidden] {
+    display: none;
+  }
+
+  .sector-page-prototype #sector-panel-map > section,
+  .la-cerra-page #area-panel-map > section {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .la-cerra-page #area-panel-map > .sector-nav {
+    grid-column: 1 / -1;
+  }
+
+  .sector-page-prototype .boulder-block.is-open {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(380px, 1.05fr);
+    column-gap: 24px;
+    align-items: start;
+    padding: 18px;
+  }
+
+  .sector-page-prototype .boulder-block.is-open > .block-header {
+    grid-column: 1 / -1;
+  }
+
+  .sector-page-prototype .boulder-block.is-open > .block-image-toggle {
+    position: sticky;
+    top: 132px;
+    grid-column: 1;
+    margin: 0;
+  }
+
+  .sector-page-prototype .boulder-block.is-open > .block-content {
+    grid-column: 2;
+    min-width: 0;
+    padding-top: 0;
+  }
+
+  .content-layout-page:not(.admin-page):not(.profile-page) {
+    width: min(100%, 1040px);
+    margin: 0 auto;
+  }
+
+  .guestbook-page .guestbook-composer,
+  .guestbook-page .guestbook-list,
+  .legal-page {
+    width: min(100%, 820px);
+    margin-right: auto;
+    margin-left: auto;
+    box-sizing: border-box;
+  }
+
+  .profile-page .profile-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 24px;
+  }
+
+  .profile-page .profile-actions {
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+
+  .admin-page .admin-workspace {
+    grid-template-columns: minmax(290px, 0.72fr) minmax(0, 1.5fr);
+    gap: 22px;
+  }
+}
+
+@media (min-width: 1360px) {
+  main,
+  .did-you-know {
+    max-width: 1240px;
+  }
+
+  .sector-page-prototype .boulder-block.is-open {
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+  }
+}
+
 /* Prototype cascade overrides kept at the end of the legacy stylesheet. */
 body {
   background: var(--cerra-cream);
@@ -3815,3 +4058,31 @@ button.text-link.as-link:focus { outline: none; }
   color: #666;
 }
 .modal-close:hover { color: #000; }
+
+/* Final desktop sizing overrides: keep these after the legacy cascade. */
+@media (min-width: 1024px) {
+  header.hero {
+    height: 168px;
+  }
+
+  body[data-current-page="start"] header.hero {
+    height: clamp(300px, 28vw, 390px);
+    min-height: 0;
+  }
+
+  main,
+  .did-you-know {
+    width: min(calc(100% - 48px), 1180px);
+  }
+
+  main {
+    padding: 28px 0 56px;
+  }
+}
+
+@media (min-width: 1360px) {
+  main,
+  .did-you-know {
+    max-width: 1240px;
+  }
+}
