@@ -4,10 +4,13 @@ let authListenerBound = false;
 let currentRoot = null;
 let currentUser = null;
 let entries = [];
+let currentPage = 1;
+const ENTRIES_PER_PAGE = 10;
 
 export async function initGuestbook() {
   currentRoot = document.querySelector('.guestbook-page');
   if (!currentRoot) return;
+  currentPage = 1;
   bindAuthListener();
 
   const [sessionResult, entriesResult] = await Promise.allSettled([
@@ -143,6 +146,7 @@ async function submitEntry(message, parentId) {
   });
   if (error) throw error;
   await loadEntries();
+  if (parentId === null) currentPage = 1;
   renderEntries();
 }
 
@@ -154,16 +158,78 @@ function renderEntries() {
   const mainEntries = entries
     .filter(entry => entry.parent_id === null)
     .sort((left, right) => new Date(right.created_at) - new Date(left.created_at));
+  const count = currentRoot?.querySelector('[data-guestbook-count]');
+  if (count) count.textContent = `${mainEntries.length} ${mainEntries.length === 1 ? 'entry' : 'entries'}`;
 
   if (mainEntries.length === 0) {
     const empty = document.createElement('p');
     empty.className = 'guestbook-empty';
     empty.textContent = 'No entries yet. Be the first to sign the guestbook.';
     container.appendChild(empty);
+    renderPagination(0);
     return;
   }
 
-  mainEntries.forEach(entry => container.appendChild(createEntryCard(entry)));
+  const pageCount = Math.ceil(mainEntries.length / ENTRIES_PER_PAGE);
+  currentPage = Math.min(Math.max(1, currentPage), pageCount);
+  const firstIndex = (currentPage - 1) * ENTRIES_PER_PAGE;
+  mainEntries
+    .slice(firstIndex, firstIndex + ENTRIES_PER_PAGE)
+    .forEach(entry => container.appendChild(createEntryCard(entry)));
+  renderPagination(pageCount);
+}
+
+function renderPagination(pageCount) {
+  const pagination = currentRoot?.querySelector('[data-guestbook-pagination]');
+  if (!pagination) return;
+  pagination.replaceChildren();
+  pagination.hidden = pageCount <= 1;
+  if (pageCount <= 1) return;
+
+  const addButton = (label, page, { current = false, disabled = false, ariaLabel = '' } = {}) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.disabled = disabled;
+    if (ariaLabel) button.setAttribute('aria-label', ariaLabel);
+    if (current) {
+      button.classList.add('is-current');
+      button.setAttribute('aria-current', 'page');
+    }
+    button.addEventListener('click', () => {
+      currentPage = page;
+      renderEntries();
+      currentRoot?.querySelector('.guestbook-feed')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    pagination.appendChild(button);
+  };
+
+  addButton('‹', Math.max(1, currentPage - 1), {
+    disabled: currentPage === 1,
+    ariaLabel: 'Previous guestbook page'
+  });
+  const visiblePages = pageCount <= 7
+    ? Array.from({ length: pageCount }, (_, index) => index + 1)
+    : [...new Set([1, currentPage - 1, currentPage, currentPage + 1, pageCount])]
+      .filter(page => page >= 1 && page <= pageCount)
+      .sort((left, right) => left - right);
+  visiblePages.forEach((page, index) => {
+    if (index > 0 && page - visiblePages[index - 1] > 1) {
+      const ellipsis = document.createElement('span');
+      ellipsis.className = 'pagination-ellipsis';
+      ellipsis.textContent = '…';
+      ellipsis.setAttribute('aria-hidden', 'true');
+      pagination.appendChild(ellipsis);
+    }
+    addButton(String(page), page, {
+      current: page === currentPage,
+      ariaLabel: `Guestbook page ${page}`
+    });
+  });
+  addButton('›', Math.min(pageCount, currentPage + 1), {
+    disabled: currentPage === pageCount,
+    ariaLabel: 'Next guestbook page'
+  });
 }
 
 function createEntryCard(entry) {
@@ -173,7 +239,9 @@ function createEntryCard(entry) {
 
   const header = document.createElement('header');
   const author = document.createElement('strong');
+  author.className = 'guestbook-author';
   author.textContent = entry.author_name;
+  author.dataset.initial = String(entry.author_name || '?').trim().charAt(0).toUpperCase() || '?';
   const time = document.createElement('time');
   time.dateTime = entry.created_at;
   time.textContent = formatDate(entry.created_at);
@@ -191,7 +259,19 @@ function createEntryCard(entry) {
   if (replies.length > 0) {
     const replyList = document.createElement('div');
     replyList.className = 'guestbook-replies';
-    replies.forEach(reply => replyList.appendChild(createReply(reply)));
+    replyList.appendChild(createReply(replies[0]));
+    if (replies.length > 1) {
+      const more = document.createElement('details');
+      more.className = 'guestbook-more-replies';
+      const summary = document.createElement('summary');
+      const additionalCount = replies.length - 1;
+      summary.textContent = `Show ${additionalCount} more ${additionalCount === 1 ? 'reply' : 'replies'}`;
+      const additionalReplies = document.createElement('div');
+      additionalReplies.className = 'guestbook-additional-replies';
+      replies.slice(1).forEach(reply => additionalReplies.appendChild(createReply(reply)));
+      more.append(summary, additionalReplies);
+      replyList.appendChild(more);
+    }
     article.appendChild(replyList);
   }
 

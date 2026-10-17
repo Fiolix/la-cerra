@@ -1818,6 +1818,187 @@ button.sector-route-count {
   }
 }
 
+/* ===== Guestbook reading flow and pagination ===== */
+.guestbook-feed,
+.guestbook-write {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.guestbook-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.guestbook-section-heading h2 {
+  margin: 3px 0 0;
+}
+
+.guestbook-entry-count {
+  flex: 0 0 auto;
+  color: var(--cerra-muted);
+  font-size: 0.86rem;
+}
+
+.guestbook-page .guestbook-card {
+  position: relative;
+  padding: 18px;
+  overflow: hidden;
+  border-color: var(--cerra-line);
+  border-radius: var(--cerra-radius);
+  box-shadow: none;
+}
+
+.guestbook-page .guestbook-card::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  content: "";
+  background: var(--cerra-green-700);
+}
+
+.guestbook-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--cerra-green-950);
+}
+
+.guestbook-author::before {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  content: attr(data-initial);
+  background: var(--cerra-green-900);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.guestbook-page .guestbook-message {
+  margin: 14px 0;
+  color: var(--cerra-ink);
+  line-height: 1.55;
+}
+
+.guestbook-page .guestbook-replies {
+  margin: 14px 0 10px 18px;
+  padding-left: 12px;
+  border-left: 2px solid #aabeb6;
+}
+
+.guestbook-more-replies {
+  border-top: 1px solid var(--cerra-line);
+}
+
+.guestbook-more-replies summary {
+  min-height: 42px;
+  padding: 11px 2px;
+  cursor: pointer;
+  color: var(--cerra-green-800);
+  font-size: 0.86rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.guestbook-more-replies summary::-webkit-details-marker {
+  display: none;
+}
+
+.guestbook-more-replies summary::after {
+  margin-left: 7px;
+  content: "↓";
+}
+
+.guestbook-more-replies[open] summary::after {
+  content: "↑";
+}
+
+.guestbook-additional-replies {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.guestbook-write {
+  margin-top: 8px;
+  padding-top: 22px;
+  border-top: 1px solid var(--cerra-line);
+}
+
+.guestbook-page .guestbook-composer {
+  margin: 0;
+  padding: 18px;
+  border-color: var(--cerra-line);
+  border-radius: var(--cerra-radius);
+}
+
+.guestbook-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.guestbook-pagination[hidden] {
+  display: none;
+}
+
+.guestbook-pagination button {
+  display: inline-grid;
+  width: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--cerra-line);
+  border-radius: 8px;
+  background: var(--cerra-card);
+  color: var(--cerra-green-900);
+}
+
+.guestbook-pagination button.is-current {
+  border-color: var(--cerra-green-900);
+  background: var(--cerra-green-900);
+  color: #fff;
+}
+
+.guestbook-pagination button:disabled {
+  opacity: 0.4;
+}
+
+.guestbook-pagination .pagination-ellipsis {
+  display: inline-grid;
+  width: 28px;
+  min-height: 40px;
+  place-items: center;
+  color: var(--cerra-muted);
+}
+
+@media (max-width: 599px) {
+  .guestbook-section-heading {
+    align-items: flex-start;
+  }
+
+  .guestbook-page .guestbook-card > header,
+  .guestbook-page .guestbook-reply-header {
+    gap: 8px;
+  }
+
+  .guestbook-page .guestbook-replies {
+    margin-left: 4px;
+  }
+}
+
 .block-nav,
 .sector-nav {
   margin: 1rem 0;

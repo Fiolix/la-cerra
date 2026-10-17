@@ -10,11 +10,29 @@
     <p>Share a greeting, a memory or a thought about your time at La Cerra.</p>
   </header>
 
-  <section class="guestbook-composer" data-guestbook-composer aria-live="polite">
-    <p class="data-loading" role="status">Checking login…</p>
+  <section class="guestbook-feed" aria-labelledby="guestbook-entries-title">
+    <div class="guestbook-section-heading">
+      <div>
+        <span class="section-eyebrow">From the community</span>
+        <h2 id="guestbook-entries-title">Messages</h2>
+      </div>
+      <span class="guestbook-entry-count" data-guestbook-count aria-live="polite"></span>
+    </div>
+    <div class="guestbook-list" data-guestbook-list aria-live="polite">
+      <p class="data-loading" role="status">Loading guestbook…</p>
+    </div>
+    <nav class="guestbook-pagination" data-guestbook-pagination aria-label="Guestbook pages" hidden></nav>
   </section>
 
-  <section class="guestbook-list" data-guestbook-list aria-live="polite">
-    <p class="data-loading" role="status">Loading guestbook…</p>
+  <section class="guestbook-write" aria-labelledby="guestbook-write-title">
+    <div class="guestbook-section-heading">
+      <div>
+        <span class="section-eyebrow">Add your message</span>
+        <h2 id="guestbook-write-title">Sign the guestbook</h2>
+      </div>
+    </div>
+    <div class="guestbook-composer" data-guestbook-composer aria-live="polite">
+      <p class="data-loading" role="status">Checking login…</p>
+    </div>
   </section>
 </div>
