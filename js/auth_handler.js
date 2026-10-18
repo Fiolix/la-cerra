@@ -254,10 +254,14 @@ function renderLoggedIn(username, message = '', isAdmin = false, canModerateGues
   if (!loginBlock) return;
 
   loginBlock.innerHTML = `
-    <p class="signed-in-label">Signed in as: <strong data-auth-username></strong></p>
-    <p><a href="#" data-page="profile">My profile</a></p>
-    ${canModerateGuestbook ? `<p><a href="#" data-page="admin">${isAdmin ? 'Admin area' : 'Guestbook moderation'}</a></p>` : ''}
-    <button id="logout-button" type="button">Log out</button>
+    <div class="signed-in-account">
+      <p class="signed-in-label">Ciao, <strong data-auth-username></strong></p>
+      <div class="account-menu-actions">
+        <a href="#" data-page="profile"><span>My profile</span><span aria-hidden="true">→</span></a>
+        ${canModerateGuestbook ? `<a href="#" data-page="admin"><span>${isAdmin ? 'Admin area' : 'Guestbook moderation'}</span><span aria-hidden="true">→</span></a>` : ''}
+      </div>
+      <button id="logout-button" class="account-logout-button" type="button">Log out</button>
+    </div>
     <p class="login-message" role="status" aria-live="polite"></p>
   `;
 

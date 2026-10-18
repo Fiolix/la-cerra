@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261018-performance-quality-1';
-import { isProjectGrade } from './route_rules.js?v=20261018-performance-quality-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261018-menu-refinement-2';
+import { isProjectGrade } from './route_rules.js?v=20261018-menu-refinement-2';
 
 let catalog = null;
 let loadError = null;

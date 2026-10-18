@@ -81,6 +81,122 @@
   background: rgba(0, 0, 0, 0.19);
 }
 
+/* Final menu surface and account refinements. */
+.slide-menu .menu-heading {
+  background: transparent;
+}
+
+.slide-menu .login-block {
+  margin: auto 12px 0;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.055);
+  text-align: left;
+}
+
+.slide-menu .signed-in-account {
+  display: grid;
+  gap: 10px;
+}
+
+.slide-menu .signed-in-label {
+  margin: 0;
+  color: #fff;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.slide-menu .signed-in-label strong {
+  font-weight: 750;
+}
+
+.slide-menu .account-menu-actions {
+  display: grid;
+  gap: 5px;
+}
+
+.slide-menu .login-block .account-menu-actions a {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 0.88rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.slide-menu .login-block .account-menu-actions a:hover,
+.slide-menu .login-block .account-menu-actions a:focus-visible {
+  background: rgba(255, 255, 255, 0.13);
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 1px;
+}
+
+.slide-menu .login-block .account-logout-button {
+  width: 100%;
+  min-height: 38px;
+  margin: 0;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.slide-menu .login-block .account-logout-button:hover,
+.slide-menu .login-block .account-logout-button:focus-visible {
+  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  outline: none;
+}
+
+.slide-menu .login-message:empty {
+  display: none;
+}
+
+.slide-menu .login-block form {
+  display: grid;
+  gap: 8px;
+}
+
+.slide-menu .login-block input {
+  width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+  text-align: left;
+}
+
+.slide-menu .login-block input::placeholder {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.slide-menu .login-block form > button {
+  width: 100%;
+  min-height: 42px;
+  margin: 2px 0 0;
+  border-radius: 8px;
+  background: #659582;
+  font-weight: 700;
+}
+
+.slide-menu .menu-utility-links {
+  padding-top: 12px;
+}
+
 .slide-menu {
   display: flex;
   flex-direction: column;
@@ -458,4 +574,10 @@
 
 .slide-menu ul ul ul {
   background: rgba(0, 0, 0, 0.19);
+}
+
+/* Keep the complete brand area on the exact menu surface colour. */
+.slide-menu .menu-heading,
+.slide-menu .menu-brand {
+  background: #102d27;
 }

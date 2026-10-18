@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261018-performance-quality-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261018-menu-refinement-2';
 
 function menuItemIcon(name) {
   const paths = {
@@ -83,13 +83,13 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.classList.toggle('menu-is-open', open);
   }
 
-  navMenu.querySelectorAll("a[data-page]").forEach(link => {
-    link.addEventListener("click", () => {
-      const parentItem = link.closest("li");
-      if (!parentItem?.classList.contains("toggleable")) {
-        setMenuOpen(false);
-      }
-    });
+  navMenu.addEventListener("click", event => {
+    const link = event.target.closest("a[data-page]");
+    if (!link) return;
+    const parentItem = link.closest("li");
+    if (!parentItem?.classList.contains("toggleable")) {
+      setMenuOpen(false);
+    }
   });
 
   menuIcon.addEventListener("click", function () {
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261018-performance-quality-1';
+import { initAuth } from './auth_handler.js?v=20261018-menu-refinement-2';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
