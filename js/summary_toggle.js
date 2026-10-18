@@ -1,18 +1,14 @@
 // summary_toggle.js als JavaScript-Modul
 
 export function setupSummaryToggle() {
-  console.log("✅ summary_toggle.js wurde als Modul geladen");
-
   const summaryBox = document.querySelector(".sector-summary");
   const textElement = summaryBox?.querySelector(".text-preview");
   const toggleButton = summaryBox?.querySelector(".toggle-summary");
 
   if (!summaryBox || !textElement || !toggleButton) {
-    console.warn("❌ summaryBox, textElement oder toggleButton nicht gefunden");
+    console.warn('The sector summary or its toggle button was not found.');
     return;
   }
-
-  console.log("📢 setupSummaryToggle wird ausgeführt...");
 
   // Vorherige Eventlistener entfernen durch Ersetzen des Buttons
   toggleButton.replaceWith(toggleButton.cloneNode(true));

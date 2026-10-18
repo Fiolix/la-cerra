@@ -3,24 +3,8 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261018-stability-1';
-
-// Schöne Anzeigenamen für Sektoren (Slug -> Label)
-const SEKTOR_LABELS = {
-  la_sportiva: 'La Sportiva',
-  somewhere: 'Somewhere',
-  // hier kannst du weitere ~20 Einträge pflegen
-};
-
-// Fallback: underscores in Leerzeichen, jedes Wort groß
-function formatSectorName(slug) {
-  if (!slug) return '-';
-  if (SEKTOR_LABELS[slug]) return SEKTOR_LABELS[slug];
-  return slug
-    .split('_')
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
+import { showTicklistPopup } from './ticklist_popup.js?v=20261018-copy-consistency-1';
+import { sectorLabel } from './sector_visibility.js?v=20261018-copy-consistency-1';
 
 
 let tickData = [];
@@ -92,7 +76,7 @@ export async function initTicklistTable(userId, onDataChanged = null) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('❌ Fehler beim Laden der Ticklist:', error);
+    console.error('The ticklist could not be loaded:', error);
     throw new Error('Tick list could not be loaded.', { cause: error });
   }
 
@@ -202,11 +186,11 @@ function initTicklistControls() {
     }
     // Sortiert einfügen (nach Anzeigename)
     Array.from(sectors)
-      .sort((a, b) => formatSectorName(a).localeCompare(formatSectorName(b)))
+      .sort((a, b) => sectorLabel(a).localeCompare(sectorLabel(b)))
       .forEach(sektor => {
         const opt = document.createElement('option');
         opt.value = sektor;
-        opt.textContent = formatSectorName(sektor);
+        opt.textContent = sectorLabel(sektor);
         sel.appendChild(opt);
       });
 
@@ -363,7 +347,7 @@ html += `
   <tr class="ticklist-meta">
     <td colspan="${colCount}">
       ${blockname && blockPage ? `<a href="#" data-page="${blockPage}${blockAnchor}">${blockname}</a>` : '–'} &nbsp;|
-      ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${formatSectorName(sektor)}</a>` : '–'} &nbsp;|
+      ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${sectorLabel(sektor)}</a>` : '–'} &nbsp;|
       <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
     </td>
   </tr>
@@ -473,10 +457,10 @@ window.goToPage = (page) => {
 };
 
 window.deleteTick = async (tickId) => {
-  if (!confirm('Wirklich löschen?')) return;
+  if (!confirm('Remove this ticklist entry? The route itself will not be deleted.')) return;
   const { error } = await supabase.from('ticklist').delete().eq('id', tickId);
   if (error) {
-    alert('Fehler beim Löschen');
+    alert('The ticklist entry could not be removed. Please try again.');
   } else {
     tickData = tickData.filter(t => t.id !== tickId);
     renderTable();
@@ -486,7 +470,7 @@ window.deleteTick = async (tickId) => {
 
 window.editTick = (tickId, userId) => {
   const entry = tickData.find(t => t.id === tickId);
-  if (!entry) return alert("Eintrag nicht gefunden");
+  if (!entry) return alert('This ticklist entry is no longer available. Please reload the page.');
 
   const route_id = entry.route_id || entry.route?.id || entry.route?.uuid;
 
@@ -494,7 +478,7 @@ window.editTick = (tickId, userId) => {
     mode: 'edit',
     entry: {
       route_id: route_id,
-      route_name: entry.route?.name ?? 'Unbekannt',
+      route_name: entry.route?.name ?? 'Unknown route',
       grad: entry.route?.grad ?? '?',
       rating: entry.rating ?? '',
       flash: entry.flash ?? false,
@@ -525,7 +509,7 @@ window.editTick = (tickId, userId) => {
         .order('created_at', { ascending: false });
 
       if (loadError) {
-        console.error("❌ Fehler beim Neuladen der Ticklist:", loadError);
+        console.error('The ticklist could not be reloaded:', loadError);
       } else {
         tickData = data;
         renderTable();

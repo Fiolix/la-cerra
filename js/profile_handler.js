@@ -2,11 +2,12 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20261018-stability-1';
-import { summarizeTicks } from './profile_stats.js?v=20261018-stability-1';
-import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261018-stability-1';
-import { showTicklistPopup } from './ticklist_popup.js?v=20261018-stability-1';
-import { isProjectGrade } from './route_rules.js?v=20261018-stability-1';
+import { initTicklistTable } from './ticklist_table.js?v=20261018-copy-consistency-1';
+import { summarizeTicks } from './profile_stats.js?v=20261018-copy-consistency-1';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261018-copy-consistency-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261018-copy-consistency-1';
+import { isProjectGrade } from './route_rules.js?v=20261018-copy-consistency-1';
+import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261018-copy-consistency-1';
 
 let authListenerBound = false;
 
@@ -107,11 +108,7 @@ function renderProfileStats(ticks) {
 }
 
 function sectorPage(slug) {
-  const aliases = {
-    'sushi-free': 'sushi_free',
-    la_sportiva: 'la_sportiva'
-  };
-  return `${aliases[slug] || slug || 'la_cerra'}.html`;
+  return SECTORS.find(sector => sector.slug === slug)?.page || `${slug || 'la_cerra'}.html`;
 }
 
 function blockAnchor(number) {
@@ -174,7 +171,7 @@ function renderPersonalProjects(result) {
     const title = document.createElement('strong');
     title.textContent = route?.name || 'Unknown route';
     const meta = document.createElement('span');
-    const sector = String(block?.sektor || '').replaceAll('_', ' ');
+    const sector = block?.sektor ? sectorLabel(block.sektor) : '';
     meta.textContent = `${sector || 'Unknown sector'} · ${block?.name || `Block ${block?.nummer || '—'}`} · Fb ${route?.grad || '—'}`;
     copy.append(title, meta);
 

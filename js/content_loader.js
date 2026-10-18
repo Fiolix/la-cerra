@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261018-stability-1";
+const ASSET_VERSION = "20261018-copy-consistency-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -93,7 +93,7 @@ function pageFromLocation() {
 async function loadPage(page) {
   const contentElement = document.getElementById("content");
   if (!contentElement) {
-    console.error("Kein #content-Element gefunden.");
+    console.error('The #content element was not found.');
     return;
   }
 
@@ -102,7 +102,7 @@ async function loadPage(page) {
     normalized = normalizePage(page);
   } catch (error) {
     showLoadError(contentElement, String(page || ""));
-    console.error("Ungültiger Seitenaufruf:", error);
+    console.error('Invalid page request:', error);
     return;
   }
 
@@ -307,7 +307,7 @@ async function loadPage(page) {
     document.activeElement?.blur();
   } catch (error) {
     if (error?.name === "AbortError" || loadId !== activeLoadId) return;
-    console.error("Fehler beim Laden der Seite:", error);
+    console.error('Page loading failed:', error);
     showLoadError(contentElement, basePage);
   } finally {
     if (loadId === activeLoadId) {

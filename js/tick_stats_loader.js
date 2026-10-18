@@ -14,7 +14,7 @@ export async function getPublicTickStats() {
   }
 
   if (error) {
-    console.error("❌ Fehler beim Laden der Tick-Statistiken:", error);
+    console.error('Public tick statistics could not be loaded:', error);
     return { data: [], error };
   }
 

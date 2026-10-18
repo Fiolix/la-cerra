@@ -1,9 +1,9 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20261018-stability-1';
-import { initUserAdministration } from './admin_users.js?v=20261018-stability-1';
-import { initGuestbookAdministration } from './admin_guestbook.js?v=20261018-stability-1';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261018-stability-1';
-import { initMapAdministration } from './admin_map.js?v=20261018-stability-1';
+import { initBlockAdministration } from './admin_blocks.js?v=20261018-copy-consistency-1';
+import { initUserAdministration } from './admin_users.js?v=20261018-copy-consistency-1';
+import { initGuestbookAdministration } from './admin_guestbook.js?v=20261018-copy-consistency-1';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261018-copy-consistency-1';
+import { initMapAdministration } from './admin_map.js?v=20261018-copy-consistency-1';
 
 let authListenerBound = false;
 let blocks = [];
@@ -18,19 +18,6 @@ const GRADES = [
   '7a', '7a+', '7b', '7b+', '7c', '7c+', '8a', '8a+', '8b', '8b+',
   '8c', '8c+', '9a'
 ];
-
-const SECTOR_LABELS = {
-  somewhere: 'Somewhere',
-  la_sportiva: 'La Sportiva',
-  'sushi-free': 'Sushi-Free',
-  bermuda_triangle: 'Bermuda Triangle',
-  second_life: '2nd Life',
-  stuntblocs: 'Stuntblocs',
-  jumble: 'Jumble',
-  bloc_meadow: 'Bloc Meadow',
-  monte_lu_bagnu: 'Monte Lu Bagnu',
-  monte_pulchiana: 'Monte Pulchiana'
-};
 
 export async function initAdmin() {
   bindAuthListener();
@@ -792,9 +779,6 @@ function blockLabel(block) {
   return `${block.nummer || '–'}${block.name ? ` · ${block.name}` : ''}`;
 }
 
-function sectorLabel(slug) {
-  return SECTOR_LABELS[slug] || String(slug || '-').replaceAll('_', ' ');
-}
 
 function normalizeLetter(value) {
   return String(value || '').normalize('NFKC').trim().toLowerCase();

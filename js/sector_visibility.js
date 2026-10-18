@@ -17,6 +17,11 @@ export const SECTORS = [
   { slug: 'boulderplanet', label: 'Boulderplanet', page: 'boulderplanet.html', order: 140, defaultVisible: false }
 ];
 
+const SECTOR_SLUG_ALIASES = {
+  sushi_free: 'sushi-free',
+  '2nd_life': 'second_life'
+};
+
 function defaultVisibility(sector) {
   return sector.defaultVisible !== false;
 }
@@ -24,9 +29,12 @@ function defaultVisibility(sector) {
 let cachedResult = null;
 
 export function sectorLabel(slug) {
-  return cachedResult?.sectors?.find(sector => sector.slug === slug)?.label
-    || SECTORS.find(sector => sector.slug === slug)?.label
-    || String(slug || '-').replaceAll('_', ' ');
+  const normalizedSlug = SECTOR_SLUG_ALIASES[slug] || slug;
+  return cachedResult?.sectors?.find(sector => sector.slug === normalizedSlug)?.label
+    || SECTORS.find(sector => sector.slug === normalizedSlug)?.label
+    || String(normalizedSlug || '-')
+      .replaceAll('_', ' ')
+      .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
 export function invalidateSectorVisibilityCache() {

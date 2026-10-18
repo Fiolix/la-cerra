@@ -1,10 +1,10 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261018-stability-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261018-copy-consistency-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261018-stability-1';
-import { isProjectGrade } from './route_rules.js?v=20261018-stability-1';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261018-stability-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261018-copy-consistency-1';
+import { isProjectGrade } from './route_rules.js?v=20261018-copy-consistency-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261018-copy-consistency-1';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -231,7 +231,7 @@ export function openAndScrollToRoute(routeId) {
 export async function loadBlocks() {
   // ❗ Verhindere doppeltes Nachladen
   if (document.querySelectorAll('.boulder-block').length > 0) {
-    console.warn('🚫 Boulder wurden bereits geladen – Abbruch.');
+    console.info('Boulder data is already loaded.');
     return;
   }
 
@@ -252,7 +252,7 @@ if (dropdown) {
 
 
   if (!container || !dropdown) {
-    console.warn('⏳ container oder dropdown nicht vorhanden – retry in 200ms');
+    console.warn('Boulder container or block selector is not ready. Retrying shortly.');
     setTimeout(loadBlocks, 200);
     return;
   }
@@ -262,7 +262,7 @@ if (dropdown) {
 
   const sektor = document.querySelector('[data-sektor]')?.dataset.sektor;
   if (!sektor) {
-    console.error('❌ Kein data-sektor im Sektor-Inhalt gefunden');
+    console.error('The sector content does not define a data-sektor value.');
     return;
   }
 
@@ -283,17 +283,15 @@ if (dropdown) {
   const { data: routes, error: routeError } = routeResult;
 
   if (blockError) {
-    console.error('❌ Fehler beim Laden der Blöcke:', blockError);
+    console.error('Boulder data could not be loaded:', blockError);
     showBlocksError(container, dropdown, 'Boulder data could not be loaded.');
     return;
   }
   if (routeError) {
-    console.error('❌ Fehler beim Laden der Routen:', routeError);
+    console.error('Route data could not be loaded:', routeError);
     showBlocksError(container, dropdown, 'Route data could not be loaded.');
     return;
   }
-
-  console.log(`ℹ️ ${blocks.length} Blöcke geladen für Sektor '${sektor}'`);
 
   container.innerHTML = '';
   dropdown.innerHTML = '<option value="">-- Select a block --</option>';

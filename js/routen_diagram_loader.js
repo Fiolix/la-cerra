@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261018-stability-1';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261018-stability-1';
+import { isProjectGrade } from './route_rules.js?v=20261018-copy-consistency-1';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261018-copy-consistency-1';
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 
@@ -219,11 +219,9 @@ function renderRouteDiagram(diagramContainer, routes, { sectorStats = null } = {
 export async function loadRoutenDiagramm(sektorName) {
   const diagramContainer = document.getElementById("routen-diagramm");
   if (!diagramContainer) {
-    console.warn("⚠️ Kein Diagramm-Container auf dieser Seite vorhanden.");
+    console.info('This page does not contain a route statistics chart.');
     return;
   }
-
-  console.log("📊 Lade Routen-Diagramm für:", sektorName);
 
   diagramContainer.innerHTML = '<p class="data-loading" role="status">Loading route statistics…</p>';
 
@@ -234,7 +232,7 @@ export async function loadRoutenDiagramm(sektorName) {
       .select("id")
       .eq("sektor", sektorName);
   } catch (error) {
-    console.error("❌ Fehler beim Laden des Blocks:", error);
+    console.error('Boulder data for route statistics could not be loaded:', error);
     showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
     return;
   }
@@ -242,7 +240,7 @@ export async function loadRoutenDiagramm(sektorName) {
   const { data: sektorBlocks, error: blockError } = blockResult;
 
   if (blockError) {
-    console.error("❌ Fehler beim Laden des Blocks:", blockError);
+    console.error('Boulder data for route statistics could not be loaded:', blockError);
     showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
     return;
   }
@@ -262,7 +260,7 @@ export async function loadRoutenDiagramm(sektorName) {
       .in("block_id", blockIds)
       .is("archived_at", null);
   } catch (error) {
-    console.error("❌ Fehler beim Laden der Routen:", error);
+    console.error('Route data for route statistics could not be loaded:', error);
     showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
     return;
   }
@@ -270,13 +268,13 @@ export async function loadRoutenDiagramm(sektorName) {
   const { data: routes, error: routeError } = routeResult;
 
   if (routeError) {
-    console.error("❌ Fehler beim Laden der Routen:", routeError);
+    console.error('Route data for route statistics could not be loaded:', routeError);
     showDiagramError(diagramContainer, 'Route statistics could not be loaded.', () => loadRoutenDiagramm(sektorName));
     return;
   }
 
   if (!routes || routes.length === 0) {
-    console.warn("⚠️ Keine Routen gefunden für", sektorName);
+    console.info('No routes were found for route statistics:', sektorName);
     diagramContainer.textContent = "No route statistics are available for this sector.";
     return;
   }

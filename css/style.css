@@ -4054,6 +4054,23 @@ button.text-link.as-link:focus { outline: none; }
   background: var(--cerra-green-900);
 }
 
+.form-status {
+  min-height: 1.35em;
+  margin: 12px 0 0;
+  color: var(--cerra-ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.form-status.is-error {
+  color: #9b312d;
+}
+
+.form-status.is-success {
+  color: var(--cerra-green-700);
+  font-weight: 700;
+}
+
 .profile-page .profile-root {
   gap: 14px;
 }

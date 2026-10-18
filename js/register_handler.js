@@ -1,11 +1,9 @@
 import { supabase } from './supabase.js';
 
 export async function initRegisterForm() {
-  console.log("🛠️ initRegisterForm() gestartet");
-
   const form = document.querySelector(".register-form");
   if (!form) {
-    console.warn("⚠️ Kein Formular gefunden – Registrierung wird nicht initialisiert.");
+    console.warn('Registration form was not found.');
     return;
   }
 
@@ -17,6 +15,15 @@ export async function initRegisterForm() {
   const emailInput = newForm.querySelector("#email");
   const passwordInput = newForm.querySelector("#password");
   const confirmPasswordInput = newForm.querySelector("#confirm-password");
+  const submitButton = newForm.querySelector("#register-button");
+  const status = newForm.querySelector("[data-register-status]");
+
+  function setStatus(message = '', type = '') {
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle('is-error', type === 'error');
+    status.classList.toggle('is-success', type === 'success');
+  }
 
   newForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -24,63 +31,82 @@ export async function initRegisterForm() {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
+    setStatus();
 
     if (!username || !email || !password || !confirmPassword) {
-      alert("Bitte fülle alle Felder aus.");
+      setStatus('Please complete all fields.', 'error');
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Die Passwörter stimmen nicht überein.");
+      setStatus('The passwords do not match.', 'error');
       return;
     }
 
     if (username.length < 3 || username.length > 30 || !/^[\p{L}\p{N}_.-]+$/u.test(username)) {
-      alert("Der Username muss 3 bis 30 Zeichen lang sein und darf nur Buchstaben, Zahlen, Punkt, Bindestrich und Unterstrich enthalten.");
+      setStatus('Use 3–30 characters for the username. Letters, numbers, dots, hyphens and underscores are allowed.', 'error');
       return;
     }
 
-    const { data: usernameAvailable, error: nameCheckError } = await supabase
-      .rpc("is_username_available", { candidate: username });
+    if (submitButton) submitButton.disabled = true;
+    setStatus('Creating your account…');
+    let registrationComplete = false;
 
-    if (nameCheckError) {
-      console.error("Username availability check failed:", nameCheckError);
-      alert("Der Username kann derzeit nicht geprüft werden. Bitte versuche es später erneut.");
-      return;
-    }
+    try {
+      const { data: usernameAvailable, error: nameCheckError } = await supabase
+        .rpc("is_username_available", { candidate: username });
 
-    if (usernameAvailable !== true) {
-      alert("Dieser Username ist bereits vergeben.");
-      return;
-    }
+      if (nameCheckError) {
+        console.error("Username availability check failed:", nameCheckError);
+        setStatus('Username availability could not be checked. Please try again.', 'error');
+        return;
+      }
 
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+      if (usernameAvailable !== true) {
+        setStatus('This username is already in use.', 'error');
+        return;
+      }
 
-    if (signUpError) {
-      alert("❌ Registrierung fehlgeschlagen: " + signUpError.message);
-      return;
-    }
+      const { error: signUpError } = await supabase.auth.signUp({ email, password });
 
-    const { data: userData } = await supabase.auth.getUser();
-    const userId = userData?.user?.id;
+      if (signUpError) {
+        console.error('Registration failed:', signUpError);
+        setStatus('Registration could not be completed. Please check your details and try again.', 'error');
+        return;
+      }
 
-    if (!userId) {
-      alert("Etwas ist schiefgelaufen. Kein Nutzer-ID erhalten.");
-      return;
-    }
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
 
-    const { error: profileError } = await supabase.from("profiles").insert({
-      user_id: userId,
-      username: username,
-      email: email
-    });
+      if (!userId) {
+        setStatus('Registration could not be completed. Please try again.', 'error');
+        return;
+      }
 
-    if (profileError) {
-      console.error("❌ Fehler beim Speichern in 'profiles':", profileError);
-      alert("❌ Fehler beim Speichern des Profils. Details findest du in der Konsole.");
-    } else {
-      alert("✅ Registrierung erfolgreich! Du kannst dich jetzt einloggen.");
-      window.location.href = "index.html";
+      const { error: profileError } = await supabase.from("profiles").insert({
+        user_id: userId,
+        username: username,
+        email: email
+      });
+
+      if (profileError) {
+        console.error("Profile could not be created:", profileError);
+        setStatus('Your profile could not be created. Please try again.', 'error');
+        return;
+      }
+
+      registrationComplete = true;
+      setStatus('Account created. You can now log in.', 'success');
+      window.setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 900);
+    } catch (error) {
+      console.error('Registration request failed:', error);
+      setStatus('Registration is currently unavailable. Please try again later.', 'error');
+    } finally {
+      if (!registrationComplete && submitButton && document.body.contains(submitButton)) {
+        submitButton.disabled = false;
+      }
     }
   });
 }
