@@ -1,10 +1,11 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261018-route-search-1';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261018-route-search-1';
-import { isProjectGrade } from './route_rules.js?v=20261018-route-search-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261018-route-table-1';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261018-route-table-1';
+import { isProjectGrade } from './route_rules.js?v=20261018-route-table-1';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
 let currentPage = 1;
+let currentSort = { key: 'location', direction: 'asc' };
 
 function setActiveTab(name, { focus = false } = {}) {
   document.querySelectorAll('[data-routes-tab]').forEach(button => {
@@ -112,7 +113,6 @@ function filterAndSortRoutes() {
   const minimum = document.getElementById('route-list-grade-min')?.value || '';
   const maximum = document.getElementById('route-list-grade-max')?.value || '';
   const includeProjects = document.getElementById('route-list-projects')?.checked !== false;
-  const sort = document.getElementById('route-list-sort')?.value || 'location';
   const minimumValue = gradeValue(minimum);
   const maximumValue = gradeValue(maximum);
   const rangeActive = minimumValue != null || maximumValue != null;
@@ -134,12 +134,24 @@ function filterAndSortRoutes() {
   });
 
   routes.sort((left, right) => {
-    if (sort === 'grade-asc') return compareGrades(left.grad, right.grad) || String(left.name || '').localeCompare(String(right.name || ''));
-    if (sort === 'grade-desc') return compareGrades(right.grad, left.grad) || String(left.name || '').localeCompare(String(right.name || ''));
-    if (sort === 'name') return String(left.name || '').localeCompare(String(right.name || ''), undefined, { numeric: true });
-    return left.sectorLabel.localeCompare(right.sectorLabel, undefined, { numeric: true })
+    if (currentSort.key === 'grade') {
+      const leftIsProject = isProjectGrade(left.grad);
+      const rightIsProject = isProjectGrade(right.grad);
+      if (leftIsProject !== rightIsProject) return leftIsProject ? 1 : -1;
+      const leftGradeValue = gradeValue(left.grad);
+      const rightGradeValue = gradeValue(right.grad);
+      if ((leftGradeValue == null) !== (rightGradeValue == null)) return leftGradeValue == null ? 1 : -1;
+      const result = compareGrades(left.grad, right.grad) || String(left.name || '').localeCompare(String(right.name || ''));
+      return currentSort.direction === 'asc' ? result : -result;
+    }
+    if (currentSort.key === 'name') {
+      const result = String(left.name || '').localeCompare(String(right.name || ''), undefined, { numeric: true });
+      return currentSort.direction === 'asc' ? result : -result;
+    }
+    const result = left.sectorLabel.localeCompare(right.sectorLabel, undefined, { numeric: true })
       || String(left.block.nummer || '').localeCompare(String(right.block.nummer || ''), undefined, { numeric: true })
       || String(left.buchstabe || '').localeCompare(String(right.buchstabe || ''), undefined, { numeric: true });
+    return currentSort.direction === 'asc' ? result : -result;
   });
 
   return routes;
@@ -164,21 +176,60 @@ function renderRouteList() {
     return;
   }
 
-  container.innerHTML = pageRoutes.map(route => {
+  const nameSortDirection = currentSort.key === 'name' ? currentSort.direction : 'none';
+  const gradeSortDirection = currentSort.key === 'grade' ? currentSort.direction : 'none';
+  const sortIndicator = key => currentSort.key === key ? (currentSort.direction === 'asc' ? '↑' : '↓') : '';
+  const tableRows = pageRoutes.map(route => {
     const project = isProjectGrade(route.grad);
+    const blockTarget = route.block.target || `${route.page}#block-${String(route.block.nummer || '').replaceAll('/', '-')}`;
     return `
-      <a href="#" class="public-route-card" data-page="${escapeHtml(route.target)}">
-        <span class="public-route-letter">${escapeHtml(route.buchstabe || '–')}</span>
-        <span class="public-route-copy">
-          <strong>${escapeHtml(route.name || 'Unnamed route')}</strong>
-          <small>${escapeHtml(`${route.block.nummer || '–'} · ${route.block.name || 'Unnamed boulder'} · ${route.sectorLabel}`)}</small>
-          ${route.beschreibung ? `<span>${escapeHtml(route.beschreibung)}</span>` : ''}
-        </span>
-        <span class="public-route-grade${project ? ' is-project' : ''}">${escapeHtml(project ? 'Project' : String(route.grad).toUpperCase())}</span>
-        <span class="public-route-arrow" aria-hidden="true">›</span>
-      </a>
+      <tr class="public-route-main-row">
+        <td class="ticklist-route">
+          <a href="#" class="public-route-name" data-page="${escapeHtml(route.target)}">
+            <span class="public-route-letter">${escapeHtml(route.buchstabe || '–')}</span>
+            <span>${escapeHtml(route.name || 'Unnamed route')}</span>
+          </a>
+        </td>
+        <td class="public-route-grade${project ? ' is-project' : ''}">
+          <a href="#" data-page="${escapeHtml(route.target)}">${escapeHtml(project ? 'Project' : String(route.grad).toUpperCase())}</a>
+        </td>
+      </tr>
+      <tr class="ticklist-meta public-route-meta-row">
+        <td colspan="2">
+          <a href="#" data-page="${escapeHtml(blockTarget)}">${escapeHtml(`${route.block.nummer || '–'} · ${route.block.name || 'Unnamed boulder'}`)}</a>
+          <span aria-hidden="true"> | </span>
+          <a href="#" data-page="${escapeHtml(route.page)}" data-scrolltop="1">${escapeHtml(route.sectorLabel)}</a>
+        </td>
+      </tr>
     `;
   }).join('');
+
+  container.innerHTML = `
+    <table class="ticklist public-route-table">
+      <thead>
+        <tr>
+          <th class="ticklist-route" aria-sort="${nameSortDirection === 'none' ? 'none' : (nameSortDirection === 'asc' ? 'ascending' : 'descending')}">
+            <button type="button" data-public-route-sort="name">Route <span aria-hidden="true">${sortIndicator('name')}</span></button>
+          </th>
+          <th aria-sort="${gradeSortDirection === 'none' ? 'none' : (gradeSortDirection === 'asc' ? 'ascending' : 'descending')}">
+            <button type="button" data-public-route-sort="grade">Fb <span aria-hidden="true">${sortIndicator('grade')}</span></button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+  `;
+
+  container.querySelectorAll('[data-public-route-sort]').forEach(button => {
+    button.addEventListener('click', () => {
+      const key = button.dataset.publicRouteSort;
+      currentSort = currentSort.key === key
+        ? { key, direction: currentSort.direction === 'asc' ? 'desc' : 'asc' }
+        : { key, direction: 'asc' };
+      currentPage = 1;
+      renderRouteList();
+    });
+  });
 
   if (pageCount <= 1) {
     pagination.innerHTML = '';
@@ -216,7 +267,6 @@ function bindFilters() {
     document.getElementById('route-list-sector'),
     document.getElementById('route-list-grade-min'),
     document.getElementById('route-list-grade-max'),
-    document.getElementById('route-list-sort'),
     document.getElementById('route-list-projects')
   ].filter(Boolean);
 
@@ -238,8 +288,8 @@ function bindFilters() {
     document.getElementById('route-list-sector').value = 'all';
     document.getElementById('route-list-grade-min').value = '';
     document.getElementById('route-list-grade-max').value = '';
-    document.getElementById('route-list-sort').value = 'location';
     document.getElementById('route-list-projects').checked = true;
+    currentSort = { key: 'location', direction: 'asc' };
     currentPage = 1;
     renderRouteList();
   });

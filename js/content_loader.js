@@ -1,6 +1,6 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261018-route-search-1";
+const ASSET_VERSION = "20261018-route-table-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
