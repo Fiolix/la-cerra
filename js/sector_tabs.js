@@ -60,7 +60,7 @@ export function setupSectorTabs(anchor = '') {
 
   const anchorTarget = anchor ? document.getElementById(anchor) : null;
   const anchorPanel = anchorTarget?.closest('[data-sector-panel]')?.dataset.sectorPanel;
-  activateSectorTab(anchorPanel || (anchor.startsWith('block-') ? 'boulders' : 'overview'));
+  activateSectorTab(anchorPanel || (/^(block|route)-/.test(anchor) ? 'boulders' : 'overview'));
 
   if (!projectListenerBound) {
     document.addEventListener('showSectorProjects', () => activateSectorTab('boulders'));

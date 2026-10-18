@@ -1,10 +1,11 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261018-guestbook-layout-1";
+const ASSET_VERSION = "20261018-route-search-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
   news: "news.html",
+  routes: "routes.html",
   bouldering: "sardinia.html",
   "bouldering.html": "sardinia.html",
   la_cerra: "la_cerra.html",
@@ -224,6 +225,12 @@ async function loadPage(page) {
       await module.initGuestbook();
     }
 
+    if (basePage === "routes.html") {
+      const module = await import(`/la-cerra/js/routes_directory.js?v=${ASSET_VERSION}`);
+      if (loadId !== activeLoadId) return;
+      await module.initRoutesDirectory();
+    }
+
     if (!sectorUnavailable && html.includes('id="boulder-blocks"')) {
       const module = await import(`/la-cerra/js/boulder_loader.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
@@ -231,7 +238,8 @@ async function loadPage(page) {
       if (loadId !== activeLoadId) return;
 
       if (anchor) {
-        module.setBlockOpen(anchor, true);
+        if (anchor.startsWith('route-')) module.openAndScrollToRoute(anchor);
+        else module.setBlockOpen(anchor, true);
       }
 
       if (anchor) {
@@ -402,12 +410,18 @@ document.addEventListener("loadPage", event => {
 });
 
 document.addEventListener("navigateToPage", event => {
-  const page = event.detail;
+  const detail = typeof event.detail === 'string' ? { page: event.detail } : (event.detail || {});
+  const page = detail.page;
   if (!page) return;
   const { basePage, anchor } = normalizePage(page);
   const historyPage = `${basePage}${anchor ? `#${anchor}` : ""}`;
   sessionStorage.setItem("forceTop", "1");
-  history.pushState({ page: historyPage }, "", `?p=${encodeURIComponent(historyPage)}`);
+  const params = new URLSearchParams();
+  params.set('p', historyPage);
+  Object.entries(detail.params || {}).forEach(([key, value]) => {
+    if (value != null && String(value) !== '') params.set(key, String(value));
+  });
+  history.pushState({ page: historyPage }, "", `?${params.toString()}`);
   loadPage(historyPage);
 });
 

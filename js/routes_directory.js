@@ -1,0 +1,290 @@
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261018-route-search-1';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261018-route-search-1';
+import { isProjectGrade } from './route_rules.js?v=20261018-route-search-1';
+
+const ITEMS_PER_PAGE = 25;
+let catalog = null;
+let currentPage = 1;
+
+function setActiveTab(name, { focus = false } = {}) {
+  document.querySelectorAll('[data-routes-tab]').forEach(button => {
+    const active = button.dataset.routesTab === name;
+    button.setAttribute('aria-selected', String(active));
+    button.tabIndex = active ? 0 : -1;
+    if (active && focus) button.focus();
+  });
+  document.querySelectorAll('[data-routes-panel]').forEach(panel => {
+    panel.hidden = panel.dataset.routesPanel !== name;
+  });
+
+  const url = new URL(window.location.href);
+  if (name === 'search') url.searchParams.set('view', 'search');
+  else if (url.searchParams.has('q')) url.searchParams.set('view', 'all');
+  else url.searchParams.delete('view');
+  window.history.replaceState(window.history.state, '', url);
+}
+
+function updateSearchUrl(query) {
+  const url = new URL(window.location.href);
+  if (query) url.searchParams.set('q', query);
+  else url.searchParams.delete('q');
+  url.searchParams.set('view', 'search');
+  window.history.replaceState(window.history.state, '', url);
+}
+
+function resultLink(target, type, title, meta = '') {
+  return `
+    <a href="#" class="route-search-result" data-page="${escapeHtml(target)}">
+      <span class="route-search-result-type">${escapeHtml(type)}</span>
+      <span class="route-search-result-copy">
+        <strong>${escapeHtml(title)}</strong>
+        ${meta ? `<small>${escapeHtml(meta)}</small>` : ''}
+      </span>
+      <span class="route-search-result-arrow" aria-hidden="true">›</span>
+    </a>
+  `;
+}
+
+function renderSearchGroup(title, items, itemRenderer) {
+  if (!items.length) return '';
+  return `
+    <section class="route-search-group">
+      <h2>${escapeHtml(title)} <span>${items.length}</span></h2>
+      <div class="route-search-group-list">${items.map(itemRenderer).join('')}</div>
+    </section>
+  `;
+}
+
+function renderSearchResults(query) {
+  const summary = document.querySelector('[data-routes-search-summary]');
+  const container = document.querySelector('[data-routes-search-results]');
+  if (!summary || !container) return;
+
+  const normalized = normalizeSearchText(query);
+  if (normalized.length < 2) {
+    summary.textContent = '';
+    container.innerHTML = '<p class="route-directory-empty">Enter at least two characters to search sectors, boulders and routes.</p>';
+    return;
+  }
+
+  const results = searchCatalog(catalog, query);
+  const count = catalogResultCount(results);
+  summary.textContent = `${count} ${count === 1 ? 'result' : 'results'} for “${query}”`;
+  if (!count) {
+    container.innerHTML = '<p class="route-directory-empty">No matching sectors, boulders or routes were found.</p>';
+    return;
+  }
+
+  container.innerHTML = [
+    renderSearchGroup('Sectors', results.sectors, sector => resultLink(sector.target, 'Sector', sector.label)),
+    renderSearchGroup('Boulders', results.blocks, block => resultLink(
+      block.target,
+      'Boulder',
+      `${block.nummer || '–'} · ${block.name || 'Unnamed boulder'}`,
+      block.sectorLabel
+    )),
+    renderSearchGroup('Routes', results.routes, route => resultLink(
+      route.target,
+      'Route',
+      route.name || 'Unnamed route',
+      `${isProjectGrade(route.grad) ? 'Project' : (route.grad || '?')} · ${route.block.name || `Boulder ${route.block.nummer}`} · ${route.sectorLabel}`
+    ))
+  ].join('');
+}
+
+function populateFilters() {
+  const sectorSelect = document.getElementById('route-list-sector');
+  const minimum = document.getElementById('route-list-grade-min');
+  const maximum = document.getElementById('route-list-grade-max');
+  if (!sectorSelect || !minimum || !maximum) return;
+
+  catalog.sectors.forEach(sector => sectorSelect.append(new Option(sector.label, sector.slug)));
+  getSortedGrades(catalog.routes).forEach(grade => {
+    minimum.append(new Option(grade.toUpperCase(), grade));
+    maximum.append(new Option(grade.toUpperCase(), grade));
+  });
+}
+
+function filterAndSortRoutes() {
+  const keyword = normalizeSearchText(document.getElementById('route-list-keyword')?.value);
+  const tokens = keyword.split(/\s+/).filter(Boolean);
+  const sector = document.getElementById('route-list-sector')?.value || 'all';
+  const minimum = document.getElementById('route-list-grade-min')?.value || '';
+  const maximum = document.getElementById('route-list-grade-max')?.value || '';
+  const includeProjects = document.getElementById('route-list-projects')?.checked !== false;
+  const sort = document.getElementById('route-list-sort')?.value || 'location';
+  const minimumValue = gradeValue(minimum);
+  const maximumValue = gradeValue(maximum);
+  const rangeActive = minimumValue != null || maximumValue != null;
+
+  const routes = catalog.routes.filter(route => {
+    const project = isProjectGrade(route.grad);
+    if (sector !== 'all' && route.sectorSlug !== sector) return false;
+    if (project && (!includeProjects || rangeActive)) return false;
+    if (!project) {
+      const value = gradeValue(route.grad);
+      if (minimumValue != null && (value == null || value < minimumValue)) return false;
+      if (maximumValue != null && (value == null || value > maximumValue)) return false;
+    }
+    if (tokens.length) {
+      const haystack = normalizeSearchText(`${route.name} ${route.buchstabe} ${route.grad} ${route.beschreibung} ${route.block.name} ${route.block.nummer} ${route.sectorLabel}`);
+      if (!tokens.every(token => haystack.includes(token))) return false;
+    }
+    return true;
+  });
+
+  routes.sort((left, right) => {
+    if (sort === 'grade-asc') return compareGrades(left.grad, right.grad) || String(left.name || '').localeCompare(String(right.name || ''));
+    if (sort === 'grade-desc') return compareGrades(right.grad, left.grad) || String(left.name || '').localeCompare(String(right.name || ''));
+    if (sort === 'name') return String(left.name || '').localeCompare(String(right.name || ''), undefined, { numeric: true });
+    return left.sectorLabel.localeCompare(right.sectorLabel, undefined, { numeric: true })
+      || String(left.block.nummer || '').localeCompare(String(right.block.nummer || ''), undefined, { numeric: true })
+      || String(left.buchstabe || '').localeCompare(String(right.buchstabe || ''), undefined, { numeric: true });
+  });
+
+  return routes;
+}
+
+function renderRouteList() {
+  const container = document.querySelector('[data-public-route-list]');
+  const count = document.querySelector('[data-route-list-count]');
+  const pagination = document.querySelector('[data-route-list-pagination]');
+  if (!container || !count || !pagination) return;
+
+  const routes = filterAndSortRoutes();
+  const pageCount = Math.max(1, Math.ceil(routes.length / ITEMS_PER_PAGE));
+  currentPage = Math.min(currentPage, pageCount);
+  const pageRoutes = routes.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  count.textContent = `${routes.length} ${routes.length === 1 ? 'route' : 'routes'}`;
+  container.removeAttribute('aria-busy');
+
+  if (!routes.length) {
+    container.innerHTML = '<p class="route-directory-empty">No routes match the selected filters.</p>';
+    pagination.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = pageRoutes.map(route => {
+    const project = isProjectGrade(route.grad);
+    return `
+      <a href="#" class="public-route-card" data-page="${escapeHtml(route.target)}">
+        <span class="public-route-letter">${escapeHtml(route.buchstabe || '–')}</span>
+        <span class="public-route-copy">
+          <strong>${escapeHtml(route.name || 'Unnamed route')}</strong>
+          <small>${escapeHtml(`${route.block.nummer || '–'} · ${route.block.name || 'Unnamed boulder'} · ${route.sectorLabel}`)}</small>
+          ${route.beschreibung ? `<span>${escapeHtml(route.beschreibung)}</span>` : ''}
+        </span>
+        <span class="public-route-grade${project ? ' is-project' : ''}">${escapeHtml(project ? 'Project' : String(route.grad).toUpperCase())}</span>
+        <span class="public-route-arrow" aria-hidden="true">›</span>
+      </a>
+    `;
+  }).join('');
+
+  if (pageCount <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+
+  const pageButtons = [];
+  const pages = new Set([1, pageCount, currentPage - 1, currentPage, currentPage + 1]);
+  let previous = 0;
+  Array.from(pages).filter(page => page >= 1 && page <= pageCount).sort((a, b) => a - b).forEach(page => {
+    if (previous && page - previous > 1) pageButtons.push('<span class="pagination-ellipsis" aria-hidden="true">…</span>');
+    pageButtons.push(`<button type="button" data-route-page="${page}" ${page === currentPage ? 'aria-current="page"' : ''}>${page}</button>`);
+    previous = page;
+  });
+
+  pagination.innerHTML = `
+    <nav class="pagination" aria-label="Route list pages">
+      <button type="button" data-route-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''} aria-label="Previous page">‹</button>
+      ${pageButtons.join('')}
+      <button type="button" data-route-page="${currentPage + 1}" ${currentPage === pageCount ? 'disabled' : ''} aria-label="Next page">›</button>
+    </nav>
+  `;
+  pagination.querySelectorAll('[data-route-page]').forEach(button => {
+    button.addEventListener('click', () => {
+      currentPage = Number(button.dataset.routePage) || 1;
+      renderRouteList();
+      document.querySelector('.route-directory-status')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+
+function bindFilters() {
+  const controls = [
+    document.getElementById('route-list-keyword'),
+    document.getElementById('route-list-sector'),
+    document.getElementById('route-list-grade-min'),
+    document.getElementById('route-list-grade-max'),
+    document.getElementById('route-list-sort'),
+    document.getElementById('route-list-projects')
+  ].filter(Boolean);
+
+  controls.forEach(control => {
+    control.addEventListener(control.matches('input[type="search"]') ? 'input' : 'change', () => {
+      currentPage = 1;
+      const minimum = gradeValue(document.getElementById('route-list-grade-min')?.value);
+      const maximum = gradeValue(document.getElementById('route-list-grade-max')?.value);
+      if (minimum != null && maximum != null && minimum > maximum) {
+        if (control.id === 'route-list-grade-min') document.getElementById('route-list-grade-max').value = control.value;
+        else document.getElementById('route-list-grade-min').value = control.value;
+      }
+      renderRouteList();
+    });
+  });
+
+  document.querySelector('[data-route-filter-reset]')?.addEventListener('click', () => {
+    document.getElementById('route-list-keyword').value = '';
+    document.getElementById('route-list-sector').value = 'all';
+    document.getElementById('route-list-grade-min').value = '';
+    document.getElementById('route-list-grade-max').value = '';
+    document.getElementById('route-list-sort').value = 'location';
+    document.getElementById('route-list-projects').checked = true;
+    currentPage = 1;
+    renderRouteList();
+  });
+}
+
+export async function initRoutesDirectory() {
+  const root = document.querySelector('[data-routes-directory]');
+  if (!root) return;
+
+  const url = new URL(window.location.href);
+  const initialQuery = url.searchParams.get('q')?.trim() || '';
+  const searchInput = document.getElementById('routes-search-input');
+  if (searchInput) searchInput.value = initialQuery;
+
+  root.querySelectorAll('[data-routes-tab]').forEach(button => {
+    button.addEventListener('click', () => setActiveTab(button.dataset.routesTab));
+    button.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      const next = button.dataset.routesTab === 'search' ? 'all' : 'search';
+      setActiveTab(next, { focus: true });
+    });
+  });
+
+  const requestedView = url.searchParams.get('view');
+  setActiveTab(requestedView === 'search' || (initialQuery && requestedView !== 'all') ? 'search' : 'all');
+
+  try {
+    catalog = await loadRouteCatalog();
+    populateFilters();
+    bindFilters();
+    renderRouteList();
+    if (initialQuery) renderSearchResults(initialQuery);
+    else renderSearchResults('');
+  } catch (error) {
+    console.error('Route directory could not be loaded:', error);
+    document.querySelector('[data-public-route-list]').innerHTML = '<section class="data-load-message" role="alert"><p>The route directory could not be loaded. Please try again later.</p></section>';
+    document.querySelector('[data-routes-search-results]').innerHTML = '<section class="data-load-message" role="alert"><p>Search is currently unavailable.</p></section>';
+  }
+
+  root.querySelector('[data-routes-search-form]')?.addEventListener('submit', event => {
+    event.preventDefault();
+    const query = searchInput?.value.trim() || '';
+    updateSearchUrl(query);
+    setActiveTab('search');
+    renderSearchResults(query);
+  });
+}

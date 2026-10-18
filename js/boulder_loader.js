@@ -99,6 +99,7 @@ function getDisplayedRoutes(block, blocks, routes, sektor) {
     if (sourceRoute) {
       displayedRoutes.push({
         ...sourceRoute,
+        _displayAlias: true,
         buchstabe: alias.displayedLetter,
         beschreibung: alias.description
       });
@@ -211,6 +212,19 @@ function openAndScrollToBlock(blockId) {
   window.requestAnimationFrame(() => {
     block.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
+  return true;
+}
+
+export function openAndScrollToRoute(routeId) {
+  const route = document.getElementById(routeId);
+  const block = route?.closest('.boulder-block');
+  if (!route || !block || !setBlockOpen(block.id, true)) return false;
+
+  route.classList.add('route-search-target');
+  window.requestAnimationFrame(() => {
+    route.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  window.setTimeout(() => route.classList.remove('route-search-target'), 3200);
   return true;
 }
 
@@ -402,7 +416,7 @@ const ratingDisplay = ratingCount > 0
   const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg]} <span style='color:#333; font-size: 0.8em;'>(${gradeCount})</span>` : '';
 
   return `
-    <div class=\"route${isTicked ? ' route-completed' : ''}${isPersonalProject ? ' route-personal-project' : ''}\" data-route-id=\"${route.uuid}\">
+    <div${route._displayAlias ? '' : ` id=\"route-${route.uuid}\"`} class=\"route${isTicked ? ' route-completed' : ''}${isPersonalProject ? ' route-personal-project' : ''}\" data-route-id=\"${route.uuid}\">
       <div class=\"route-title\">
         <span class=\"route-label\">${route.buchstabe}</span>
         <span class=\"route-name\">${route.name ?? ''}</span>
