@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261018-copy-consistency-1";
+const ASSET_VERSION = "20261018-performance-quality-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -137,6 +137,7 @@ async function loadPage(page) {
     });
     contentElement.replaceChildren(template.content.cloneNode(true));
     document.body.dataset.currentPage = basePage.replace('.html', '');
+    updateDocumentTitle(contentElement, basePage);
 
     let handledScroll = false;
     let sectorUnavailable = false;
@@ -297,6 +298,7 @@ async function loadPage(page) {
     const factsModule = await import(`/la-cerra/js/facts_loader.js?v=${ASSET_VERSION}`);
     if (loadId !== activeLoadId) return;
     await factsModule.showNextFact();
+    updateDocumentTitle(contentElement, basePage);
 
     if (anchor && !handledScroll) {
       scrollToAnchor(anchor);
@@ -314,6 +316,13 @@ async function loadPage(page) {
       contentElement.removeAttribute("aria-busy");
     }
   }
+}
+
+function updateDocumentTitle(container, basePage) {
+  const pageHeading = container.querySelector('h1')?.textContent.trim();
+  document.title = basePage === 'start.html' || !pageHeading
+    ? 'Bouldering La Cerra'
+    : `${pageHeading} | Bouldering La Cerra`;
 }
 
 function waitForImage(image) {

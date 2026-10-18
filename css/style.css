@@ -171,7 +171,7 @@ body:not([data-current-page="start"]) .hero-copy {
   letter-spacing: 0.13em;
 }
 
-.hero-copy h1 {
+.hero-copy .hero-title {
   margin: 2px 0 5px;
   color: #fff;
   font-size: clamp(2.15rem, 10vw, 3.6rem);
@@ -222,7 +222,7 @@ main h2 {
   box-shadow: var(--cerra-shadow);
 }
 
-.start-intro h2 {
+.start-intro h1 {
   margin: 0 0 8px;
   font-size: clamp(2rem, 9vw, 3rem);
   line-height: 1;
@@ -2809,7 +2809,7 @@ img[loading="lazy"] {
     left: max(32px, calc((100% - 1120px) / 2));
   }
 
-  .hero-copy h1 {
+  .hero-copy .hero-title {
     font-size: 4rem;
   }
 

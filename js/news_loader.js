@@ -1,4 +1,4 @@
-const NEWS_URL = '/la-cerra/data/news.json?v=20261018-copy-consistency-1';
+const NEWS_URL = '/la-cerra/data/news.json?v=20261018-performance-quality-1';
 
 let newsPromise = null;
 
@@ -39,9 +39,10 @@ function createImage(item) {
   wrapper.className = 'news-image';
 
   const image = document.createElement('img');
-  image.src = item.image;
+  image.src = item.thumbnail || item.image;
   image.alt = item.imageAlt || '';
   image.loading = 'lazy';
+  image.decoding = 'async';
   image.addEventListener('error', () => wrapper.remove(), { once: true });
   wrapper.appendChild(image);
   return wrapper;
