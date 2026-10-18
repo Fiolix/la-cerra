@@ -2,11 +2,11 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20260909-admin-routes-1';
-import { summarizeTicks } from './profile_stats.js?v=20260905-stability-1';
-import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261006-projects-1';
-import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
-import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
+import { initTicklistTable } from './ticklist_table.js?v=20261018-stability-1';
+import { summarizeTicks } from './profile_stats.js?v=20261018-stability-1';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261018-stability-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261018-stability-1';
+import { isProjectGrade } from './route_rules.js?v=20261018-stability-1';
 
 let authListenerBound = false;
 

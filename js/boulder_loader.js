@@ -1,10 +1,10 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20260905-stability-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261018-stability-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
-import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261006-projects-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261018-stability-1';
+import { isProjectGrade } from './route_rules.js?v=20261018-stability-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261018-stability-1';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;

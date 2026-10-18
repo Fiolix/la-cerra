@@ -194,17 +194,6 @@
   text-underline-offset: 3px;
 }
 
-.slide-menu .language-switcher {
-  padding: 10px 20px;
-}
-
-.slide-menu .language-switcher img {
-  width: 26px;
-  height: 26px;
-  margin: 0;
-  border-radius: 50%;
-}
-
 .menu-utility-links {
   display: flex;
   justify-content: center;
@@ -430,29 +419,6 @@
 
 .signed-in-label {
   margin-bottom: 0.5rem;
-}
-
-/* Sprachumschalter */
-.language-switcher {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-}
-
-.language-switcher img {
-  width: 32px;
-  height: 32px;
-  object-fit: cover;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: border 0.2s, box-shadow 0.2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.language-switcher img:hover {
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
 /* Prototype cascade overrides kept after the legacy menu rules. */

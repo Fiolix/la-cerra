@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20260913-bermuda-1';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261008-mobile-prototype-4';
+import { isProjectGrade } from './route_rules.js?v=20261018-stability-1';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261018-stability-1';
 
 let areaStatsPromise = null;
 

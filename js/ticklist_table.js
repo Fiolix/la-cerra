@@ -3,7 +3,7 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20260909-admin-routes-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261018-stability-1';
 
 // Schöne Anzeigenamen für Sektoren (Slug -> Label)
 const SEKTOR_LABELS = {

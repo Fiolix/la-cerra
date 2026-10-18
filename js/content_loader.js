@@ -1,6 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
-const ASSET_VERSION = "20261018-route-table-1";
+// Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
+const ASSET_VERSION = "20261018-stability-1";
 
 const PAGE_ALIASES = {
   start: "start.html",

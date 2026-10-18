@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261017-performance-desktop-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261018-stability-1';
 
 function menuItemIcon(name) {
   const paths = {
@@ -47,11 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
       <p class="account-loading" role="status">Checking login…</p>
     </div>
 
-    <div class="language-switcher">
-      <img src="img/flag_en.png" alt="EN" title="English" onclick="setLanguage('en')" />
-      <img src="img/flag_it.png" alt="IT" title="Italiano" onclick="setLanguage('it')" />
-      <img src="img/flag_de.png" alt="DE" title="Deutsch" onclick="setLanguage('de')" />
-    </div>
     <div class="menu-utility-links">
       <a href="#" data-page="contact">Contact</a>
       <a href="#" data-page="imprint">Imprint</a>
@@ -134,11 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-function setLanguage(lang) {
-  alert('Sprache wechseln zu: ' + lang);
-}
-
-import { initAuth } from './auth_handler.js?v=20261017-performance-desktop-1';
+import { initAuth } from './auth_handler.js?v=20261018-stability-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
