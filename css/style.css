@@ -4559,6 +4559,7 @@ button.text-link.as-link:focus { outline: none; }
 .profile-page .profile-stats {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  margin-top: 14px;
 }
 
 .profile-page .stat-card {
@@ -4566,11 +4567,6 @@ button.text-link.as-link:focus { outline: none; }
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.profile-page .stat-card-primary {
-  border-color: rgba(31, 75, 61, 0.28);
-  background: rgba(31, 75, 61, 0.07);
 }
 
 .profile-page .profile-list-tabs {

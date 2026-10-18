@@ -1,10 +1,10 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261018-menu-refinement-2';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261018-scroll-restoration-2';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261018-menu-refinement-2';
-import { isProjectGrade } from './route_rules.js?v=20261018-menu-refinement-2';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261018-menu-refinement-2';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261018-scroll-restoration-2';
+import { isProjectGrade } from './route_rules.js?v=20261018-scroll-restoration-2';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261018-scroll-restoration-2';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -534,8 +534,13 @@ const ratingDisplay = ratingCount > 0
           return;
         }
 
-        sessionStorage.setItem('scrollY', window.scrollY);
-        document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+        document.dispatchEvent(new CustomEvent('reloadCurrentPage', {
+          detail: {
+            scrollY: window.scrollY,
+            openBlockId: blockDiv.id,
+            sectorTab: 'boulders'
+          }
+        }));
       });
     });
 
@@ -621,8 +626,13 @@ const ratingDisplay = ratingCount > 0
         mode: 'add',
         entry: routesForPopup,
         onSuccess: () => {
-          sessionStorage.setItem('scrollY', window.scrollY);
-          document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
+          document.dispatchEvent(new CustomEvent('reloadCurrentPage', {
+            detail: {
+              scrollY: window.scrollY,
+              openBlockId: blockDiv.id,
+              sectorTab: 'boulders'
+            }
+          }));
         }
       });
       tickButton.disabled = false;

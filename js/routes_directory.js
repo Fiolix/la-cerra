@@ -1,6 +1,6 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261018-menu-refinement-2';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261018-menu-refinement-2';
-import { isProjectGrade } from './route_rules.js?v=20261018-menu-refinement-2';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261018-scroll-restoration-2';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261018-scroll-restoration-2';
+import { isProjectGrade } from './route_rules.js?v=20261018-scroll-restoration-2';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;

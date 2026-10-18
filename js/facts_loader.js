@@ -1,4 +1,4 @@
-const FACTS_URL = '/la-cerra/data/facts.json?v=20261018-menu-refinement-2';
+const FACTS_URL = '/la-cerra/data/facts.json?v=20261018-scroll-restoration-2';
 const FACT_ORDER_KEY = 'did_you_know_order_v1';
 const LAST_FACT_KEY = 'did_you_know_last_v1';
 

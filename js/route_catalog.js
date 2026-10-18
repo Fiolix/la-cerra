@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261018-menu-refinement-2';
-import { compareGrades } from './grade_utils.js?v=20261018-menu-refinement-2';
+import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261018-scroll-restoration-2';
+import { compareGrades } from './grade_utils.js?v=20261018-scroll-restoration-2';
 
 let catalogPromise = null;
 

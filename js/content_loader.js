@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261018-menu-refinement-2";
+const ASSET_VERSION = "20261018-scroll-restoration-2";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -56,9 +56,23 @@ const PAGE_ALIASES = {
 let activeLoadId = 0;
 let activeController = null;
 let deferredMapListener = null;
+let scrollTrackingFrame = 0;
+let ignoreScrollTracking = false;
+let scrollLoadId = 0;
 
-window.addEventListener("beforeunload", () => {
-  sessionStorage.setItem("scrollY", window.scrollY);
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+window.addEventListener('scroll', () => {
+  if (ignoreScrollTracking || scrollTrackingFrame) return;
+  scrollTrackingFrame = window.requestAnimationFrame(() => {
+    scrollTrackingFrame = 0;
+    rememberCurrentScroll();
+  });
+}, { passive: true });
+
+window.addEventListener('pagehide', () => rememberCurrentScroll(true));
+document.addEventListener('sectorTabChanged', () => {
+  if (!ignoreScrollTracking) rememberCurrentScroll();
 });
 
 function normalizePage(page) {
@@ -90,7 +104,7 @@ function pageFromLocation() {
   return page;
 }
 
-async function loadPage(page) {
+async function loadPage(page, options = {}) {
   const contentElement = document.getElementById("content");
   if (!contentElement) {
     console.error('The #content element was not found.');
@@ -155,7 +169,7 @@ async function loadPage(page) {
     if (html.includes('data-sector-tabs')) {
       const tabsModule = await import(`/la-cerra/js/sector_tabs.js?v=${ASSET_VERSION}`);
       if (loadId !== activeLoadId) return;
-      tabsModule.setupSectorTabs(anchor);
+      tabsModule.setupSectorTabs(anchor, options.sectorTab || '');
     }
 
     if (html.includes('data-interactive-map')) {
@@ -242,6 +256,11 @@ async function loadPage(page) {
       if (anchor) {
         if (anchor.startsWith('route-')) module.openAndScrollToRoute(anchor);
         else module.setBlockOpen(anchor, true);
+      } else if (options.openBlockId) {
+        module.setBlockOpen(options.openBlockId, true);
+        const blockImage = document.getElementById(options.openBlockId)?.querySelector('img');
+        await waitForImage(blockImage);
+        if (loadId !== activeLoadId) return;
       }
 
       if (anchor) {
@@ -249,10 +268,6 @@ async function loadPage(page) {
         await waitForImage(anchorImage);
         if (loadId !== activeLoadId) return;
         scrollToAnchor(anchor);
-        handledScroll = true;
-      } else if (sessionStorage.getItem("forceTop") === "1") {
-        window.scrollTo(0, 0);
-        sessionStorage.removeItem("forceTop");
         handledScroll = true;
       }
     }
@@ -305,7 +320,7 @@ async function loadPage(page) {
       handledScroll = true;
     }
 
-    if (!handledScroll) restoreScrollPosition();
+    if (!handledScroll) await applyRequestedScroll(options);
     document.activeElement?.blur();
   } catch (error) {
     if (error?.name === "AbortError" || loadId !== activeLoadId) return;
@@ -355,12 +370,46 @@ function scrollToAnchor(anchor) {
   tryScroll();
 }
 
-function restoreScrollPosition() {
-  const scrollY = sessionStorage.getItem("scrollY");
-  if (scrollY !== null) {
-    window.scrollTo(0, Number(scrollY));
-    sessionStorage.removeItem("scrollY");
-  }
+function historyPageFromLocation() {
+  const { basePage, anchor } = normalizePage(pageFromLocation());
+  return `${basePage}${anchor ? `#${anchor}` : ''}`;
+}
+
+function scrollStorageKey(page = historyPageFromLocation()) {
+  return `scroll-position:${page}`;
+}
+
+function rememberCurrentScroll(persist = false) {
+  const page = historyPageFromLocation();
+  const scrollY = Math.max(0, Math.round(window.scrollY));
+  const sectorTab = document.querySelector('[data-sector-tabs]')?.dataset.activeSectorTab || '';
+  history.replaceState({ ...(history.state || {}), page, scrollY, sectorTab }, '', window.location.href);
+  if (persist) sessionStorage.setItem(scrollStorageKey(page), String(scrollY));
+}
+
+function loadWithScroll(page, options = {}) {
+  const currentScrollLoadId = ++scrollLoadId;
+  ignoreScrollTracking = true;
+  return loadPage(page, options).finally(() => {
+    window.requestAnimationFrame(() => {
+      if (currentScrollLoadId !== scrollLoadId) return;
+      ignoreScrollTracking = false;
+      rememberCurrentScroll();
+    });
+  });
+}
+
+function applyRequestedScroll(options) {
+  const requestedY = options.scrollMode === 'position' ? Number(options.scrollY) : 0;
+  const scrollY = Number.isFinite(requestedY) ? Math.max(0, requestedY) : 0;
+  return new Promise(resolve => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollY, left: 0, behavior: 'auto' });
+        resolve();
+      });
+    });
+  });
 }
 
 function showLoadError(container, page) {
@@ -389,7 +438,10 @@ function showSectorUnavailable(container, sectorName) {
 document.body.addEventListener("click", event => {
   const retryButton = event.target.closest("[data-retry-page]");
   if (retryButton) {
-    loadPage(decodeURIComponent(retryButton.dataset.retryPage));
+    loadWithScroll(decodeURIComponent(retryButton.dataset.retryPage), {
+      scrollMode: 'position',
+      scrollY: window.scrollY
+    });
     return;
   }
 
@@ -400,23 +452,29 @@ document.body.addEventListener("click", event => {
   const page = link.getAttribute("data-page");
   if (!page) return;
 
-  if (link.hasAttribute("data-scrolltop")) {
-    sessionStorage.setItem("forceTop", "1");
-  }
-
   const { basePage, anchor } = normalizePage(page);
   const historyPage = `${basePage}${anchor ? `#${anchor}` : ""}`;
-  history.pushState({ page: historyPage }, "", `?p=${encodeURIComponent(historyPage)}`);
-  loadPage(historyPage);
+  rememberCurrentScroll();
+  history.pushState({ page: historyPage, scrollY: 0 }, "", `?p=${encodeURIComponent(historyPage)}`);
+  loadWithScroll(historyPage, { scrollMode: 'top' });
 });
 
-document.addEventListener("reloadCurrentPage", () => {
-  loadPage(pageFromLocation());
+document.addEventListener("reloadCurrentPage", event => {
+  const detail = event.detail || {};
+  loadWithScroll(pageFromLocation(), {
+    scrollMode: 'position',
+    scrollY: Number.isFinite(detail.scrollY) ? detail.scrollY : window.scrollY,
+    openBlockId: detail.openBlockId || '',
+    sectorTab: detail.sectorTab
+      || document.querySelector('[data-sector-tabs]')?.dataset.activeSectorTab
+      || ''
+  });
 });
 
 document.addEventListener("loadPage", event => {
-  sessionStorage.setItem("scrollY", window.scrollY);
-  loadPage(event.detail);
+  const page = typeof event.detail === 'string' ? event.detail : event.detail?.page;
+  if (!page) return;
+  loadWithScroll(page, { scrollMode: 'position', scrollY: window.scrollY });
 });
 
 document.addEventListener("navigateToPage", event => {
@@ -425,20 +483,42 @@ document.addEventListener("navigateToPage", event => {
   if (!page) return;
   const { basePage, anchor } = normalizePage(page);
   const historyPage = `${basePage}${anchor ? `#${anchor}` : ""}`;
-  sessionStorage.setItem("forceTop", "1");
+  rememberCurrentScroll();
   const params = new URLSearchParams();
   params.set('p', historyPage);
   Object.entries(detail.params || {}).forEach(([key, value]) => {
     if (value != null && String(value) !== '') params.set(key, String(value));
   });
-  history.pushState({ page: historyPage }, "", `?${params.toString()}`);
-  loadPage(historyPage);
+  history.pushState({ page: historyPage, scrollY: 0 }, "", `?${params.toString()}`);
+  loadWithScroll(historyPage, { scrollMode: 'top' });
 });
 
-window.addEventListener("popstate", () => {
-  loadPage(pageFromLocation());
+window.addEventListener("popstate", event => {
+  loadWithScroll(pageFromLocation(), {
+    scrollMode: 'position',
+    scrollY: Number.isFinite(event.state?.scrollY) ? event.state.scrollY : 0,
+    sectorTab: event.state?.sectorTab || ''
+  });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadPage(pageFromLocation());
+  const page = pageFromLocation();
+  const navigationType = performance.getEntriesByType('navigation')[0]?.type;
+  const storedScroll = Number(sessionStorage.getItem(scrollStorageKey(historyPageFromLocation())));
+  const stateScroll = Number(history.state?.scrollY);
+  const reloadScroll = Number.isFinite(stateScroll)
+    ? stateScroll
+    : (Number.isFinite(storedScroll) ? storedScroll : 0);
+  const restoreReload = navigationType === 'reload';
+  history.replaceState({
+    ...(history.state || {}),
+    page: historyPageFromLocation(),
+    scrollY: restoreReload ? reloadScroll : 0,
+    sectorTab: history.state?.sectorTab || ''
+  }, '', window.location.href);
+  loadWithScroll(page, {
+    scrollMode: restoreReload ? 'position' : 'top',
+    scrollY: reloadScroll,
+    sectorTab: restoreReload ? (history.state?.sectorTab || '') : ''
+  });
 });

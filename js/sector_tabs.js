@@ -32,7 +32,7 @@ export function activateSectorTab(name, { focus = false } = {}) {
   return true;
 }
 
-export function setupSectorTabs(anchor = '') {
+export function setupSectorTabs(anchor = '', preferredTab = '') {
   const root = getTabsRoot();
   if (!root) return;
 
@@ -60,7 +60,7 @@ export function setupSectorTabs(anchor = '') {
 
   const anchorTarget = anchor ? document.getElementById(anchor) : null;
   const anchorPanel = anchorTarget?.closest('[data-sector-panel]')?.dataset.sectorPanel;
-  activateSectorTab(anchorPanel || (/^(block|route)-/.test(anchor) ? 'boulders' : 'overview'));
+  activateSectorTab(anchorPanel || (/^(block|route)-/.test(anchor) ? 'boulders' : preferredTab || 'overview'));
 
   if (!projectListenerBound) {
     document.addEventListener('showSectorProjects', () => activateSectorTab('boulders'));
