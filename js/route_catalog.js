@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261019-yellow-icons-1';
-import { compareGrades } from './grade_utils.js?v=20261019-yellow-icons-1';
+import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261019-yellow-icons-2';
+import { compareGrades } from './grade_utils.js?v=20261019-yellow-icons-2';
 
 let catalogPromise = null;
 

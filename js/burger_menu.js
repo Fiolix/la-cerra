@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261019-yellow-icons-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261019-yellow-icons-2';
 
 function menuItemIcon(name) {
   const paths = {
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261019-yellow-icons-1';
+import { initAuth } from './auth_handler.js?v=20261019-yellow-icons-2';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
