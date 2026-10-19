@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-route-community-stats-1';
-import { isProjectGrade } from './route_rules.js?v=20261019-route-community-stats-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-search-top-drawer-1';
+import { isProjectGrade } from './route_rules.js?v=20261019-search-top-drawer-1';
 
 let catalog = null;
 let loadError = null;
@@ -109,21 +109,23 @@ function initSiteSearch() {
   overlay.innerHTML = `
     <div class="site-search-backdrop" data-site-search-close></div>
     <section class="site-search-dialog" role="dialog" aria-modal="true" aria-labelledby="site-search-title">
-      <div class="site-search-heading">
-        <div><span>BOULDERING LA CERRA</span><h2 id="site-search-title">Search</h2></div>
-        <button type="button" class="site-search-close" data-site-search-close aria-label="Close search">×</button>
+      <div class="site-search-inner">
+        <div class="site-search-heading">
+          <div><span>BOULDERING LA CERRA</span><h2 id="site-search-title">Search</h2></div>
+          <button type="button" class="site-search-close" data-site-search-close aria-label="Close search">×</button>
+        </div>
+        <form class="site-search-form" data-site-search-form role="search">
+          <label class="visually-hidden" for="site-search-input">Search routes, boulders and sectors</label>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+          <input id="site-search-input" data-site-search-input type="search" autocomplete="off" placeholder="Route, grade, boulder or sector" />
+          <button type="submit">Search</button>
+        </form>
+        <div class="site-search-results" data-site-search-results aria-live="polite">
+          <p class="site-search-hint">Search route names, grades, boulders and sectors.</p>
+        </div>
+        <button type="button" class="site-search-all" data-site-search-all hidden>Show all results <span aria-hidden="true">→</span></button>
+        <button type="button" class="site-search-directory-link" data-site-search-directory>Browse all routes</button>
       </div>
-      <form class="site-search-form" data-site-search-form role="search">
-        <label class="visually-hidden" for="site-search-input">Search routes, boulders and sectors</label>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
-        <input id="site-search-input" data-site-search-input type="search" autocomplete="off" placeholder="Route, grade, boulder or sector" />
-        <button type="submit">Search</button>
-      </form>
-      <div class="site-search-results" data-site-search-results aria-live="polite">
-        <p class="site-search-hint">Search route names, grades, boulders and sectors.</p>
-      </div>
-      <button type="button" class="site-search-all" data-site-search-all hidden>Show all results <span aria-hidden="true">→</span></button>
-      <button type="button" class="site-search-directory-link" data-site-search-directory>Browse all routes</button>
     </section>
   `;
   document.body.appendChild(overlay);
