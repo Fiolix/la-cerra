@@ -1,10 +1,10 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261019-sector-route-table-1';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261019-route-community-stats-1';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261019-sector-route-table-1';
-const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261019-sector-route-table-1';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261019-route-community-stats-1';
+const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261019-route-community-stats-1';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;

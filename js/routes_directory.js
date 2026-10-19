@@ -1,9 +1,12 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-sector-route-table-1';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261019-sector-route-table-1';
-import { isProjectGrade } from './route_rules.js?v=20261019-sector-route-table-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-route-community-stats-1';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261019-route-community-stats-1';
+import { isProjectGrade } from './route_rules.js?v=20261019-route-community-stats-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-route-community-stats-1';
+import { compareRouteStats, formatRating, getRouteStats, summarizePublicRouteStats } from './route_stats.js?v=20261019-route-community-stats-1';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
+let publicRouteStats = new Map();
 let currentPage = 1;
 let currentSort = { key: 'location', direction: 'asc' };
 
@@ -88,9 +91,25 @@ function renderSearchResults(query) {
       route.target,
       'Route',
       route.name || 'Unnamed route',
-      `${isProjectGrade(route.grad) ? 'Project' : (route.grad || '?')} · ${route.block.name || `Boulder ${route.block.nummer}`} · ${route.sectorLabel}`
+      `${isProjectGrade(route.grad) ? 'Project' : (route.grad || '?')} · ${route.block.name || `Boulder ${route.block.nummer}`} · ${route.sectorLabel} · ${routeStatsText(route.uuid)}`
     ))
   ].join('');
+}
+
+function routeStatsText(routeId) {
+  const stats = getRouteStats(publicRouteStats, routeId);
+  const rating = stats.ratingCount ? `★ ${formatRating(stats.ratingAverage)} (${stats.ratingCount})` : '★ —';
+  const userGrade = stats.userGradeCount ? `User grade ${stats.userGrade} (${stats.userGradeCount})` : 'User grade —';
+  return `${rating} · ${userGrade}`;
+}
+
+function routeStatsHtml(routeId) {
+  const stats = getRouteStats(publicRouteStats, routeId);
+  return `
+    <span class="route-stat-item" title="Average community rating">★ ${escapeHtml(formatRating(stats.ratingAverage))}${stats.ratingCount ? ` <small>(${stats.ratingCount})</small>` : ''}</span>
+    <span class="route-stat-divider" aria-hidden="true">·</span>
+    <span class="route-stat-item">User grade <strong>${escapeHtml(stats.userGrade || '—')}</strong>${stats.userGradeCount ? ` <small>(${stats.userGradeCount})</small>` : ''}</span>
+  `;
 }
 
 function populateFilters() {
@@ -134,6 +153,15 @@ function filterAndSortRoutes() {
   });
 
   routes.sort((left, right) => {
+    if (currentSort.key === 'rating' || currentSort.key === 'userGrade') {
+      const result = compareRouteStats(
+        getRouteStats(publicRouteStats, left.uuid),
+        getRouteStats(publicRouteStats, right.uuid),
+        currentSort.key,
+        currentSort.direction
+      );
+      return result || String(left.name || '').localeCompare(String(right.name || ''), undefined, { numeric: true });
+    }
     if (currentSort.key === 'grade') {
       const leftIsProject = isProjectGrade(left.grad);
       const rightIsProject = isProjectGrade(right.grad);
@@ -196,9 +224,12 @@ function renderRouteList() {
       </tr>
       <tr class="ticklist-meta public-route-meta-row">
         <td colspan="2">
-          <a href="#" data-page="${escapeHtml(blockTarget)}">${escapeHtml(`${route.block.nummer || '–'} · ${route.block.name || 'Unnamed boulder'}`)}</a>
-          <span aria-hidden="true"> | </span>
-          <a href="#" data-page="${escapeHtml(route.page)}" data-scrolltop="1">${escapeHtml(route.sectorLabel)}</a>
+          <span class="public-route-location">
+            <a href="#" data-page="${escapeHtml(blockTarget)}">${escapeHtml(`${route.block.nummer || '–'} · ${route.block.name || 'Unnamed boulder'}`)}</a>
+            <span aria-hidden="true"> | </span>
+            <a href="#" data-page="${escapeHtml(route.page)}" data-scrolltop="1">${escapeHtml(route.sectorLabel)}</a>
+          </span>
+          <span class="public-route-stats">${routeStatsHtml(route.uuid)}</span>
         </td>
       </tr>
     `;
@@ -219,6 +250,16 @@ function renderRouteList() {
       <tbody>${tableRows}</tbody>
     </table>
   `;
+
+  const sortSelect = document.getElementById('route-list-sort');
+  const directionButton = document.querySelector('[data-route-list-direction]');
+  if (sortSelect) sortSelect.value = currentSort.key;
+  if (directionButton) {
+    const ascending = currentSort.direction === 'asc';
+    directionButton.textContent = ascending ? '↑' : '↓';
+    directionButton.setAttribute('aria-label', ascending ? 'Sort ascending' : 'Sort descending');
+    directionButton.title = ascending ? 'Sort ascending' : 'Sort descending';
+  }
 
   container.querySelectorAll('[data-public-route-sort]').forEach(button => {
     button.addEventListener('click', () => {
@@ -293,6 +334,18 @@ function bindFilters() {
     currentPage = 1;
     renderRouteList();
   });
+
+  document.getElementById('route-list-sort')?.addEventListener('change', event => {
+    currentSort = { key: event.target.value, direction: 'asc' };
+    currentPage = 1;
+    renderRouteList();
+  });
+
+  document.querySelector('[data-route-list-direction]')?.addEventListener('click', () => {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    currentPage = 1;
+    renderRouteList();
+  });
 }
 
 export async function initRoutesDirectory() {
@@ -318,7 +371,12 @@ export async function initRoutesDirectory() {
   setActiveTab(requestedView === 'search' || (initialQuery && requestedView !== 'all') ? 'search' : 'all');
 
   try {
-    catalog = await loadRouteCatalog();
+    const [catalogResult, statsResult] = await Promise.all([
+      loadRouteCatalog(),
+      getPublicTickStats()
+    ]);
+    catalog = catalogResult;
+    publicRouteStats = summarizePublicRouteStats(statsResult.data);
     populateFilters();
     bindFilters();
     renderRouteList();

@@ -46,8 +46,19 @@
       <button type="button" class="text-link small as-link route-filter-reset" data-route-filter-reset>Reset filters</button>
     </div>
 
-    <div class="route-directory-status">
+    <div class="route-directory-status route-table-tools">
       <p data-route-list-count aria-live="polite">Loading routes…</p>
+      <div class="route-table-sort">
+        <label for="route-list-sort">Sort</label>
+        <select id="route-list-sort">
+          <option value="location">Location</option>
+          <option value="name">Route</option>
+          <option value="grade">Fb grade</option>
+          <option value="rating">Rating</option>
+          <option value="userGrade">User grade</option>
+        </select>
+        <button type="button" data-route-list-direction aria-label="Sort ascending" title="Sort ascending">↑</button>
+      </div>
     </div>
     <div class="public-route-list" data-public-route-list aria-busy="true"></div>
     <div class="route-directory-pagination" data-route-list-pagination></div>

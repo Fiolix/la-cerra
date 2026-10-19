@@ -1,11 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-sector-route-table-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-route-community-stats-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261019-sector-route-table-1';
-import { isProjectGrade } from './route_rules.js?v=20261019-sector-route-table-1';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261019-sector-route-table-1';
-import { compareGrades } from './grade_utils.js?v=20261019-sector-route-table-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261019-route-community-stats-1';
+import { isProjectGrade } from './route_rules.js?v=20261019-route-community-stats-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261019-route-community-stats-1';
+import { compareGrades } from './grade_utils.js?v=20261019-route-community-stats-1';
+import { compareRouteStats, formatRating, getRouteStats, summarizePublicRouteStats } from './route_stats.js?v=20261019-route-community-stats-1';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -104,7 +105,7 @@ function normalizeSearchText(value) {
     .trim();
 }
 
-function renderSectorRouteDirectory(blocks, routes, sektor) {
+function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
   const diagram = document.getElementById('routen-diagramm');
   if (!diagram || !Array.isArray(blocks) || !Array.isArray(routes)) return;
 
@@ -130,7 +131,20 @@ function renderSectorRouteDirectory(blocks, routes, sektor) {
       <div class="sector-route-directory-body">
         <label for="${escapeHtml(searchId)}">Search routes or boulders</label>
         <input id="${escapeHtml(searchId)}" type="search" autocomplete="off" placeholder="Search by name, grade or boulder">
-        <p class="sector-route-directory-status" data-sector-route-count aria-live="polite"></p>
+        <div class="route-table-tools">
+          <p class="sector-route-directory-status" data-sector-route-count aria-live="polite"></p>
+          <div class="route-table-sort">
+            <label for="${escapeHtml(searchId)}-sort">Sort</label>
+            <select id="${escapeHtml(searchId)}-sort" data-sector-route-sort-select>
+              <option value="block">Boulder</option>
+              <option value="name">Route</option>
+              <option value="grade">Fb grade</option>
+              <option value="rating">Rating</option>
+              <option value="userGrade">User grade</option>
+            </select>
+            <button type="button" data-sector-route-direction aria-label="Sort ascending" title="Sort ascending">↑</button>
+          </div>
+        </div>
         <div class="sector-route-table-wrap" data-sector-route-table></div>
       </div>
     </details>
@@ -140,6 +154,8 @@ function renderSectorRouteDirectory(blocks, routes, sektor) {
   const search = section.querySelector('input[type="search"]');
   const count = section.querySelector('[data-sector-route-count]');
   const table = section.querySelector('[data-sector-route-table]');
+  const sortSelect = section.querySelector('[data-sector-route-sort-select]');
+  const directionButton = section.querySelector('[data-sector-route-direction]');
 
   const renderRows = () => {
     const query = normalizeSearchText(search?.value);
@@ -157,8 +173,17 @@ function renderSectorRouteDirectory(blocks, routes, sektor) {
       } else if (sort.key === 'grade') {
         const leftProject = isProjectGrade(left.route.grad);
         const rightProject = isProjectGrade(right.route.grad);
-        if (leftProject !== rightProject) result = leftProject ? 1 : -1;
-        else result = compareGrades(left.route.grad, right.route.grad);
+        if (leftProject !== rightProject) return leftProject ? 1 : -1;
+        result = compareGrades(left.route.grad, right.route.grad);
+      } else if (sort.key === 'rating' || sort.key === 'userGrade') {
+        result = compareRouteStats(
+          getRouteStats(publicRouteStats, left.route.uuid),
+          getRouteStats(publicRouteStats, right.route.uuid),
+          sort.key,
+          sort.direction
+        );
+        if (!result) result = String(left.route.name || '').localeCompare(String(right.route.name || ''), undefined, { numeric: true });
+        return result;
       } else {
         result = String(left.block.nummer || '').localeCompare(String(right.block.nummer || ''), undefined, { numeric: true })
           || String(left.route.buchstabe || '').localeCompare(String(right.route.buchstabe || ''), undefined, { numeric: true });
@@ -178,6 +203,13 @@ function renderSectorRouteDirectory(blocks, routes, sektor) {
 
     const sortIndicator = key => sort.key === key ? (sort.direction === 'asc' ? '↑' : '↓') : '';
     const ariaSort = key => sort.key === key ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none';
+    if (sortSelect) sortSelect.value = sort.key;
+    if (directionButton) {
+      const ascending = sort.direction === 'asc';
+      directionButton.textContent = ascending ? '↑' : '↓';
+      directionButton.setAttribute('aria-label', ascending ? 'Sort ascending' : 'Sort descending');
+      directionButton.title = ascending ? 'Sort ascending' : 'Sort descending';
+    }
     table.innerHTML = `
       <table class="sector-route-table">
         <thead>
@@ -192,8 +224,9 @@ function renderSectorRouteDirectory(blocks, routes, sektor) {
             const routeTarget = `${page}#route-${route.uuid}`;
             const blockTarget = `${page}#${toAnchorId(block.nummer)}`;
             const project = isProjectGrade(route.grad);
+            const stats = getRouteStats(publicRouteStats, route.uuid);
             return `
-              <tr>
+              <tr class="sector-route-main-row">
                 <td>
                   <a href="#" data-page="${escapeHtml(routeTarget)}">
                     <span class="sector-route-letter">${escapeHtml(route.buchstabe || '–')}</span>
@@ -208,6 +241,13 @@ function renderSectorRouteDirectory(blocks, routes, sektor) {
                     <span class="sector-route-block-number">${escapeHtml(block.nummer || '–')}</span>
                     <span class="sector-route-block-name">${escapeHtml(block.name || 'Unnamed boulder')}</span>
                   </a>
+                </td>
+              </tr>
+              <tr class="sector-route-stats-row">
+                <td colspan="3">
+                  <span class="route-stat-item" title="Average community rating">★ ${escapeHtml(formatRating(stats.ratingAverage))}${stats.ratingCount ? ` <small>(${stats.ratingCount})</small>` : ''}</span>
+                  <span class="route-stat-divider" aria-hidden="true">·</span>
+                  <span class="route-stat-item">User grade <strong>${escapeHtml(stats.userGrade || '—')}</strong>${stats.userGradeCount ? ` <small>(${stats.userGradeCount})</small>` : ''}</span>
                 </td>
               </tr>
             `;
@@ -228,6 +268,14 @@ function renderSectorRouteDirectory(blocks, routes, sektor) {
   };
 
   search?.addEventListener('input', renderRows);
+  sortSelect?.addEventListener('change', () => {
+    sort = { key: sortSelect.value, direction: 'asc' };
+    renderRows();
+  });
+  directionButton?.addEventListener('click', () => {
+    sort.direction = sort.direction === 'asc' ? 'desc' : 'asc';
+    renderRows();
+  });
   renderRows();
 }
 
@@ -445,8 +493,6 @@ if (dropdown) {
   dropdown.innerHTML = '<option value="">-- Select a block --</option>';
   dropdown.disabled = false;
 
-  renderSectorRouteDirectory(blocks, routes, sektor);
-
 // Optionen je Block einfügen (Anzeige "04/05 – Name", Wert "#block-04-05")
 if (dropdown && Array.isArray(blocks)) {
   blocks.forEach(b => {
@@ -480,6 +526,8 @@ const tickStatsResult = await getPublicTickStats();
 const tickedRoutesResult = await getTickedRouteIds();
 const projectRoutesResult = await getPersonalProjectRouteIds(tickedRoutesResult.userId);
 const tickStats = tickStatsResult.data;
+const publicRouteStats = summarizePublicRouteStats(tickStats);
+renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats);
 const tickedRouteIds = tickedRoutesResult.ids;
 const projectRouteIds = projectRoutesResult.ids;
 const projectsAvailable = !projectRoutesResult.unavailable;
