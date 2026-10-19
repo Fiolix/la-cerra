@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261018-scroll-restoration-2";
+const ASSET_VERSION = "20261019-direct-links-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -254,7 +254,7 @@ async function loadPage(page, options = {}) {
       if (loadId !== activeLoadId) return;
 
       if (anchor) {
-        if (anchor.startsWith('route-')) module.openAndScrollToRoute(anchor);
+        if (anchor.startsWith('route-')) module.openAndScrollToRoute(anchor, { scroll: false });
         else module.setBlockOpen(anchor, true);
       } else if (options.openBlockId) {
         module.setBlockOpen(options.openBlockId, true);
@@ -264,10 +264,14 @@ async function loadPage(page, options = {}) {
       }
 
       if (anchor) {
-        const anchorImage = document.getElementById(anchor)?.querySelector("img");
+        const anchorTarget = document.getElementById(anchor);
+        const anchorBlock = anchorTarget?.classList.contains('boulder-block')
+          ? anchorTarget
+          : anchorTarget?.closest('.boulder-block');
+        const anchorImage = anchorBlock?.querySelector('.block-image-toggle img');
         await waitForImage(anchorImage);
         if (loadId !== activeLoadId) return;
-        scrollToAnchor(anchor);
+        await scrollToAnchor(anchor);
         handledScroll = true;
       }
     }
@@ -316,7 +320,7 @@ async function loadPage(page, options = {}) {
     updateDocumentTitle(contentElement, basePage);
 
     if (anchor && !handledScroll) {
-      scrollToAnchor(anchor);
+      await scrollToAnchor(anchor);
       handledScroll = true;
     }
 
@@ -355,19 +359,54 @@ function waitForImage(image) {
   });
 }
 
-function scrollToAnchor(anchor) {
+async function scrollToAnchor(anchor) {
+  let target = document.getElementById(anchor);
   let remainingAttempts = 20;
 
-  const tryScroll = () => {
-    const target = document.getElementById(anchor);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else if (remainingAttempts-- > 0) {
-      window.setTimeout(tryScroll, 100);
-    }
-  };
+  while (!target && remainingAttempts-- > 0) {
+    await new Promise(resolve => window.setTimeout(resolve, 100));
+    target = document.getElementById(anchor);
+  }
 
-  tryScroll();
+  if (!target) return false;
+
+  const block = anchor.startsWith('route-') ? 'center' : 'start';
+  const alignTarget = () => target.scrollIntoView({ behavior: 'auto', block });
+  const imageIsBeforeTarget = image => (
+    image !== target
+    && Boolean(image.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING)
+  );
+  const hasLoadingImageBeforeTarget = () => Array.from(
+    document.querySelectorAll('img.is-pending[src]')
+  ).some(imageIsBeforeTarget);
+
+  // A direct jump can activate lazy-loaded topo images just above the target.
+  // Their natural height may differ from the reserved placeholder and move the
+  // requested block or route after the first scroll. Re-align while those
+  // already requested images settle, without loading the rest of the page.
+  alignTarget();
+  const startedAt = performance.now();
+  let stableChecks = 0;
+  let previousTop = target.getBoundingClientRect().top;
+
+  while (performance.now() - startedAt < 4000) {
+    await new Promise(resolve => window.setTimeout(resolve, 100));
+    const currentTop = target.getBoundingClientRect().top;
+    const moved = Math.abs(currentTop - previousTop) > 1;
+
+    if (moved || hasLoadingImageBeforeTarget()) {
+      alignTarget();
+      stableChecks = 0;
+    } else {
+      stableChecks += 1;
+    }
+
+    previousTop = target.getBoundingClientRect().top;
+    if (stableChecks >= 3) break;
+  }
+
+  alignTarget();
+  return true;
 }
 
 function historyPageFromLocation() {

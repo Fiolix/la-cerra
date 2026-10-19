@@ -1,10 +1,10 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261018-scroll-restoration-2';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-direct-links-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261018-scroll-restoration-2';
-import { isProjectGrade } from './route_rules.js?v=20261018-scroll-restoration-2';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261018-scroll-restoration-2';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261019-direct-links-1';
+import { isProjectGrade } from './route_rules.js?v=20261019-direct-links-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261019-direct-links-1';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -215,15 +215,17 @@ function openAndScrollToBlock(blockId) {
   return true;
 }
 
-export function openAndScrollToRoute(routeId) {
+export function openAndScrollToRoute(routeId, { scroll = true } = {}) {
   const route = document.getElementById(routeId);
   const block = route?.closest('.boulder-block');
   if (!route || !block || !setBlockOpen(block.id, true)) return false;
 
   route.classList.add('route-search-target');
-  window.requestAnimationFrame(() => {
-    route.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  });
+  if (scroll) {
+    window.requestAnimationFrame(() => {
+      route.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
   window.setTimeout(() => route.classList.remove('route-search-target'), 3200);
   return true;
 }
