@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-breadcrumb-info-1';
-import { isProjectGrade } from './route_rules.js?v=20261019-breadcrumb-info-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-yellow-icons-1';
+import { isProjectGrade } from './route_rules.js?v=20261019-yellow-icons-1';
 
 let catalog = null;
 let loadError = null;

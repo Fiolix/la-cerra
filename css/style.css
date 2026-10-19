@@ -3060,8 +3060,8 @@ img[loading="lazy"] {
   width: 32px;
   height: 32px;
   fill: none;
-  stroke: var(--cerra-green-800);
-  stroke-width: 2.2;
+  stroke: #b07800;
+  stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
