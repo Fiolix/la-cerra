@@ -1,4 +1,4 @@
-import { isProjectGrade } from './route_rules.js?v=20261019-yellow-icons-2';
+import { isProjectGrade } from './route_rules.js?v=20261019-sector-route-table-1';
 
 export function normalizeGrade(value) {
   return String(value ?? '').trim().toLowerCase().replaceAll(' ', '');

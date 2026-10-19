@@ -1,10 +1,11 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-yellow-icons-2';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-sector-route-table-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261019-yellow-icons-2';
-import { isProjectGrade } from './route_rules.js?v=20261019-yellow-icons-2';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261019-yellow-icons-2';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261019-sector-route-table-1';
+import { isProjectGrade } from './route_rules.js?v=20261019-sector-route-table-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261019-sector-route-table-1';
+import { compareGrades } from './grade_utils.js?v=20261019-sector-route-table-1';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -83,6 +84,151 @@ document.addEventListener('authStateChanged', () => {
 function toAnchorId(nr) {
   // aus "04/05" wird "04-05"
   return `block-${String(nr).replaceAll('/', '-')}`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;'
+  }[character]));
+}
+
+function normalizeSearchText(value) {
+  return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function renderSectorRouteDirectory(blocks, routes, sektor) {
+  const diagram = document.getElementById('routen-diagramm');
+  if (!diagram || !Array.isArray(blocks) || !Array.isArray(routes)) return;
+
+  document.querySelector('[data-sector-route-directory]')?.remove();
+
+  const page = `${sektor}.html`;
+  const blockMap = new Map(blocks.map(block => [block.id, block]));
+  const rows = routes
+    .filter(route => blockMap.has(route.block_id))
+    .map(route => ({ route, block: blockMap.get(route.block_id) }));
+  const searchId = `sector-route-search-${sektor}`;
+  let sort = { key: 'block', direction: 'asc' };
+
+  const section = document.createElement('section');
+  section.className = 'sector-route-directory';
+  section.dataset.sectorRouteDirectory = '';
+  section.innerHTML = `
+    <details>
+      <summary>
+        <span>Routes in this sector</span>
+        <strong>${rows.length}</strong>
+      </summary>
+      <div class="sector-route-directory-body">
+        <label for="${escapeHtml(searchId)}">Search routes or boulders</label>
+        <input id="${escapeHtml(searchId)}" type="search" autocomplete="off" placeholder="Search by name, grade or boulder">
+        <p class="sector-route-directory-status" data-sector-route-count aria-live="polite"></p>
+        <div class="sector-route-table-wrap" data-sector-route-table></div>
+      </div>
+    </details>
+  `;
+  diagram.insertAdjacentElement('afterend', section);
+
+  const search = section.querySelector('input[type="search"]');
+  const count = section.querySelector('[data-sector-route-count]');
+  const table = section.querySelector('[data-sector-route-table]');
+
+  const renderRows = () => {
+    const query = normalizeSearchText(search?.value);
+    const tokens = query.split(/\s+/).filter(Boolean);
+    const filtered = rows.filter(({ route, block }) => {
+      if (!tokens.length) return true;
+      const haystack = normalizeSearchText(`${route.buchstabe} ${route.name} ${route.grad} ${route.beschreibung} ${block.nummer} ${block.name}`);
+      return tokens.every(token => haystack.includes(token));
+    });
+
+    filtered.sort((left, right) => {
+      let result = 0;
+      if (sort.key === 'name') {
+        result = String(left.route.name || '').localeCompare(String(right.route.name || ''), undefined, { numeric: true });
+      } else if (sort.key === 'grade') {
+        const leftProject = isProjectGrade(left.route.grad);
+        const rightProject = isProjectGrade(right.route.grad);
+        if (leftProject !== rightProject) result = leftProject ? 1 : -1;
+        else result = compareGrades(left.route.grad, right.route.grad);
+      } else {
+        result = String(left.block.nummer || '').localeCompare(String(right.block.nummer || ''), undefined, { numeric: true })
+          || String(left.route.buchstabe || '').localeCompare(String(right.route.buchstabe || ''), undefined, { numeric: true });
+      }
+      if (!result) result = String(left.route.name || '').localeCompare(String(right.route.name || ''), undefined, { numeric: true });
+      return sort.direction === 'asc' ? result : -result;
+    });
+
+    count.textContent = query
+      ? `${filtered.length} of ${rows.length} ${rows.length === 1 ? 'route' : 'routes'}`
+      : `${rows.length} ${rows.length === 1 ? 'route' : 'routes'}`;
+
+    if (!filtered.length) {
+      table.innerHTML = '<p class="route-directory-empty">No matching routes were found.</p>';
+      return;
+    }
+
+    const sortIndicator = key => sort.key === key ? (sort.direction === 'asc' ? '↑' : '↓') : '';
+    const ariaSort = key => sort.key === key ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none';
+    table.innerHTML = `
+      <table class="sector-route-table">
+        <thead>
+          <tr>
+            <th aria-sort="${ariaSort('name')}"><button type="button" data-sector-route-sort="name">Route <span aria-hidden="true">${sortIndicator('name')}</span></button></th>
+            <th aria-sort="${ariaSort('grade')}"><button type="button" data-sector-route-sort="grade">Fb <span aria-hidden="true">${sortIndicator('grade')}</span></button></th>
+            <th aria-sort="${ariaSort('block')}"><button type="button" data-sector-route-sort="block">Boulder <span aria-hidden="true">${sortIndicator('block')}</span></button></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(({ route, block }) => {
+            const routeTarget = `${page}#route-${route.uuid}`;
+            const blockTarget = `${page}#${toAnchorId(block.nummer)}`;
+            const project = isProjectGrade(route.grad);
+            return `
+              <tr>
+                <td>
+                  <a href="#" data-page="${escapeHtml(routeTarget)}">
+                    <span class="sector-route-letter">${escapeHtml(route.buchstabe || '–')}</span>
+                    <span>${escapeHtml(route.name || 'Unnamed route')}</span>
+                  </a>
+                </td>
+                <td class="sector-route-grade${project ? ' is-project' : ''}">
+                  <a href="#" data-page="${escapeHtml(routeTarget)}">${escapeHtml(project ? 'Project' : (String(route.grad || '?').toUpperCase()))}</a>
+                </td>
+                <td>
+                  <a href="#" data-page="${escapeHtml(blockTarget)}">
+                    <span class="sector-route-block-number">${escapeHtml(block.nummer || '–')}</span>
+                    <span class="sector-route-block-name">${escapeHtml(block.name || 'Unnamed boulder')}</span>
+                  </a>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+
+    table.querySelectorAll('[data-sector-route-sort]').forEach(button => {
+      button.addEventListener('click', () => {
+        const key = button.dataset.sectorRouteSort;
+        sort = sort.key === key
+          ? { key, direction: sort.direction === 'asc' ? 'desc' : 'asc' }
+          : { key, direction: 'asc' };
+        renderRows();
+      });
+    });
+  };
+
+  search?.addEventListener('input', renderRows);
+  renderRows();
 }
 
 function getDisplayedRoutes(block, blocks, routes, sektor) {
@@ -298,6 +444,8 @@ if (dropdown) {
   container.innerHTML = '';
   dropdown.innerHTML = '<option value="">-- Select a block --</option>';
   dropdown.disabled = false;
+
+  renderSectorRouteDirectory(blocks, routes, sektor);
 
 // Optionen je Block einfügen (Anzeige "04/05 – Name", Wert "#block-04-05")
 if (dropdown && Array.isArray(blocks)) {

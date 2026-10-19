@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261019-yellow-icons-2';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261019-yellow-icons-2';
+import { isProjectGrade } from './route_rules.js?v=20261019-sector-route-table-1';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261019-sector-route-table-1';
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 
