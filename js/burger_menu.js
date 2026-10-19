@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261019-search-top-drawer-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261019-compact-route-rows-1';
 
 function menuItemIcon(name) {
   const paths = {
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261019-search-top-drawer-1';
+import { initAuth } from './auth_handler.js?v=20261019-compact-route-rows-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

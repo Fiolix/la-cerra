@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261019-search-top-drawer-1";
+const ASSET_VERSION = "20261019-compact-route-rows-1";
 
 const PAGE_ALIASES = {
   start: "start.html",

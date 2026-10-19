@@ -3,8 +3,8 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261019-search-top-drawer-1';
-import { sectorLabel } from './sector_visibility.js?v=20261019-search-top-drawer-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261019-compact-route-rows-1';
+import { sectorLabel } from './sector_visibility.js?v=20261019-compact-route-rows-1';
 
 
 let tickData = [];
