@@ -20,7 +20,7 @@
 
 /* Mobile design prototype */
 .slide-menu {
-  width: min(86vw, 340px);
+  width: min(82vw, 300px);
   background: #102d27;
   box-shadow: 10px 0 35px rgba(0, 0, 0, 0.32);
 }
@@ -539,7 +539,7 @@
 
 /* Prototype cascade overrides kept after the legacy menu rules. */
 .slide-menu {
-  width: min(86vw, 340px);
+  width: min(82vw, 300px);
   background: #102d27;
   box-shadow: 10px 0 35px rgba(0, 0, 0, 0.32);
 }

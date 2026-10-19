@@ -618,7 +618,7 @@ footer a {
 
 @media (min-width: 700px) {
   .start-primary-actions {
-    grid-template-columns: minmax(0, 280px) minmax(0, 220px);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr);
   }
 
   .sector-card-list {

@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261019-direct-links-1';
+import { applySectorVisibility } from './sector_visibility.js?v=20261019-home-menu-2';
 
 function menuItemIcon(name) {
   const paths = {
@@ -8,8 +8,7 @@ function menuItemIcon(name) {
     sardinia: '<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"/><path d="M3.5 12h17M12 3c2.4 2.5 3.6 5.5 3.6 9S14.4 18.5 12 21c-2.4-2.5-3.6-5.5-3.6-9S9.6 5.5 12 3Z"/>',
     guide: '<path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h4"/>',
     stay: '<path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M8 20v-6h8v6"/>',
-    guestbook: '<path d="M4 4h16v12H9l-5 4z"/><path d="M8 8h8M8 12h5"/>',
-    routes: '<path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+    guestbook: '<path d="M4 4h16v12H9l-5 4z"/><path d="M8 8h8M8 12h5"/>'
   };
   return `<svg class="menu-item-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.guide}</svg>`;
 }
@@ -35,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
       <li><a href="#" data-page="start">${menuItemIcon('home')}<span>Home</span></a></li>
       <li><a href="#" data-page="news">${menuItemIcon('news')}<span>News</span></a></li>
       <li><a href="#" data-page="la_cerra">${menuItemIcon('bouldering')}<span>Bouldering La Cerra</span></a></li>
-      <li><a href="#" data-page="routes">${menuItemIcon('routes')}<span>Routes</span></a></li>
       <li><a href="#" data-page="sardinia">${menuItemIcon('sardinia')}<span>Sardinia</span></a></li>
       <li><a href="#" data-page="before_you_go">${menuItemIcon('guide')}<span>Information</span></a></li>
       <li><a href="#" data-page="agriturismo">${menuItemIcon('stay')}<span>Agriturismo</span></a></li>
@@ -129,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261019-direct-links-1';
+import { initAuth } from './auth_handler.js?v=20261019-home-menu-2';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

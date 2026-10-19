@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
-import { summarizeTicks } from './profile_stats.js?v=20261019-direct-links-1';
-import { loadAreaStats } from './area_stats.js?v=20261019-direct-links-1';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261019-direct-links-1';
+import { summarizeTicks } from './profile_stats.js?v=20261019-home-menu-2';
+import { loadAreaStats } from './area_stats.js?v=20261019-home-menu-2';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261019-home-menu-2';
 
 let renderId = 0;
 let authListenerBound = false;
@@ -45,7 +45,14 @@ function bindAuthListener() {
   document.addEventListener('authStateChanged', () => initStartAccount());
 }
 
+function updateStartGreeting(username = '') {
+  const greeting = document.querySelector('[data-start-greeting]');
+  if (!greeting) return;
+  greeting.textContent = username ? `Ciao, ${username}!` : 'Ciao Ragazzi!';
+}
+
 function showLoading(container) {
+  updateStartGreeting();
   container.innerHTML = `
     <h2>Account</h2>
     <p class="account-loading">Loading account information…</p>
@@ -53,6 +60,7 @@ function showLoading(container) {
 }
 
 function showLoggedOut(container) {
+  updateStartGreeting();
   container.innerHTML = `
     <h2>Your account</h2>
     <p>Log in to manage your personal ticklist, or create a new account.</p>
@@ -83,6 +91,7 @@ async function showLoggedIn(container, user, currentRenderId) {
   }
 
   const username = profileResult.data?.username || 'My profile';
+  updateStartGreeting(profileResult.data?.username || 'User');
   const areaStats = areaStatsResult.data;
   const activeTicks = (ticksResult.data || []).filter(tick => areaStats.gradedRouteIds.has(tick.route_id));
   const stats = summarizeTicks(activeTicks);
@@ -133,6 +142,7 @@ async function showLoggedIn(container, user, currentRenderId) {
 }
 
 function showAccountError(container) {
+  updateStartGreeting();
   container.innerHTML = `
     <h2>Account</h2>
     <p class="account-message" role="alert">Your account information is currently unavailable.</p>

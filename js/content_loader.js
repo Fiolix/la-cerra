@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261019-direct-links-1";
+const ASSET_VERSION = "20261019-home-menu-2";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -264,13 +264,6 @@ async function loadPage(page, options = {}) {
       }
 
       if (anchor) {
-        const anchorTarget = document.getElementById(anchor);
-        const anchorBlock = anchorTarget?.classList.contains('boulder-block')
-          ? anchorTarget
-          : anchorTarget?.closest('.boulder-block');
-        const anchorImage = anchorBlock?.querySelector('.block-image-toggle img');
-        await waitForImage(anchorImage);
-        if (loadId !== activeLoadId) return;
         await scrollToAnchor(anchor);
         handledScroll = true;
       }
