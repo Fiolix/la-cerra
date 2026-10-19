@@ -1,8 +1,7 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261019-home-menu-2';
+import { applySectorVisibility } from './sector_visibility.js?v=20261019-information-menu-2';
 
 function menuItemIcon(name) {
   const paths = {
-    home: '<path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     news: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/>',
     bouldering: '<path d="m3 19 6-11 3 5 3-8 6 14z"/><path d="m8 19 4-6 3 6"/>',
     sardinia: '<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"/><path d="M3.5 12h17M12 3c2.4 2.5 3.6 5.5 3.6 9S14.4 18.5 12 21c-2.4-2.5-3.6-5.5-3.6-9S9.6 5.5 12 3Z"/>',
@@ -31,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
       <button class="menu-close" type="button" aria-label="Close menu">×</button>
     </div>
     <ul class="menu-primary-list">
-      <li><a href="#" data-page="start">${menuItemIcon('home')}<span>Home</span></a></li>
       <li><a href="#" data-page="news">${menuItemIcon('news')}<span>News</span></a></li>
       <li><a href="#" data-page="la_cerra">${menuItemIcon('bouldering')}<span>Bouldering La Cerra</span></a></li>
       <li><a href="#" data-page="sardinia">${menuItemIcon('sardinia')}<span>Sardinia</span></a></li>
@@ -127,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261019-home-menu-2';
+import { initAuth } from './auth_handler.js?v=20261019-information-menu-2';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
