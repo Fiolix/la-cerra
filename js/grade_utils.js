@@ -1,4 +1,4 @@
-import { isProjectGrade } from './route_rules.js?v=20261019-information-menu-2';
+import { isProjectGrade } from './route_rules.js?v=20261019-breadcrumb-info-1';
 
 export function normalizeGrade(value) {
   return String(value ?? '').trim().toLowerCase().replaceAll(' ', '');
