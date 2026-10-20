@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-9';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261020-profile-table-design-9';
+import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-10';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261020-profile-table-design-10';
 
 let areaStatsPromise = null;
 

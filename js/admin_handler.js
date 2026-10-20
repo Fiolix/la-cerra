@@ -1,9 +1,9 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20261020-profile-table-design-9';
-import { initUserAdministration } from './admin_users.js?v=20261020-profile-table-design-9';
-import { initGuestbookAdministration } from './admin_guestbook.js?v=20261020-profile-table-design-9';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261020-profile-table-design-9';
-import { initMapAdministration } from './admin_map.js?v=20261020-profile-table-design-9';
+import { initBlockAdministration } from './admin_blocks.js?v=20261020-profile-table-design-10';
+import { initUserAdministration } from './admin_users.js?v=20261020-profile-table-design-10';
+import { initGuestbookAdministration } from './admin_guestbook.js?v=20261020-profile-table-design-10';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261020-profile-table-design-10';
+import { initMapAdministration } from './admin_map.js?v=20261020-profile-table-design-10';
 
 let authListenerBound = false;
 let blocks = [];

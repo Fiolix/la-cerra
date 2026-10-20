@@ -1,4 +1,4 @@
-import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-9';
+import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-10';
 
 export function normalizeGrade(value) {
   return String(value ?? '').trim().toLowerCase().replaceAll(' ', '');

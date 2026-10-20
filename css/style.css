@@ -741,7 +741,7 @@ body[data-current-page="start"] .news-teaser-card {
   align-items: baseline;
   gap: 5px;
   color: inherit;
-  font-weight: 680;
+  font-weight: 650;
   text-decoration: none;
 }
 
@@ -2575,6 +2575,11 @@ button#register-button:hover {
   white-space: nowrap;
   padding: 0.4rem 0.6rem;
   border-top: 1px solid #ddd;
+}
+
+.ticklist th {
+  font-size: 0.82rem;
+  font-weight: 650;
 }
 
 .ticklist tr.ticklist-meta td {

@@ -3,8 +3,8 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261020-profile-table-design-9';
-import { sectorLabel } from './sector_visibility.js?v=20261020-profile-table-design-9';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261020-profile-table-design-10';
+import { sectorLabel } from './sector_visibility.js?v=20261020-profile-table-design-10';
 
 
 let tickData = [];
@@ -287,7 +287,7 @@ let html = `
   <table class="ticklist">
     <thead>
       <tr>
-        <th class="ticklist-route" data-sort="route">Name</th>
+        <th class="ticklist-route" data-sort="route">Route</th>
         <th style="text-align: center;" data-sort="grad">Fb</th>
         ${visibleColumns.flash    ? `<th style="text-align: center;" data-sort="flash">Flash</th>` : ''}
         ${visibleColumns.rating   ? `<th style="text-align: center;" data-sort="rating">Rating</th>` : ''}
