@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-route-table-details-1';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-route-table-details-1';
-import { isProjectGrade } from './route_rules.js?v=20261020-route-table-details-1';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-route-table-details-1';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-route-table-details-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-profile-table-design-1';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-profile-table-design-1';
+import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-profile-table-design-1';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-profile-table-design-1';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
@@ -103,13 +103,14 @@ function routeStatsText(routeId) {
   return `${rating} · ${userGrade}`;
 }
 
-function routeStatsHtml(routeId) {
+function routeRatingHtml(routeId) {
   const stats = getRouteStats(publicRouteStats, routeId);
-  return `
-    <span class="route-stat-item" title="Average community rating">${renderRatingStars(stats.ratingAverage, stats.ratingCount)}</span>
-    <span class="route-stat-divider" aria-hidden="true">·</span>
-    <span class="route-stat-item">User grade <strong>${escapeHtml(stats.userGrade || '—')}</strong>${stats.userGradeCount ? ` <small>(${stats.userGradeCount})</small>` : ''}</span>
-  `;
+  return `<span class="route-stat-item" title="Average community rating">${renderRatingStars(stats.ratingAverage, stats.ratingCount)}</span>`;
+}
+
+function routeUserGradeHtml(routeId) {
+  const stats = getRouteStats(publicRouteStats, routeId);
+  return `<strong>${escapeHtml(stats.userGrade || '—')}</strong>${stats.userGradeCount ? ` <small>(${stats.userGradeCount})</small>` : ''}`;
 }
 
 function populateFilters() {
@@ -218,13 +219,14 @@ function renderRouteList() {
         <td class="public-route-grade${project ? ' is-project' : ''}">
           ${project ? '<span class="route-grade-empty" aria-label="No grade"></span>' : `<a href="#" data-page="${escapeHtml(route.target)}">${escapeHtml(String(route.grad).toUpperCase())}</a>`}
         </td>
+        <td class="public-route-rating">${routeRatingHtml(route.uuid)}</td>
+        <td class="public-route-user-grade">${routeUserGradeHtml(route.uuid)}</td>
       </tr>
       <tr class="ticklist-meta public-route-meta-row">
-        <td colspan="2">
+        <td colspan="4">
           <span class="public-route-location">
             <a href="#" data-page="${escapeHtml(route.page)}" data-scrolltop="1">${escapeHtml(route.sectorLabel)}</a>
           </span>
-          <span class="public-route-stats">${routeStatsHtml(route.uuid)}</span>
         </td>
       </tr>
     `;
@@ -239,6 +241,12 @@ function renderRouteList() {
           </th>
           <th aria-sort="${gradeSortDirection === 'none' ? 'none' : (gradeSortDirection === 'asc' ? 'ascending' : 'descending')}">
             <button type="button" data-public-route-sort="grade">Fb <span aria-hidden="true">${sortIndicator('grade')}</span></button>
+          </th>
+          <th aria-sort="${currentSort.key === 'rating' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}">
+            <button type="button" data-public-route-sort="rating">Rating <span aria-hidden="true">${sortIndicator('rating')}</span></button>
+          </th>
+          <th aria-sort="${currentSort.key === 'userGrade' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}">
+            <button type="button" data-public-route-sort="userGrade">User grade <span aria-hidden="true">${sortIndicator('userGrade')}</span></button>
           </th>
         </tr>
       </thead>
