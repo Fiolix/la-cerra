@@ -72,6 +72,20 @@ export function formatRating(value) {
   return value == null ? '—' : Number(value).toFixed(1);
 }
 
+export function renderRatingStars(value, count = 0) {
+  const numericValue = Number(value);
+  const rating = Number.isFinite(numericValue) ? Math.max(0, Math.min(5, numericValue)) : 0;
+  const stars = Array.from({ length: 5 }, (_, index) => {
+    const fill = Math.max(0, Math.min(1, rating - index)) * 100;
+    return `<span class="community-rating-star" style="--star-fill:${fill}%" aria-hidden="true">★</span>`;
+  }).join('');
+  const label = count
+    ? `${formatRating(rating)} out of 5 stars from ${count} ${count === 1 ? 'rating' : 'ratings'}`
+    : 'No ratings yet';
+
+  return `<span class="community-rating-stars" role="img" aria-label="${label}">${stars}</span>${count ? ` <small>(${count})</small>` : ''}`;
+}
+
 export function compareRouteStats(left, right, key, direction = 'asc') {
   const leftValue = key === 'rating' ? left.ratingAverage : left.userGradeIndex;
   const rightValue = key === 'rating' ? right.ratingAverage : right.userGradeIndex;

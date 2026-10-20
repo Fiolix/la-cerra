@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-compact-route-rows-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-route-table-details-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261019-compact-route-rows-1';
-import { isProjectGrade } from './route_rules.js?v=20261019-compact-route-rows-1';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261019-compact-route-rows-1';
-import { compareGrades } from './grade_utils.js?v=20261019-compact-route-rows-1';
-import { compareRouteStats, formatRating, getRouteStats, summarizePublicRouteStats } from './route_stats.js?v=20261019-compact-route-rows-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261020-route-table-details-1';
+import { isProjectGrade } from './route_rules.js?v=20261020-route-table-details-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261020-route-table-details-1';
+import { compareGrades } from './grade_utils.js?v=20261020-route-table-details-1';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-route-table-details-1';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -225,17 +225,16 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
               <tr class="sector-route-main-row">
                 <td>
                   <a href="#" data-page="${escapeHtml(routeTarget)}">
-                    <span class="sector-route-letter">${escapeHtml(route.buchstabe || '–')}</span>
                     <span>${escapeHtml(route.name || 'Unnamed route')}</span>
                   </a>
                 </td>
                 <td class="sector-route-grade${project ? ' is-project' : ''}">
-                  <a href="#" data-page="${escapeHtml(routeTarget)}">${escapeHtml(project ? 'Project' : (String(route.grad || '?').toUpperCase()))}</a>
+                  ${project ? '<span class="route-grade-empty" aria-label="No grade"></span>' : `<a href="#" data-page="${escapeHtml(routeTarget)}">${escapeHtml(String(route.grad || '?').toUpperCase())}</a>`}
                 </td>
               </tr>
               <tr class="sector-route-stats-row">
                 <td colspan="2">
-                  <span class="route-stat-item" title="Average community rating">★ ${escapeHtml(formatRating(stats.ratingAverage))}${stats.ratingCount ? ` <small>(${stats.ratingCount})</small>` : ''}</span>
+                  <span class="route-stat-item" title="Average community rating">${renderRatingStars(stats.ratingAverage, stats.ratingCount)}</span>
                   <span class="route-stat-divider" aria-hidden="true">·</span>
                   <span class="route-stat-item">User grade <strong>${escapeHtml(stats.userGrade || '—')}</strong>${stats.userGradeCount ? ` <small>(${stats.userGradeCount})</small>` : ''}</span>
                 </td>

@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-compact-route-rows-1';
-import { isProjectGrade } from './route_rules.js?v=20261019-compact-route-rows-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-route-table-details-1';
+import { isProjectGrade } from './route_rules.js?v=20261020-route-table-details-1';
 
 let catalog = null;
 let loadError = null;
@@ -50,7 +50,7 @@ function renderQuickResults(query) {
     <section><h3>Boulders</h3>${results.blocks.map(block => quickResult(block.target, 'Boulder', `${block.nummer || '–'} · ${block.name || 'Unnamed boulder'}`, block.sectorLabel)).join('')}</section>
   `);
   if (results.routes.length) sections.push(`
-    <section><h3>Routes</h3>${results.routes.map(route => quickResult(route.target, 'Route', route.name || 'Unnamed route', `${isProjectGrade(route.grad) ? 'Project' : (route.grad || '?')} · ${route.block.name || route.block.nummer} · ${route.sectorLabel}`)).join('')}</section>
+    <section><h3>Routes</h3>${results.routes.map(route => quickResult(route.target, 'Route', route.name || 'Unnamed route', [isProjectGrade(route.grad) ? '' : (route.grad || '?'), route.sectorLabel].filter(Boolean).join(' · '))).join('')}</section>
   `);
   resultsRoot.innerHTML = sections.join('');
 }

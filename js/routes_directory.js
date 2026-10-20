@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261019-compact-route-rows-1';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261019-compact-route-rows-1';
-import { isProjectGrade } from './route_rules.js?v=20261019-compact-route-rows-1';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261019-compact-route-rows-1';
-import { compareRouteStats, formatRating, getRouteStats, summarizePublicRouteStats } from './route_stats.js?v=20261019-compact-route-rows-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-route-table-details-1';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-route-table-details-1';
+import { isProjectGrade } from './route_rules.js?v=20261020-route-table-details-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-route-table-details-1';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-route-table-details-1';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
@@ -91,7 +91,7 @@ function renderSearchResults(query) {
       route.target,
       'Route',
       route.name || 'Unnamed route',
-      `${isProjectGrade(route.grad) ? 'Project' : (route.grad || '?')} · ${route.sectorLabel} · ${routeStatsText(route.uuid)}`
+      [isProjectGrade(route.grad) ? '' : (route.grad || '?'), route.sectorLabel, routeStatsText(route.uuid)].filter(Boolean).join(' · ')
     ))
   ].join('');
 }
@@ -106,7 +106,7 @@ function routeStatsText(routeId) {
 function routeStatsHtml(routeId) {
   const stats = getRouteStats(publicRouteStats, routeId);
   return `
-    <span class="route-stat-item" title="Average community rating">★ ${escapeHtml(formatRating(stats.ratingAverage))}${stats.ratingCount ? ` <small>(${stats.ratingCount})</small>` : ''}</span>
+    <span class="route-stat-item" title="Average community rating">${renderRatingStars(stats.ratingAverage, stats.ratingCount)}</span>
     <span class="route-stat-divider" aria-hidden="true">·</span>
     <span class="route-stat-item">User grade <strong>${escapeHtml(stats.userGrade || '—')}</strong>${stats.userGradeCount ? ` <small>(${stats.userGradeCount})</small>` : ''}</span>
   `;
@@ -212,12 +212,11 @@ function renderRouteList() {
       <tr class="public-route-main-row">
         <td class="ticklist-route">
           <a href="#" class="public-route-name" data-page="${escapeHtml(route.target)}">
-            <span class="public-route-letter">${escapeHtml(route.buchstabe || '–')}</span>
             <span>${escapeHtml(route.name || 'Unnamed route')}</span>
           </a>
         </td>
         <td class="public-route-grade${project ? ' is-project' : ''}">
-          <a href="#" data-page="${escapeHtml(route.target)}">${escapeHtml(project ? 'Project' : String(route.grad).toUpperCase())}</a>
+          ${project ? '<span class="route-grade-empty" aria-label="No grade"></span>' : `<a href="#" data-page="${escapeHtml(route.target)}">${escapeHtml(String(route.grad).toUpperCase())}</a>`}
         </td>
       </tr>
       <tr class="ticklist-meta public-route-meta-row">

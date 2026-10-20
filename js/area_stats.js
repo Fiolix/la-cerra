@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261019-compact-route-rows-1';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261019-compact-route-rows-1';
+import { isProjectGrade } from './route_rules.js?v=20261020-route-table-details-1';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261020-route-table-details-1';
 
 let areaStatsPromise = null;
 

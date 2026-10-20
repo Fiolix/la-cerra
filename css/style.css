@@ -780,13 +780,6 @@ body[data-current-page="start"] .news-teaser-card {
   text-decoration: underline;
 }
 
-.sector-route-letter {
-  flex: 0 0 auto;
-  color: var(--cerra-green-800);
-  font-size: 0.7rem;
-  font-weight: 820;
-}
-
 .sector-route-grade {
   color: var(--cerra-green-950) !important;
   font-weight: 800;
@@ -2651,6 +2644,19 @@ button#register-button:hover {
 
 #ticklist-table table {
   min-width: unset;
+}
+
+#ticklist-table td.ticklist-route > a {
+  color: inherit;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+#ticklist-table td.ticklist-route > a:hover,
+#ticklist-table td.ticklist-route > a:focus-visible {
+  color: var(--cerra-green-600);
+  outline: none;
+  text-decoration: underline;
 }
 
 .ticklist tr.ticklist-meta td a {
@@ -5427,15 +5433,6 @@ body.site-search-is-open {
   border-top: 0;
 }
 
-.public-route-letter {
-  flex: 0 0 auto;
-  min-width: 20px;
-  color: var(--cerra-green-800);
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-align: center;
-}
-
 .public-route-name {
   display: inline-flex;
   align-items: baseline;
@@ -5467,13 +5464,17 @@ body.site-search-is-open {
 }
 
 .public-route-grade.is-project {
-  color: var(--cerra-muted);
-  font-size: 0.67rem;
-  text-transform: uppercase;
+  color: transparent;
+}
+
+.route-grade-empty {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
 }
 
 .public-route-table tr.public-route-meta-row td {
-  padding: 0 12px 10px 40px;
+  padding: 0 12px 10px;
   color: var(--cerra-muted);
   background: var(--cerra-card);
   border-bottom: 1px solid var(--cerra-line);
@@ -5497,6 +5498,24 @@ body.site-search-is-open {
 
 .public-route-stats {
   color: var(--cerra-muted);
+}
+
+.community-rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-family: sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.community-rating-star {
+  color: transparent;
+  background: linear-gradient(90deg, #efb828 var(--star-fill), #cfd4d1 var(--star-fill));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .public-route-table tr.public-route-meta-row:last-child td {

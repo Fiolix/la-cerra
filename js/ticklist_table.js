@@ -3,8 +3,8 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261019-compact-route-rows-1';
-import { sectorLabel } from './sector_visibility.js?v=20261019-compact-route-rows-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261020-route-table-details-1';
+import { sectorLabel } from './sector_visibility.js?v=20261020-route-table-details-1';
 
 
 let tickData = [];
@@ -62,12 +62,11 @@ export async function initTicklistTable(userId, onDataChanged = null) {
       grade_suggestion,
       created_at,
       route:route_id(
+        uuid,
         name,
         grad,
         archived_at,
         block:block_id(
-          name,
-          nummer,
           sektor
         )
       )
@@ -288,7 +287,7 @@ let html = `
   <table class="ticklist">
     <thead>
       <tr>
-        <th class="ticklist-route" data-sort="route">Route</th>
+        <th class="ticklist-route" data-sort="route">Name</th>
         <th style="text-align: center;" data-sort="grad">Fb</th>
         ${visibleColumns.flash    ? `<th style="text-align: center;" data-sort="flash">Flash</th>` : ''}
         ${visibleColumns.rating   ? `<th style="text-align: center;" data-sort="rating">Rating</th>` : ''}
@@ -302,6 +301,9 @@ let html = `
 
 for (const entry of pageItems) {
   const stars = renderStars(entry.rating);
+  const sektor = entry.route?.block?.sektor;
+  const blockPage = sektor ? `${sektor}.html` : null;
+  const routePage = blockPage && entry.route?.uuid ? `${blockPage}#route-${entry.route.uuid}` : null;
 
   // optionale Zellen vorbereiten
   const tdFlash    = visibleColumns.flash    ? `<td style="text-align: center;">${entry.flash ? '✅' : ''}</td>` : '';
@@ -313,7 +315,7 @@ for (const entry of pageItems) {
 
   html += `
     <tr>
-      <td class="ticklist-route">${entry.route?.name ?? '-'}${entry.route?.archived_at ? ' <span class="ticklist-archived">Archived</span>' : ''}</td>
+      <td class="ticklist-route">${routePage && !entry.route?.archived_at ? `<a href="#" data-page="${routePage}">${entry.route?.name ?? '-'}</a>` : (entry.route?.name ?? '-')}${entry.route?.archived_at ? ' <span class="ticklist-archived">Archived</span>' : ''}</td>
       <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
       ${tdFlash}
       ${tdRating}
@@ -326,14 +328,6 @@ for (const entry of pageItems) {
 
 // Innerhalb der renderTable()-Schleife
 // Innerhalb der renderTable()-Schleife
-const sektor = entry.route?.block?.sektor;
-const blockname = entry.route?.block?.name;
-let nummer = entry.route?.block?.nummer;
-if (nummer) nummer = nummer.replaceAll('/', '-');
-
-const blockAnchor = nummer ? `#block-${nummer}` : '';
-const blockPage = sektor ? `${sektor}.html` : null;
-
 // aktuelle Spaltenanzahl berechnen:
 // 2 fixe Spalten (Route, Fb) + optionale sichtbare
 const colCount = 2
@@ -346,7 +340,6 @@ const colCount = 2
 html += `
   <tr class="ticklist-meta">
     <td colspan="${colCount}">
-      ${blockname && blockPage ? `<a href="#" data-page="${blockPage}${blockAnchor}">${blockname}</a>` : '–'} &nbsp;|
       ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${sectorLabel(sektor)}</a>` : '–'} &nbsp;|
       <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
     </td>
