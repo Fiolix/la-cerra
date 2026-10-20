@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-profile-table-design-1';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-profile-table-design-1';
-import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-1';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-profile-table-design-1';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-profile-table-design-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-profile-table-design-9';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-profile-table-design-9';
+import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-9';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-profile-table-design-9';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-profile-table-design-9';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
@@ -246,7 +246,7 @@ function renderRouteList() {
             <button type="button" data-public-route-sort="rating">Rating <span aria-hidden="true">${sortIndicator('rating')}</span></button>
           </th>
           <th aria-sort="${currentSort.key === 'userGrade' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}">
-            <button type="button" data-public-route-sort="userGrade">User grade <span aria-hidden="true">${sortIndicator('userGrade')}</span></button>
+            <button type="button" data-public-route-sort="userGrade" title="User grade">User <span aria-hidden="true">${sortIndicator('userGrade')}</span></button>
           </th>
         </tr>
       </thead>

@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-profile-table-design-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-profile-table-design-9';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261020-profile-table-design-1';
-import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-1';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261020-profile-table-design-1';
-import { compareGrades } from './grade_utils.js?v=20261020-profile-table-design-1';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-profile-table-design-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261020-profile-table-design-9';
+import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-9';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261020-profile-table-design-9';
+import { compareGrades } from './grade_utils.js?v=20261020-profile-table-design-9';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-profile-table-design-9';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -209,13 +209,13 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
       directionButton.title = ascending ? 'Sort ascending' : 'Sort descending';
     }
     table.innerHTML = `
-      <table class="sector-route-table">
+      <table class="ticklist sector-route-table">
         <thead>
           <tr>
-            <th aria-sort="${ariaSort('name')}"><button type="button" data-sector-route-sort="name">Name <span aria-hidden="true">${sortIndicator('name')}</span></button></th>
+            <th class="ticklist-route" aria-sort="${ariaSort('name')}"><button type="button" data-sector-route-sort="name">Name <span aria-hidden="true">${sortIndicator('name')}</span></button></th>
             <th aria-sort="${ariaSort('grade')}"><button type="button" data-sector-route-sort="grade">Fb <span aria-hidden="true">${sortIndicator('grade')}</span></button></th>
             <th aria-sort="${ariaSort('rating')}"><button type="button" data-sector-route-sort="rating">Rating <span aria-hidden="true">${sortIndicator('rating')}</span></button></th>
-            <th aria-sort="${ariaSort('userGrade')}"><button type="button" data-sector-route-sort="userGrade">User grade <span aria-hidden="true">${sortIndicator('userGrade')}</span></button></th>
+            <th aria-sort="${ariaSort('userGrade')}"><button type="button" data-sector-route-sort="userGrade" title="User grade">User <span aria-hidden="true">${sortIndicator('userGrade')}</span></button></th>
           </tr>
         </thead>
         <tbody>
@@ -225,7 +225,7 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
             const stats = getRouteStats(publicRouteStats, route.uuid);
             return `
               <tr class="sector-route-main-row">
-                <td>
+                <td class="ticklist-route">
                   <a href="#" data-page="${escapeHtml(routeTarget)}">
                     <span>${escapeHtml(route.name || 'Unnamed route')}</span>
                   </a>
