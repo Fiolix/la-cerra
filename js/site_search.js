@@ -1,9 +1,53 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261021-disclosure-ui-2';
-import { isProjectGrade } from './route_rules.js?v=20261021-disclosure-ui-2';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261021-reinzeichnung-1';
+import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
 
 let catalog = null;
 let loadError = null;
 let searchTimer = null;
+let previousSearchFocus = null;
+let searchInertedElements = [];
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
+function setSearchBackgroundInert(overlay, inert) {
+  if (inert) {
+    searchInertedElements = Array.from(document.body.children).filter(element => (
+      element !== overlay
+      && !element.inert
+      && !['SCRIPT', 'STYLE'].includes(element.tagName)
+    ));
+    searchInertedElements.forEach(element => { element.inert = true; });
+    return;
+  }
+
+  searchInertedElements.forEach(element => { element.inert = false; });
+  searchInertedElements = [];
+}
+
+function trapSearchFocus(event, overlay) {
+  if (event.key !== 'Tab') return;
+  const dialog = overlay.querySelector('[role="dialog"]');
+  const focusable = Array.from(dialog?.querySelectorAll(FOCUSABLE_SELECTOR) || [])
+    .filter(element => !element.hidden && element.getClientRects().length > 0);
+  if (!focusable.length) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
 
 function quickResult(target, type, title, meta = '') {
   return `
@@ -69,7 +113,9 @@ function openSearch() {
   const dialog = document.querySelector('[data-site-search]');
   const trigger = document.querySelector('[data-site-search-open]');
   if (!dialog || !trigger) return;
+  previousSearchFocus = document.activeElement;
   dialog.hidden = false;
+  setSearchBackgroundInert(dialog, true);
   document.body.classList.add('site-search-is-open');
   trigger.setAttribute('aria-expanded', 'true');
   window.setTimeout(() => document.querySelector('[data-site-search-input]')?.focus(), 0);
@@ -93,9 +139,14 @@ function closeSearch({ restoreFocus = false } = {}) {
   const trigger = document.querySelector('[data-site-search-open]');
   if (!dialog || dialog.hidden) return;
   dialog.hidden = true;
+  setSearchBackgroundInert(dialog, false);
   document.body.classList.remove('site-search-is-open');
   trigger?.setAttribute('aria-expanded', 'false');
-  if (restoreFocus) trigger?.focus();
+  if (restoreFocus) {
+    const focusTarget = previousSearchFocus?.isConnected ? previousSearchFocus : trigger;
+    focusTarget?.focus();
+  }
+  previousSearchFocus = null;
 }
 
 function initSiteSearch() {
@@ -147,7 +198,12 @@ function initSiteSearch() {
     searchTimer = window.setTimeout(() => renderQuickResults(input.value), 160);
   });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !overlay.hidden) closeSearch({ restoreFocus: true });
+    if (overlay.hidden) return;
+    if (event.key === 'Escape') {
+      closeSearch({ restoreFocus: true });
+      return;
+    }
+    trapSearchFocus(event, overlay);
   });
 }
 

@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261021-disclosure-ui-2";
+const ASSET_VERSION = "20261021-reinzeichnung-1";
 
 const PAGE_ALIASES = {
   start: "start.html",
@@ -93,9 +93,7 @@ function normalizePage(page) {
 function pageFromLocation() {
   const params = new URLSearchParams(window.location.search);
   const queryPage = params.get("p");
-  let page = queryPage
-    ? queryPage
-    : (localStorage.getItem("lastPage") || "start.html");
+  let page = queryPage || "start.html";
 
   if (window.location.hash && !page.includes("#")) {
     page += window.location.hash;
@@ -150,8 +148,10 @@ async function loadPage(page, options = {}) {
       if (!image.hasAttribute("decoding")) image.decoding = "async";
     });
     contentElement.replaceChildren(template.content.cloneNode(true));
+    normalizeBreadcrumbs(contentElement, basePage);
     document.body.dataset.currentPage = basePage.replace('.html', '');
     updateDocumentTitle(contentElement, basePage);
+    updateMetaDescription(contentElement, basePage);
 
     let handledScroll = false;
     let sectorUnavailable = false;
@@ -318,7 +318,7 @@ async function loadPage(page, options = {}) {
     }
 
     if (!handledScroll) await applyRequestedScroll(options);
-    document.activeElement?.blur();
+    if (options.focusHeading) focusPageHeading(contentElement);
   } catch (error) {
     if (error?.name === "AbortError" || loadId !== activeLoadId) return;
     console.error('Page loading failed:', error);
@@ -335,6 +335,43 @@ function updateDocumentTitle(container, basePage) {
   document.title = basePage === 'start.html' || !pageHeading
     ? 'Bouldering La Cerra'
     : `${pageHeading} | Bouldering La Cerra`;
+}
+
+function updateMetaDescription(container, basePage) {
+  const description = document.querySelector('meta[name="description"]');
+  if (!description) return;
+
+  const fallback = 'A digital guide to bouldering at La Cerra in northern Sardinia, with sectors, routes, maps and practical visitor information.';
+  const intro = container.querySelector([
+    '.content-page-intro p',
+    '.area-heading p',
+    '.sector-summary .text-preview',
+    '.start-intro p'
+  ].join(','))?.textContent.replace(/\s+/g, ' ').trim();
+  const value = basePage === 'start.html' || !intro ? fallback : intro;
+  description.content = value.length > 160 ? `${value.slice(0, 157).trimEnd()}…` : value;
+}
+
+function normalizeBreadcrumbs(container, basePage) {
+  container.querySelectorAll('.breadcrumb').forEach(breadcrumb => {
+    if (!breadcrumb.hasAttribute('aria-label')) breadcrumb.setAttribute('aria-label', 'Breadcrumb');
+
+    const links = Array.from(breadcrumb.querySelectorAll('a[data-page]'));
+    const currentLink = links.reverse().find(link => {
+      try {
+        return normalizePage(link.dataset.page).basePage === basePage;
+      } catch {
+        return false;
+      }
+    });
+    currentLink?.setAttribute('aria-current', 'page');
+  });
+}
+
+function focusPageHeading(container) {
+  const target = container.querySelector('h1') || container;
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
 }
 
 function waitForImage(image) {
@@ -472,7 +509,8 @@ document.body.addEventListener("click", event => {
   if (retryButton) {
     loadWithScroll(decodeURIComponent(retryButton.dataset.retryPage), {
       scrollMode: 'position',
-      scrollY: window.scrollY
+      scrollY: window.scrollY,
+      focusHeading: true
     });
     return;
   }
@@ -488,7 +526,7 @@ document.body.addEventListener("click", event => {
   const historyPage = `${basePage}${anchor ? `#${anchor}` : ""}`;
   rememberCurrentScroll();
   history.pushState({ page: historyPage, scrollY: 0 }, "", `?p=${encodeURIComponent(historyPage)}`);
-  loadWithScroll(historyPage, { scrollMode: 'top' });
+  loadWithScroll(historyPage, { scrollMode: 'top', focusHeading: true });
 });
 
 document.addEventListener("reloadCurrentPage", event => {
@@ -506,7 +544,7 @@ document.addEventListener("reloadCurrentPage", event => {
 document.addEventListener("loadPage", event => {
   const page = typeof event.detail === 'string' ? event.detail : event.detail?.page;
   if (!page) return;
-  loadWithScroll(page, { scrollMode: 'position', scrollY: window.scrollY });
+  loadWithScroll(page, { scrollMode: 'position', scrollY: window.scrollY, focusHeading: true });
 });
 
 document.addEventListener("navigateToPage", event => {
@@ -522,14 +560,15 @@ document.addEventListener("navigateToPage", event => {
     if (value != null && String(value) !== '') params.set(key, String(value));
   });
   history.pushState({ page: historyPage, scrollY: 0 }, "", `?${params.toString()}`);
-  loadWithScroll(historyPage, { scrollMode: 'top' });
+  loadWithScroll(historyPage, { scrollMode: 'top', focusHeading: true });
 });
 
 window.addEventListener("popstate", event => {
   loadWithScroll(pageFromLocation(), {
     scrollMode: 'position',
     scrollY: Number.isFinite(event.state?.scrollY) ? event.state.scrollY : 0,
-    sectorTab: event.state?.sectorTab || ''
+    sectorTab: event.state?.sectorTab || '',
+    focusHeading: true
   });
 });
 

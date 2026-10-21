@@ -2,12 +2,12 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20261021-disclosure-ui-2';
-import { summarizeTicks } from './profile_stats.js?v=20261021-disclosure-ui-2';
-import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261021-disclosure-ui-2';
-import { showTicklistPopup } from './ticklist_popup.js?v=20261021-disclosure-ui-2';
-import { isProjectGrade } from './route_rules.js?v=20261021-disclosure-ui-2';
-import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261021-disclosure-ui-2';
+import { initTicklistTable } from './ticklist_table.js?v=20261021-reinzeichnung-1';
+import { summarizeTicks } from './profile_stats.js?v=20261021-reinzeichnung-1';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261021-reinzeichnung-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261021-reinzeichnung-1';
+import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
+import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261021-reinzeichnung-1';
 
 let authListenerBound = false;
 
@@ -352,7 +352,7 @@ function initProfileModals() {
       const pw2 = document.getElementById('pw-new2')?.value.trim() || '';
 
       if (msg) msg.textContent = '';
-      if (pw1.length < 8) { if (msg) msg.textContent = 'Password must be at least 8 characters.'; return; }
+      if (pw1.length < 10) { if (msg) msg.textContent = 'Password must be at least 10 characters.'; return; }
       if (pw1 !== pw2)    { if (msg) msg.textContent = 'New passwords do not match.'; return; }
 
       try {

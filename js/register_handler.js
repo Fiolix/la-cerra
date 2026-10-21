@@ -38,6 +38,11 @@ export async function initRegisterForm() {
       return;
     }
 
+    if (password.length < 10) {
+      setStatus('Password must be at least 10 characters.', 'error');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setStatus('The passwords do not match.', 'error');
       return;

@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261021-disclosure-ui-2';
+import { applySectorVisibility } from './sector_visibility.js?v=20261021-reinzeichnung-1';
 
 function menuItemIcon(name) {
   const paths = {
@@ -54,10 +54,23 @@ document.addEventListener("DOMContentLoaded", function () {
   backdrop.type = 'button';
   backdrop.className = 'menu-backdrop';
   backdrop.setAttribute('aria-label', 'Close menu');
+  backdrop.hidden = true;
   document.body.insertBefore(backdrop, document.body.firstChild);
   document.body.insertBefore(navMenu, document.body.firstChild);
   applySectorVisibility(navMenu);
   const menuClose = navMenu.querySelector(".menu-close");
+  let menuInertedElements = [];
+
+  const focusableSelector = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])'
+  ].join(',');
+
+  navMenu.setAttribute('aria-hidden', 'true');
 
   document.dispatchEvent(new CustomEvent("loginBlockReady"));
 
@@ -70,13 +83,32 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function setMenuOpen(open) {
+    const wasOpen = navMenu.classList.contains("open");
+    if (open === wasOpen) return;
+
     navMenu.classList.toggle("open", open);
+    navMenu.setAttribute('aria-hidden', String(!open));
     menuIcon.setAttribute("aria-expanded", String(open));
     menuIcon.classList.toggle("is-hidden", open);
     menuIcon.setAttribute("aria-hidden", String(open));
     menuIcon.tabIndex = open ? -1 : 0;
+    backdrop.hidden = !open;
     backdrop.classList.toggle('is-visible', open);
     document.body.classList.toggle('menu-is-open', open);
+
+    if (open) {
+      menuInertedElements = Array.from(document.body.children).filter(element => (
+        element !== navMenu
+        && element !== backdrop
+        && !element.inert
+        && !['SCRIPT', 'STYLE'].includes(element.tagName)
+      ));
+      menuInertedElements.forEach(element => { element.inert = true; });
+      window.setTimeout(() => menuClose?.focus(), 0);
+    } else {
+      menuInertedElements.forEach(element => { element.inert = false; });
+      menuInertedElements = [];
+    }
   }
 
   navMenu.addEventListener("click", event => {
@@ -118,14 +150,30 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && navMenu.classList.contains("open")) {
+    if (!navMenu.classList.contains("open")) return;
+    if (e.key === "Escape") {
       setMenuOpen(false);
       menuIcon.focus();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const focusable = Array.from(navMenu.querySelectorAll(focusableSelector))
+        .filter(element => !element.hidden && element.getClientRects().length > 0);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261021-disclosure-ui-2';
+import { initAuth } from './auth_handler.js?v=20261021-reinzeichnung-1';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

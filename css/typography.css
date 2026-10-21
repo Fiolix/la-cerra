@@ -167,6 +167,11 @@ figcaption,
   font-weight: 760;
 }
 
+.route-grade-count {
+  color: var(--cerra-ink-muted);
+  font-size: 0.8em;
+}
+
 .diagram-axis-prefix {
   color: #56635e;
   font-family: "Inter", "Segoe UI", Arial, sans-serif;

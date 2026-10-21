@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261021-disclosure-ui-2';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261021-reinzeichnung-1';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261021-disclosure-ui-2';
-import { isProjectGrade } from './route_rules.js?v=20261021-disclosure-ui-2';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261021-disclosure-ui-2';
-import { compareGrades } from './grade_utils.js?v=20261021-disclosure-ui-2';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261021-disclosure-ui-2';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261021-reinzeichnung-1';
+import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261021-reinzeichnung-1';
+import { compareGrades } from './grade_utils.js?v=20261021-reinzeichnung-1';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261021-reinzeichnung-1';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -103,6 +103,12 @@ function normalizeSearchText(value) {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim();
+}
+
+function formatBlockHeight(value) {
+  const height = String(value ?? '').trim();
+  if (!height) return '—';
+  return /^\d+(?:[.,]\d+)?$/.test(height) ? `${height} m` : height;
 }
 
 function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
@@ -530,8 +536,9 @@ for (const entry of tickStats) {
     blockDiv.id = toAnchorId(block.nummer);
 
     const routesHtml = blockRoutes.map(route => {
-  const displayedGrade = String(route.grad ?? '').trim();
-  const isProject = isProjectGrade(displayedGrade);
+  const rawGrade = String(route.grad ?? '').trim();
+  const isProject = isProjectGrade(rawGrade);
+  const displayedGrade = isProject ? 'Project' : (rawGrade.toUpperCase() || '?');
   const routeDescription = route.beschreibung || (isProject ? 'open project' : '');
   const isTicked = !isProject && tickedRouteIds.has(route.uuid);
   const isPersonalProject = !isTicked && projectRouteIds.has(route.uuid);
@@ -567,7 +574,7 @@ const ratingDisplay = ratingCount > 0
   const gradeAvg = numericGrades.length > 0
     ? Math.round(numericGrades.reduce((a, b) => a + b, 0) / numericGrades.length)
     : null;
-  const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg]} <span style='color:#333; font-size: 0.8em;'>(${gradeCount})</span>` : '';
+  const gradeDisplay = gradeAvg ? `${valueToFb[gradeAvg].toUpperCase()} <span class="route-grade-count">(${gradeCount})</span>` : '';
 
   return `
     <div${route._displayAlias ? '' : ` id=\"route-${route.uuid}\"`} class=\"route${isTicked ? ' route-completed' : ''}${isPersonalProject ? ' route-personal-project' : ''}\" data-route-id=\"${route.uuid}\">
@@ -615,7 +622,7 @@ const ratingDisplay = ratingCount > 0
       <button class="block-header" type="button" data-block-toggle aria-expanded="false" aria-controls="${blockDiv.id}-routes">
         <span class="block-id">${block.nummer}</span>
         <span class="block-name">${block.name}</span>
-        <span class="block-height">Height: ${block.hoehe ?? ''}</span>
+        <span class="block-height">Height: ${formatBlockHeight(block.hoehe)}</span>
       </button>
       <button class="block-image-toggle" type="button" data-block-toggle aria-expanded="false" aria-controls="${blockDiv.id}-routes" aria-label="Show or hide routes for ${block.name || `Block ${block.nummer}`}">
         <img data-src="/la-cerra/img/bouldering/la_cerra/${block.sektor}/${block.bild}" class="is-pending" alt="${block.name || `Block ${block.nummer}`}" loading="lazy" decoding="async" />
