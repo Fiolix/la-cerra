@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-route-table-controls-2';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-route-table-controls-2';
-import { isProjectGrade } from './route_rules.js?v=20261020-route-table-controls-2';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-route-table-controls-2';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-route-table-controls-2';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261021-sector-descriptions-1';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261021-sector-descriptions-1';
+import { isProjectGrade } from './route_rules.js?v=20261021-sector-descriptions-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261021-sector-descriptions-1';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261021-sector-descriptions-1';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;

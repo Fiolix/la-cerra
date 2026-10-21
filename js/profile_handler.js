@@ -2,12 +2,12 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20261020-route-table-controls-2';
-import { summarizeTicks } from './profile_stats.js?v=20261020-route-table-controls-2';
-import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261020-route-table-controls-2';
-import { showTicklistPopup } from './ticklist_popup.js?v=20261020-route-table-controls-2';
-import { isProjectGrade } from './route_rules.js?v=20261020-route-table-controls-2';
-import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261020-route-table-controls-2';
+import { initTicklistTable } from './ticklist_table.js?v=20261021-sector-descriptions-1';
+import { summarizeTicks } from './profile_stats.js?v=20261021-sector-descriptions-1';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261021-sector-descriptions-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261021-sector-descriptions-1';
+import { isProjectGrade } from './route_rules.js?v=20261021-sector-descriptions-1';
+import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261021-sector-descriptions-1';
 
 let authListenerBound = false;
 
