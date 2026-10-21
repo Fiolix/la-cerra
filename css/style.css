@@ -440,7 +440,10 @@ body[data-current-page="start"] .news-teaser-card {
   box-shadow: none;
 }
 
-.sector-page-prototype .toggle-summary {
+.sector-summary .toggle-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   width: auto;
   min-height: 44px;
   margin: 8px 0 -8px;
@@ -449,6 +452,33 @@ body[data-current-page="start"] .news-teaser-card {
   color: var(--cerra-green-800);
   font-weight: 700;
   text-align: left;
+}
+
+.sector-summary .toggle-summary::after,
+.sector-route-directory summary::after,
+.block-header::after,
+.news-page .news-details summary::after,
+.guestbook-more-replies summary::after,
+#display-options-toggle::after {
+  display: inline-block;
+  flex: 0 0 auto;
+  content: "›";
+  color: currentColor;
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1;
+  transform: rotate(0deg);
+  transform-origin: center;
+  transition: transform 150ms ease;
+}
+
+.sector-summary.expanded .toggle-summary::after,
+.sector-route-directory details[open] summary::after,
+.block-header[aria-expanded="true"]::after,
+.news-page .news-details[open] summary::after,
+.guestbook-more-replies[open] summary::after,
+#display-options-toggle[aria-expanded="true"]::after {
+  transform: rotate(90deg);
 }
 
 .sector-tabs {
@@ -568,15 +598,12 @@ body[data-current-page="start"] .news-teaser-card {
   position: absolute;
   right: 15px;
   top: 50%;
-  content: "+";
   color: var(--cerra-green-700);
-  font-size: 1.15rem;
-  font-weight: 500;
-  transform: translateY(-52%);
+  transform: translateY(-50%) rotate(0deg);
 }
 
 .sector-route-directory details[open] summary::after {
-  content: "−";
+  transform: translateY(-50%) rotate(90deg);
 }
 
 .sector-route-directory summary:hover,
@@ -1215,6 +1242,11 @@ img {
   cursor: pointer;
 }
 
+.block-header::after {
+  margin-left: 0.65rem;
+  color: var(--cerra-green-700);
+}
+
 .block-content {
   padding-top: 0.25rem;
 }
@@ -1638,33 +1670,13 @@ img {
   font-size: 0.9rem;
 }
 
-/* Bestehendes CSS für .sector-summary */
+/* Sector introduction text */
 .sector-summary {
   margin: 2rem 0;
   background-color: #f9f9f9;
   border-radius: 0.5rem;
   border: 1px solid #ddd;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.sector-summary summary {
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-  position: relative;
-}
-
-.sector-summary summary::after {
-  content: "▼";
-  float: right;
-  margin-left: 0.5rem;
-  font-size: 0.8rem;
-}
-
-.sector-summary[open] summary::after {
-  content: "▲";
 }
 
 .sector-summary p {
@@ -2174,6 +2186,9 @@ button.sector-route-count {
 }
 
 .guestbook-more-replies summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   min-height: 42px;
   padding: 11px 2px;
   cursor: pointer;
@@ -2185,15 +2200,6 @@ button.sector-route-count {
 
 .guestbook-more-replies summary::-webkit-details-marker {
   display: none;
-}
-
-.guestbook-more-replies summary::after {
-  margin-left: 7px;
-  content: "↓";
-}
-
-.guestbook-more-replies[open] summary::after {
-  content: "↑";
 }
 
 .guestbook-additional-replies {
@@ -3003,7 +3009,12 @@ button.secondary-button:focus-visible {
 .display-row label { font-size: 0.95rem; color: #333; }
 
 /* optional: Klick-Außenseite schließt Panel (Cursor-Hinweis) */
-.controls-right .text-link.small { cursor: pointer; }
+.controls-right .text-link.small {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
 
 /* ===== Modals (Password / Delete) ===== */
 .modal { position: fixed; inset: 0; z-index: 100; }
@@ -4070,15 +4081,22 @@ footer a {
 
 /* Buttons wie Text-Links darstellen (für Modals) */
 button.text-link.as-link {
+  display: inline-flex;
+  width: auto;
   background: none;
   border: none;
   padding: 0;
   margin: 0;
   line-height: 1;
+  font: inherit;
   cursor: pointer;
   color: inherit; /* übernimmt .text-link Farbregeln */
 }
 button.text-link.as-link:focus { outline: none; }
+button.text-link.as-link:focus-visible {
+  outline: 2px solid var(--cerra-green-700);
+  outline-offset: 3px;
+}
 
 /* ===== Mobile design rollout: content, community and account pages ===== */
 .content-layout-page {
@@ -4232,12 +4250,18 @@ button.text-link.as-link:focus { outline: none; }
 }
 
 .news-page .news-details summary::after {
-  content: "↓";
-  font-size: 1rem;
+  color: var(--cerra-green-700);
 }
 
-.news-page .news-details[open] summary::after {
-  content: "↑";
+@media (prefers-reduced-motion: reduce) {
+  .sector-summary .toggle-summary::after,
+  .sector-route-directory summary::after,
+  .block-header::after,
+  .news-page .news-details summary::after,
+  .guestbook-more-replies summary::after,
+  #display-options-toggle::after {
+    transition: none;
+  }
 }
 
 .news-page .news-details {

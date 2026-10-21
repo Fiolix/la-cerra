@@ -265,11 +265,16 @@ function createEntryCard(entry) {
       more.className = 'guestbook-more-replies';
       const summary = document.createElement('summary');
       const additionalCount = replies.length - 1;
-      summary.textContent = `Show ${additionalCount} more ${additionalCount === 1 ? 'reply' : 'replies'}`;
+      const closedLabel = `Show ${additionalCount} more ${additionalCount === 1 ? 'reply' : 'replies'}`;
+      const openLabel = `Show fewer ${additionalCount === 1 ? 'reply' : 'replies'}`;
+      summary.textContent = closedLabel;
       const additionalReplies = document.createElement('div');
       additionalReplies.className = 'guestbook-additional-replies';
       replies.slice(1).forEach(reply => additionalReplies.appendChild(createReply(reply)));
       more.append(summary, additionalReplies);
+      more.addEventListener('toggle', () => {
+        summary.textContent = more.open ? openLabel : closedLabel;
+      });
       replyList.appendChild(more);
     }
     article.appendChild(replyList);
@@ -280,6 +285,8 @@ function createEntryCard(entry) {
     replyButton.type = 'button';
     replyButton.className = 'text-link as-link guestbook-reply-button';
     replyButton.textContent = 'Reply';
+    replyButton.setAttribute('aria-expanded', 'false');
+    replyButton.setAttribute('aria-controls', `guestbook-reply-form-${entry.id}`);
     replyButton.addEventListener('click', () => toggleReplyForm(article, entry.id, replyButton));
     article.appendChild(replyButton);
   }
@@ -309,6 +316,7 @@ function toggleReplyForm(article, parentId, button) {
   if (existing) {
     existing.remove();
     button.textContent = 'Reply';
+    button.setAttribute('aria-expanded', 'false');
     return;
   }
 
@@ -320,8 +328,10 @@ function toggleReplyForm(article, parentId, button) {
       await submitEntry(message, parentId);
     }
   });
+  form.id = `guestbook-reply-form-${parentId}`;
   article.appendChild(form);
   button.textContent = 'Cancel reply';
+  button.setAttribute('aria-expanded', 'true');
   form.querySelector('textarea')?.focus();
 }
 

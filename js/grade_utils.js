@@ -1,4 +1,4 @@
-import { isProjectGrade } from './route_rules.js?v=20261021-sector-descriptions-1';
+import { isProjectGrade } from './route_rules.js?v=20261021-disclosure-ui-1';
 
 export function normalizeGrade(value) {
   return String(value ?? '').trim().toLowerCase().replaceAll(' ', '');

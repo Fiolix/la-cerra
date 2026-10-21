@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261021-sector-descriptions-1';
-import { isProjectGrade } from './route_rules.js?v=20261021-sector-descriptions-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261021-disclosure-ui-1';
+import { isProjectGrade } from './route_rules.js?v=20261021-disclosure-ui-1';
 
 let catalog = null;
 let loadError = null;

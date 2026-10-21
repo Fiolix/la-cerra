@@ -3,8 +3,8 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261021-sector-descriptions-1';
-import { sectorLabel } from './sector_visibility.js?v=20261021-sector-descriptions-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261021-disclosure-ui-1';
+import { sectorLabel } from './sector_visibility.js?v=20261021-disclosure-ui-1';
 
 
 let tickData = [];
@@ -213,14 +213,25 @@ function initTicklistControls() {
   const chkDate      = document.getElementById('col-date');
 
   if (toggle && panel) {
+    const setDisplayOptionsOpen = (open, { restoreFocus = false } = {}) => {
+      panel.style.display = open ? 'block' : 'none';
+      toggle.setAttribute('aria-expanded', String(open));
+      if (restoreFocus) toggle.focus();
+    };
+
+    setDisplayOptionsOpen(false);
     toggle.addEventListener('click', (e) => {
       e.preventDefault();
-      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      setDisplayOptionsOpen(toggle.getAttribute('aria-expanded') !== 'true');
     });
-    // optional: Klick außerhalb schließt Panel
     document.addEventListener('click', (e) => {
       if (!panel.contains(e.target) && !toggle.contains(e.target)) {
-        panel.style.display = 'none';
+        setDisplayOptionsOpen(false);
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setDisplayOptionsOpen(false, { restoreFocus: true });
       }
     });
   }
