@@ -2609,14 +2609,20 @@ button#register-button:hover {
   text-align: center;
 }
 
-/* Kein Scrollen nötig, Tabelle passt sich ihrem Inhalt an */
 #ticklist-table {
   overflow-x: auto;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
-#ticklist-table table {
-  min-width: unset;
+#ticklist-table .ticklist {
+  width: max-content;
+  min-width: 100%;
+  max-width: none;
 }
 
 #ticklist-table td.ticklist-route > a {
@@ -2767,6 +2773,16 @@ button.secondary-button:focus-visible {
 .profile-root {
   display: grid;
   gap: 18px;
+  min-width: 0;
+}
+
+.profile-root > [data-profile-content],
+.profile-ticklist,
+[data-profile-list-panel] {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Header: einspaltig, zentriert */

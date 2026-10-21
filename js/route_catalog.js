@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261020-profile-table-design-10';
-import { compareGrades } from './grade_utils.js?v=20261020-profile-table-design-10';
+import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261020-route-table-controls-2';
+import { compareGrades } from './grade_utils.js?v=20261020-route-table-controls-2';
 
 let catalogPromise = null;
 

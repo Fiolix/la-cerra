@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-profile-table-design-10';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-route-table-controls-2';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261020-profile-table-design-10';
-import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-10';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261020-profile-table-design-10';
-import { compareGrades } from './grade_utils.js?v=20261020-profile-table-design-10';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-profile-table-design-10';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261020-route-table-controls-2';
+import { isProjectGrade } from './route_rules.js?v=20261020-route-table-controls-2';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261020-route-table-controls-2';
+import { compareGrades } from './grade_utils.js?v=20261020-route-table-controls-2';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-route-table-controls-2';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -133,16 +133,6 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
         <input id="${escapeHtml(searchId)}" type="search" autocomplete="off" placeholder="Search by name, grade or boulder">
         <div class="route-table-tools">
           <p class="sector-route-directory-status" data-sector-route-count aria-live="polite"></p>
-          <div class="route-table-sort">
-            <label for="${escapeHtml(searchId)}-sort">Sort</label>
-            <select id="${escapeHtml(searchId)}-sort" data-sector-route-sort-select>
-              <option value="name">Name</option>
-              <option value="grade">Fb grade</option>
-              <option value="rating">Rating</option>
-              <option value="userGrade">User grade</option>
-            </select>
-            <button type="button" data-sector-route-direction aria-label="Sort ascending" title="Sort ascending">↑</button>
-          </div>
         </div>
         <div class="sector-route-table-wrap" data-sector-route-table></div>
       </div>
@@ -153,8 +143,6 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
   const search = section.querySelector('input[type="search"]');
   const count = section.querySelector('[data-sector-route-count]');
   const table = section.querySelector('[data-sector-route-table]');
-  const sortSelect = section.querySelector('[data-sector-route-sort-select]');
-  const directionButton = section.querySelector('[data-sector-route-direction]');
 
   const renderRows = () => {
     const query = normalizeSearchText(search?.value);
@@ -201,13 +189,6 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
 
     const sortIndicator = key => sort.key === key ? (sort.direction === 'asc' ? '↑' : '↓') : '';
     const ariaSort = key => sort.key === key ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none';
-    if (sortSelect) sortSelect.value = sort.key;
-    if (directionButton) {
-      const ascending = sort.direction === 'asc';
-      directionButton.textContent = ascending ? '↑' : '↓';
-      directionButton.setAttribute('aria-label', ascending ? 'Sort ascending' : 'Sort descending');
-      directionButton.title = ascending ? 'Sort ascending' : 'Sort descending';
-    }
     table.innerHTML = `
       <table class="ticklist sector-route-table">
         <thead>
@@ -254,14 +235,6 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
   };
 
   search?.addEventListener('input', renderRows);
-  sortSelect?.addEventListener('change', () => {
-    sort = { key: sortSelect.value, direction: 'asc' };
-    renderRows();
-  });
-  directionButton?.addEventListener('click', () => {
-    sort.direction = sort.direction === 'asc' ? 'desc' : 'asc';
-    renderRows();
-  });
   renderRows();
 }
 

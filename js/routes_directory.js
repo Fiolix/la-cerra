@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-profile-table-design-10';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-profile-table-design-10';
-import { isProjectGrade } from './route_rules.js?v=20261020-profile-table-design-10';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-profile-table-design-10';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-profile-table-design-10';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261020-route-table-controls-2';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261020-route-table-controls-2';
+import { isProjectGrade } from './route_rules.js?v=20261020-route-table-controls-2';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261020-route-table-controls-2';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261020-route-table-controls-2';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
@@ -254,16 +254,6 @@ function renderRouteList() {
     </table>
   `;
 
-  const sortSelect = document.getElementById('route-list-sort');
-  const directionButton = document.querySelector('[data-route-list-direction]');
-  if (sortSelect) sortSelect.value = currentSort.key;
-  if (directionButton) {
-    const ascending = currentSort.direction === 'asc';
-    directionButton.textContent = ascending ? '↑' : '↓';
-    directionButton.setAttribute('aria-label', ascending ? 'Sort ascending' : 'Sort descending');
-    directionButton.title = ascending ? 'Sort ascending' : 'Sort descending';
-  }
-
   container.querySelectorAll('[data-public-route-sort]').forEach(button => {
     button.addEventListener('click', () => {
       const key = button.dataset.publicRouteSort;
@@ -338,17 +328,6 @@ function bindFilters() {
     renderRouteList();
   });
 
-  document.getElementById('route-list-sort')?.addEventListener('change', event => {
-    currentSort = { key: event.target.value, direction: 'asc' };
-    currentPage = 1;
-    renderRouteList();
-  });
-
-  document.querySelector('[data-route-list-direction]')?.addEventListener('click', () => {
-    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-    currentPage = 1;
-    renderRouteList();
-  });
 }
 
 export async function initRoutesDirectory() {
