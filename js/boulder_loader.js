@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261021-disclosure-ui-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261021-disclosure-ui-2';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261021-disclosure-ui-1';
-import { isProjectGrade } from './route_rules.js?v=20261021-disclosure-ui-1';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261021-disclosure-ui-1';
-import { compareGrades } from './grade_utils.js?v=20261021-disclosure-ui-1';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261021-disclosure-ui-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261021-disclosure-ui-2';
+import { isProjectGrade } from './route_rules.js?v=20261021-disclosure-ui-2';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261021-disclosure-ui-2';
+import { compareGrades } from './grade_utils.js?v=20261021-disclosure-ui-2';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261021-disclosure-ui-2';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -125,8 +125,7 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
   section.innerHTML = `
     <details>
       <summary>
-        <span>Routes in this sector</span>
-        <strong>${rows.length}</strong>
+        <span>Browse routes</span>
       </summary>
       <div class="sector-route-directory-body">
         <label for="${escapeHtml(searchId)}">Search routes or boulders</label>

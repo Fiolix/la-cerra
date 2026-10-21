@@ -577,7 +577,7 @@ body[data-current-page="start"] .news-teaser-card {
 
 .sector-route-directory summary {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   align-items: center;
   gap: 12px;
   min-height: 48px;
@@ -610,18 +610,6 @@ body[data-current-page="start"] .news-teaser-card {
 .sector-route-directory summary:focus-visible {
   background: rgba(89, 123, 104, 0.07);
   outline: none;
-}
-
-.sector-route-directory summary strong {
-  display: inline-grid;
-  place-items: center;
-  min-width: 31px;
-  min-height: 26px;
-  padding: 0 7px;
-  border-radius: 999px;
-  color: var(--cerra-green-900);
-  background: rgba(89, 123, 104, 0.12);
-  font-size: 0.78rem;
 }
 
 .sector-route-directory-body {
