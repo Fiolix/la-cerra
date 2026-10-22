@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261021-reinzeichnung-1';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261022-mobile-profile-7';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261021-reinzeichnung-1';
-import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261021-reinzeichnung-1';
-import { compareGrades } from './grade_utils.js?v=20261021-reinzeichnung-1';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261021-reinzeichnung-1';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261022-mobile-profile-7';
+import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261022-mobile-profile-7';
+import { compareGrades } from './grade_utils.js?v=20261022-mobile-profile-7';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261022-mobile-profile-7';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -212,7 +212,7 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
             return `
               <tr class="sector-route-main-row">
                 <td class="ticklist-route">
-                  <a href="#" data-page="${escapeHtml(routeTarget)}">
+                  <a href="#" data-page="${escapeHtml(routeTarget)}" title="${escapeHtml(route.name || 'Unnamed route')}">
                     <span>${escapeHtml(route.name || 'Unnamed route')}</span>
                   </a>
                 </td>

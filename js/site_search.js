@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261021-reinzeichnung-1';
-import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-mobile-profile-7';
+import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
 
 let catalog = null;
 let loadError = null;

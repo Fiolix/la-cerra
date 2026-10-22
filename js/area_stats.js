@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261021-reinzeichnung-1';
+import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261022-mobile-profile-7';
 
 let areaStatsPromise = null;
 

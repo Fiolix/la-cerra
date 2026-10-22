@@ -1,4 +1,4 @@
-const NEWS_URL = '/la-cerra/data/news.json?v=20261021-reinzeichnung-1';
+const NEWS_URL = '/la-cerra/data/news.json?v=20261022-mobile-profile-7';
 
 let newsPromise = null;
 

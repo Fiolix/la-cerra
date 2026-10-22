@@ -2,12 +2,12 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20261021-reinzeichnung-1';
-import { summarizeTicks } from './profile_stats.js?v=20261021-reinzeichnung-1';
-import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261021-reinzeichnung-1';
-import { showTicklistPopup } from './ticklist_popup.js?v=20261021-reinzeichnung-1';
-import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
-import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261021-reinzeichnung-1';
+import { initTicklistTable } from './ticklist_table.js?v=20261022-mobile-profile-7';
+import { summarizeTicks } from './profile_stats.js?v=20261022-mobile-profile-7';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261022-mobile-profile-7';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261022-mobile-profile-7';
+import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261022-mobile-profile-7';
 
 let authListenerBound = false;
 
@@ -168,12 +168,15 @@ function renderPersonalProjects(result) {
 
     const copy = document.createElement('div');
     copy.className = 'profile-project-copy';
+    const titleRow = document.createElement('div');
+    titleRow.className = 'profile-project-title-row';
     const title = document.createElement('strong');
     title.textContent = route?.name || 'Unknown route';
+    titleRow.appendChild(title);
     const meta = document.createElement('span');
     const sector = block?.sektor ? sectorLabel(block.sektor) : '';
     meta.textContent = `${sector || 'Unknown sector'} · ${block?.name || `Block ${block?.nummer || '—'}`} · Fb ${route?.grad || '—'}`;
-    copy.append(title, meta);
+    copy.append(titleRow, meta);
 
     if (route?.archived_at) {
       const archived = document.createElement('span');
@@ -184,6 +187,8 @@ function renderPersonalProjects(result) {
 
     const actions = document.createElement('div');
     actions.className = 'profile-project-actions';
+    const links = document.createElement('div');
+    links.className = 'profile-project-links';
 
     if (!route?.archived_at && block?.sektor) {
       const view = document.createElement('button');
@@ -195,26 +200,34 @@ function renderPersonalProjects(result) {
           detail: `${sectorPage(block.sektor)}#${blockAnchor(block.nummer)}`
         }));
       });
-      actions.appendChild(view);
+      links.appendChild(view);
     }
 
+    let climbedLabel = null;
     if (!route?.archived_at && !isProjectGrade(route?.grad)) {
-      const climbed = document.createElement('button');
-      climbed.type = 'button';
-      climbed.className = 'secondary-button profile-project-climbed';
-      climbed.textContent = 'Mark as climbed';
-      climbed.addEventListener('click', () => {
-        showTicklistPopup({
+      climbedLabel = document.createElement('label');
+      climbedLabel.className = 'route-tick-label profile-project-climbed';
+      const climbedText = document.createElement('span');
+      climbedText.textContent = 'Climbed';
+      const climbedInput = document.createElement('input');
+      climbedInput.type = 'checkbox';
+      climbedInput.title = 'Mark as climbed';
+      climbedInput.addEventListener('change', () => {
+        if (!climbedInput.checked) return;
+        const opened = showTicklistPopup({
           mode: 'add',
           entry: {
             route_id: project.route_id,
             route_name: route?.name || 'Unknown route',
             grad: route?.grad || '?'
           },
-          onSuccess: () => document.dispatchEvent(new CustomEvent('reloadCurrentPage'))
+          onSuccess: () => document.dispatchEvent(new CustomEvent('reloadCurrentPage')),
+          onCancel: () => { climbedInput.checked = false; }
         });
+        if (!opened) climbedInput.checked = false;
       });
-      actions.appendChild(climbed);
+      climbedLabel.append(climbedText, climbedInput);
+      titleRow.appendChild(climbedLabel);
     }
 
     const remove = document.createElement('button');
@@ -232,7 +245,8 @@ function renderPersonalProjects(result) {
       }
       document.dispatchEvent(new CustomEvent('reloadCurrentPage'));
     });
-    actions.appendChild(remove);
+    links.appendChild(remove);
+    actions.appendChild(links);
 
     item.append(copy, actions);
     list.appendChild(item);

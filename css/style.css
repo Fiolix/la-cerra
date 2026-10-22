@@ -711,6 +711,23 @@ body[data-current-page="start"] .news-teaser-card {
 .ticklist.sector-route-table th:nth-child(3) { width: 29%; }
 .ticklist.sector-route-table th:nth-child(4) { width: 19%; }
 
+@media (max-width: 599px) {
+  .ticklist.sector-route-table th:nth-child(1) { width: 50%; }
+  .ticklist.sector-route-table th:nth-child(2) { width: 12%; }
+  .ticklist.sector-route-table th:nth-child(3) { width: 23%; }
+  .ticklist.sector-route-table th:nth-child(4) { width: 15%; }
+
+  .ticklist.sector-route-table td {
+    padding-right: 0.4rem;
+    padding-left: 0.4rem;
+  }
+
+  .ticklist.sector-route-table th button {
+    padding-right: 0.4rem;
+    padding-left: 0.4rem;
+  }
+}
+
 .sector-route-table th {
   padding: 0;
 }
@@ -758,12 +775,27 @@ body[data-current-page="start"] .news-teaser-card {
 }
 
 .sector-route-table td > a {
-  display: inline-flex;
+  display: flex;
+  width: 100%;
+  min-width: 0;
   align-items: baseline;
   gap: 5px;
   color: inherit;
   font-weight: 650;
   text-decoration: none;
+}
+
+.sector-route-table td.ticklist-route,
+.sector-route-table td.ticklist-route > a > span {
+  min-width: 0;
+}
+
+.sector-route-table td.ticklist-route > a > span {
+  display: block;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sector-route-table td > a:hover,
@@ -2926,10 +2958,8 @@ button.secondary-button:focus-visible {
 }
 
 .profile-project-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  display: grid;
+  gap: 0.75rem;
   padding: 0.8rem 0.9rem;
   border: 1px solid #e1e7e5;
   border-radius: 0.45rem;
@@ -2938,6 +2968,22 @@ button.secondary-button:focus-visible {
 
 .profile-project-copy {
   min-width: 0;
+}
+
+.profile-project-title-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.profile-project-title-row > strong {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-project-copy strong,
@@ -2953,11 +2999,10 @@ button.secondary-button:focus-visible {
 }
 
 .profile-project-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 0.55rem;
+  display: block;
+  width: 100%;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--cerra-line);
 }
 
 .profile-project-actions button {
@@ -2965,8 +3010,28 @@ button.secondary-button:focus-visible {
   margin: 0;
 }
 
+.profile-project-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.85rem;
+}
+
 .profile-project-climbed {
-  padding: 0.42rem 0.65rem;
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--cerra-green-900);
+  font-size: 0.86rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.profile-project-climbed input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--cerra-green-800);
+  cursor: pointer;
 }
 
 /* ===== Ticklist: Bedienleiste & Anzeige-Panel ===== */
@@ -3993,13 +4058,8 @@ footer a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .profile-project-card {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .profile-project-actions {
-    justify-content: flex-start;
+  .profile-project-links {
+    flex-wrap: nowrap;
   }
 
   .route-chart-frame {

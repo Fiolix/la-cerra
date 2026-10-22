@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261021-reinzeichnung-1';
+import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261022-mobile-profile-7';
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 

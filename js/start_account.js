@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
-import { summarizeTicks } from './profile_stats.js?v=20261021-reinzeichnung-1';
-import { loadAreaStats } from './area_stats.js?v=20261021-reinzeichnung-1';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261021-reinzeichnung-1';
+import { summarizeTicks } from './profile_stats.js?v=20261022-mobile-profile-7';
+import { loadAreaStats } from './area_stats.js?v=20261022-mobile-profile-7';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261022-mobile-profile-7';
 
 let renderId = 0;
 let authListenerBound = false;

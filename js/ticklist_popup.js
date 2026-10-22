@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
+import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
 
 const GRADES = [
   '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c',
@@ -126,7 +126,7 @@ function createRouteEditor(item) {
   return editor;
 }
 
-export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null }) {
+export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null, onCancel = null }) {
   const entries = Array.isArray(entry) ? entry : (entry ? [entry] : []);
   if (entries.length === 0) return false;
 
@@ -183,9 +183,11 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
     if (event.key === 'Escape') closeDialog();
   };
 
-  const closeDialog = () => {
+  const closeDialog = (cancelled = true) => {
+    if (!overlay.isConnected) return;
     document.removeEventListener('keydown', handleKeydown);
     overlay.remove();
+    if (cancelled && typeof onCancel === 'function') onCancel();
   };
 
   closeButton.addEventListener('click', closeDialog);
@@ -199,7 +201,7 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
     status.classList.add('is-success');
     status.textContent = message;
     await new Promise(resolve => window.setTimeout(resolve, 500));
-    closeDialog();
+    closeDialog(false);
 
     if (typeof onSuccess === 'function') {
       await onSuccess();

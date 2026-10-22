@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261021-reinzeichnung-1';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261021-reinzeichnung-1';
-import { isProjectGrade } from './route_rules.js?v=20261021-reinzeichnung-1';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261021-reinzeichnung-1';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261021-reinzeichnung-1';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-mobile-profile-7';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261022-mobile-profile-7';
+import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261022-mobile-profile-7';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261022-mobile-profile-7';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
