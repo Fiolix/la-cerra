@@ -5,7 +5,7 @@ html {
 
 body {
   color: var(--cerra-ink);
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: var(--cerra-font);
   font-optical-sizing: auto;
   font-synthesis: none;
   line-height: 1.58;
@@ -174,14 +174,14 @@ figcaption,
 
 .diagram-axis-prefix {
   color: #56635e;
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: var(--cerra-font);
   font-size: 13px;
 }
 
 .slide-menu,
 .slide-menu input,
 .slide-menu button {
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-family: var(--cerra-font);
 }
 
 .slide-menu .menu-primary-list a {
