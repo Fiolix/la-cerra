@@ -1,4 +1,4 @@
-import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
 
 export function normalizeGrade(value) {
   return String(value ?? '').trim().toLowerCase().replaceAll(' ', '');

@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-mobile-profile-7';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261022-mobile-profile-7';
-import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261022-mobile-profile-7';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261022-mobile-profile-7';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-route-data-2';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261022-route-data-2';
+import { formatRouteGrade, formatRouteName, isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261022-route-data-2';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261022-route-data-2';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
@@ -89,9 +89,9 @@ function renderSearchResults(query) {
     )),
     renderSearchGroup('Routes', results.routes, route => resultLink(
       route.target,
-      'Route',
-      route.name || 'Unnamed route',
-      [isProjectGrade(route.grad) ? '' : (route.grad || '?'), route.sectorLabel, routeStatsText(route.uuid)].filter(Boolean).join(' · ')
+      isProjectGrade(route.grad) ? 'Open project' : 'Route',
+      formatRouteName(route),
+      [formatRouteGrade(route.grad), route.sectorLabel, routeStatsText(route.uuid)].filter(Boolean).join(' · ')
     ))
   ].join('');
 }
@@ -147,7 +147,7 @@ function filterAndSortRoutes() {
       if (maximumValue != null && (value == null || value > maximumValue)) return false;
     }
     if (tokens.length) {
-      const haystack = normalizeSearchText(`${route.name} ${route.buchstabe} ${route.grad} ${route.beschreibung} ${route.block.name} ${route.block.nummer} ${route.sectorLabel}`);
+      const haystack = normalizeSearchText(`${route.name} ${formatRouteName(route)} ${route.buchstabe} ${route.grad} ${formatRouteGrade(route.grad)} ${route.beschreibung} ${route.block.name} ${route.block.nummer} ${route.sectorLabel}`);
       if (!tokens.every(token => haystack.includes(token))) return false;
     }
     return true;
@@ -198,7 +198,7 @@ function renderRouteList() {
   const projectCount = routes.filter(route => isProjectGrade(route.grad)).length;
   const establishedCount = routes.length - projectCount;
   count.textContent = projectCount
-    ? `${routes.length} lines · ${establishedCount} established · ${projectCount} open ${projectCount === 1 ? 'project' : 'projects'}`
+    ? `${routes.length} lines · ${establishedCount} ${establishedCount === 1 ? 'route' : 'routes'} · ${projectCount} open ${projectCount === 1 ? 'project' : 'projects'}`
     : `${routes.length} ${routes.length === 1 ? 'route' : 'routes'}`;
   container.removeAttribute('aria-busy');
 
@@ -213,15 +213,16 @@ function renderRouteList() {
   const sortIndicator = key => currentSort.key === key ? (currentSort.direction === 'asc' ? '↑' : '↓') : '';
   const tableRows = pageRoutes.map(route => {
     const project = isProjectGrade(route.grad);
+    const routeName = formatRouteName(route);
     return `
       <tr class="public-route-main-row">
         <td class="ticklist-route">
           <a href="#" class="public-route-name" data-page="${escapeHtml(route.target)}">
-            <span>${escapeHtml(route.name || 'Unnamed route')}</span>
+            <span>${escapeHtml(routeName)}</span>
           </a>
         </td>
         <td class="public-route-grade${project ? ' is-project' : ''}">
-          ${project ? '<span class="route-grade-empty" aria-label="No grade"></span>' : `<a href="#" data-page="${escapeHtml(route.target)}">${escapeHtml(String(route.grad).toUpperCase())}</a>`}
+          ${project ? '<span class="route-grade-project" title="Open project">Proj.</span>' : `<a href="#" data-page="${escapeHtml(route.target)}">${escapeHtml(formatRouteGrade(route.grad))}</a>`}
         </td>
         <td class="public-route-rating">${routeRatingHtml(route.uuid)}</td>
         <td class="public-route-user-grade">${routeUserGradeHtml(route.uuid)}</td>

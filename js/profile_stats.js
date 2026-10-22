@@ -15,14 +15,14 @@ function highestGrade(ticks) {
   let highest = null;
 
   for (const tick of ticks) {
-    const grade = tick.route?.grad;
+    const grade = String(tick.route?.grad ?? '').trim().toLowerCase();
     if (!gradeValue.has(grade)) continue;
     if (highest === null || gradeValue.get(grade) > gradeValue.get(highest)) {
       highest = grade;
     }
   }
 
-  return highest || '-';
+  return highest ? highest.toUpperCase() : '—';
 }
 
 export function summarizeTicks(ticks = []) {

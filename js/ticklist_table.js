@@ -3,8 +3,9 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261022-mobile-profile-7';
-import { sectorLabel } from './sector_visibility.js?v=20261022-mobile-profile-7';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261022-route-data-2';
+import { sectorLabel } from './sector_visibility.js?v=20261022-route-data-2';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261022-route-data-2';
 
 
 let tickData = [];
@@ -326,8 +327,8 @@ for (const entry of pageItems) {
 
   html += `
     <tr>
-      <td class="ticklist-route">${routePage && !entry.route?.archived_at ? `<a href="#" data-page="${routePage}">${entry.route?.name ?? '-'}</a>` : (entry.route?.name ?? '-')}${entry.route?.archived_at ? ' <span class="ticklist-archived">Archived</span>' : ''}</td>
-      <td style="text-align: center;">${entry.route?.grad ?? '-'}</td>
+      <td class="ticklist-route">${routePage && !entry.route?.archived_at ? `<a href="#" data-page="${routePage}">${formatRouteName(entry.route)}</a>` : formatRouteName(entry.route)}${entry.route?.archived_at ? ' <span class="ticklist-archived">Archived</span>' : ''}</td>
+      <td style="text-align: center;">${formatRouteGrade(entry.route?.grad, { fallback: '—' })}</td>
       ${tdFlash}
       ${tdRating}
       ${tdSuggested}
@@ -482,8 +483,8 @@ window.editTick = (tickId, userId) => {
     mode: 'edit',
     entry: {
       route_id: route_id,
-      route_name: entry.route?.name ?? 'Unknown route',
-      grad: entry.route?.grad ?? '?',
+      route_name: formatRouteName(entry.route),
+      grad: formatRouteGrade(entry.route?.grad),
       rating: entry.rating ?? '',
       flash: entry.flash ?? false,
       grade_suggestion: entry.grade_suggestion ?? ''

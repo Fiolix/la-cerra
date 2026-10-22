@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261022-mobile-profile-7';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261022-route-data-2';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261022-mobile-profile-7';
-import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261022-mobile-profile-7';
-import { compareGrades } from './grade_utils.js?v=20261022-mobile-profile-7';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261022-mobile-profile-7';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261022-route-data-2';
+import { formatRouteGrade, formatRouteName, isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261022-route-data-2';
+import { compareGrades } from './grade_utils.js?v=20261022-route-data-2';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261022-route-data-2';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;
@@ -111,6 +111,15 @@ function formatBlockHeight(value) {
   return /^\d+(?:[.,]\d+)?$/.test(height) ? `${height} m` : height;
 }
 
+function formatLineSummary(entries) {
+  const projects = entries.filter(({ route }) => isProjectGrade(route.grad)).length;
+  const routes = entries.length - projects;
+  const parts = [`${entries.length} ${entries.length === 1 ? 'line' : 'lines'}`];
+  if (routes) parts.push(`${routes} ${routes === 1 ? 'route' : 'routes'}`);
+  if (projects) parts.push(`${projects} open ${projects === 1 ? 'project' : 'projects'}`);
+  return parts.join(' · ');
+}
+
 function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
   const diagram = document.getElementById('routen-diagramm');
   if (!diagram || !Array.isArray(blocks) || !Array.isArray(routes)) return;
@@ -154,7 +163,7 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
     const tokens = query.split(/\s+/).filter(Boolean);
     const filtered = rows.filter(({ route, block }) => {
       if (!tokens.length) return true;
-      const haystack = normalizeSearchText(`${route.buchstabe} ${route.name} ${route.grad} ${route.beschreibung} ${block.nummer} ${block.name}`);
+      const haystack = normalizeSearchText(`${route.buchstabe} ${route.name} ${formatRouteName(route)} ${route.grad} ${formatRouteGrade(route.grad)} ${route.beschreibung} ${block.nummer} ${block.name}`);
       return tokens.every(token => haystack.includes(token));
     });
 
@@ -184,8 +193,8 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
     });
 
     count.textContent = query
-      ? `${filtered.length} of ${rows.length} ${rows.length === 1 ? 'route' : 'routes'}`
-      : `${rows.length} ${rows.length === 1 ? 'route' : 'routes'}`;
+      ? `${formatLineSummary(filtered)} · ${rows.length} total lines`
+      : formatLineSummary(rows);
 
     if (!filtered.length) {
       table.innerHTML = '<p class="route-directory-empty">No matching routes were found.</p>';
@@ -208,16 +217,17 @@ function renderSectorRouteDirectory(blocks, routes, sektor, publicRouteStats) {
           ${filtered.map(({ route, block }) => {
             const routeTarget = `${page}#route-${route.uuid}`;
             const project = isProjectGrade(route.grad);
+            const routeName = formatRouteName(route);
             const stats = getRouteStats(publicRouteStats, route.uuid);
             return `
               <tr class="sector-route-main-row">
                 <td class="ticklist-route">
-                  <a href="#" data-page="${escapeHtml(routeTarget)}" title="${escapeHtml(route.name || 'Unnamed route')}">
-                    <span>${escapeHtml(route.name || 'Unnamed route')}</span>
+                  <a href="#" data-page="${escapeHtml(routeTarget)}" title="${escapeHtml(routeName)}">
+                    <span>${escapeHtml(routeName)}</span>
                   </a>
                 </td>
                 <td class="sector-route-grade${project ? ' is-project' : ''}">
-                  ${project ? '<span class="route-grade-empty" aria-label="No grade"></span>' : `<a href="#" data-page="${escapeHtml(routeTarget)}">${escapeHtml(String(route.grad || '?').toUpperCase())}</a>`}
+                  ${project ? '<span class="route-grade-project" title="Open project">Proj.</span>' : `<a href="#" data-page="${escapeHtml(routeTarget)}">${escapeHtml(formatRouteGrade(route.grad))}</a>`}
                 </td>
                 <td class="sector-route-rating"><span class="route-stat-item" title="Average community rating">${renderRatingStars(stats.ratingAverage, stats.ratingCount)}</span></td>
                 <td class="sector-route-user-grade"><strong>${escapeHtml(stats.userGrade || '—')}</strong>${stats.userGradeCount ? ` <small>(${stats.userGradeCount})</small>` : ''}</td>
@@ -538,7 +548,8 @@ for (const entry of tickStats) {
     const routesHtml = blockRoutes.map(route => {
   const rawGrade = String(route.grad ?? '').trim();
   const isProject = isProjectGrade(rawGrade);
-  const displayedGrade = isProject ? 'Project' : (rawGrade.toUpperCase() || '?');
+  const displayedGrade = formatRouteGrade(rawGrade);
+  const displayedName = formatRouteName(route);
   const routeDescription = route.beschreibung || (isProject ? 'open project' : '');
   const isTicked = !isProject && tickedRouteIds.has(route.uuid);
   const isPersonalProject = !isTicked && projectRouteIds.has(route.uuid);
@@ -580,7 +591,7 @@ const ratingDisplay = ratingCount > 0
     <div${route._displayAlias ? '' : ` id=\"route-${route.uuid}\"`} class=\"route${isTicked ? ' route-completed' : ''}${isPersonalProject ? ' route-personal-project' : ''}\" data-route-id=\"${route.uuid}\">
       <div class=\"route-title\">
         <span class=\"route-label\">${route.buchstabe}</span>
-        <span class=\"route-name\">${route.name ?? ''}</span>
+        <span class=\"route-name\">${escapeHtml(displayedName)}</span>
         ${isTicked ? '<span class="route-completed-mark" title="Already in your ticklist" aria-label="Climbed">✓</span>' : ''}
         ${isPersonalProject ? '<span class="route-project-mark" title="Saved as your project" aria-label="My project">P</span>' : ''}
         <span class=\"route-grade\">${displayedGrade || '?'}</span>

@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-mobile-profile-7';
-import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-route-data-2';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261022-route-data-2';
 
 let catalog = null;
 let loadError = null;
@@ -94,7 +94,7 @@ function renderQuickResults(query) {
     <section><h3>Boulders</h3>${results.blocks.map(block => quickResult(block.target, 'Boulder', `${block.nummer || '–'} · ${block.name || 'Unnamed boulder'}`, block.sectorLabel)).join('')}</section>
   `);
   if (results.routes.length) sections.push(`
-    <section><h3>Routes</h3>${results.routes.map(route => quickResult(route.target, 'Route', route.name || 'Unnamed route', [isProjectGrade(route.grad) ? '' : (route.grad || '?'), route.sectorLabel].filter(Boolean).join(' · '))).join('')}</section>
+    <section><h3>Routes</h3>${results.routes.map(route => quickResult(route.target, formatRouteGrade(route.grad) === 'Project' ? 'Open project' : 'Route', formatRouteName(route), [formatRouteGrade(route.grad), route.sectorLabel].filter(Boolean).join(' · '))).join('')}</section>
   `);
   resultsRoot.innerHTML = sections.join('');
 }

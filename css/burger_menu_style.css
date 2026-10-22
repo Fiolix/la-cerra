@@ -473,7 +473,7 @@
 
 /* Loginbereich angepasst */
 .login-block {
-  margin-top: 2rem;
+  margin-top: 0;
   padding: 1rem;
   border-top: 1px solid #aaa;
   text-align: center;

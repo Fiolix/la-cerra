@@ -1,6 +1,7 @@
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261022-mobile-profile-7';
-import { compareGrades } from './grade_utils.js?v=20261022-mobile-profile-7';
+import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261022-route-data-2';
+import { compareGrades } from './grade_utils.js?v=20261022-route-data-2';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261022-route-data-2';
 
 let catalogPromise = null;
 
@@ -131,7 +132,7 @@ export function searchCatalog(catalog, query, { limitPerGroup = Infinity } = {})
     .slice(0, limitPerGroup);
 
   const routes = catalog.routes
-    .filter(route => matchesAllTokens(`${route.buchstabe} ${route.name} ${route.grad} ${route.beschreibung} ${route.block.nummer} ${route.block.name} ${route.sectorLabel}`, tokens))
+    .filter(route => matchesAllTokens(`${route.buchstabe} ${route.name} ${formatRouteName(route)} ${route.grad} ${formatRouteGrade(route.grad)} ${route.beschreibung} ${route.block.nummer} ${route.block.name} ${route.sectorLabel}`, tokens))
     .sort((a, b) => (
       resultScore(a.name, `${a.buchstabe} ${a.name} ${a.grad} ${a.beschreibung} ${a.block.name} ${a.sectorLabel}`, query)
       - resultScore(b.name, `${b.buchstabe} ${b.name} ${b.grad} ${b.beschreibung} ${b.block.name} ${b.sectorLabel}`, query)

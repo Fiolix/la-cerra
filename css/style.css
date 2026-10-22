@@ -5537,6 +5537,14 @@ body.site-search-is-open {
   height: 1em;
 }
 
+.route-grade-project {
+  color: var(--cerra-muted);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
 .public-route-table tr.public-route-meta-row td {
   text-align: center;
 }

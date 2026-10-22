@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261022-mobile-profile-7";
+const ASSET_VERSION = "20261022-route-data-2";
 
 const PAGE_ALIASES = {
   start: "start.html",

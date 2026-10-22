@@ -2,12 +2,12 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20261022-mobile-profile-7';
-import { summarizeTicks } from './profile_stats.js?v=20261022-mobile-profile-7';
-import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261022-mobile-profile-7';
-import { showTicklistPopup } from './ticklist_popup.js?v=20261022-mobile-profile-7';
-import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
-import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261022-mobile-profile-7';
+import { initTicklistTable } from './ticklist_table.js?v=20261022-route-data-2';
+import { summarizeTicks } from './profile_stats.js?v=20261022-route-data-2';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261022-route-data-2';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261022-route-data-2';
+import { formatRouteGrade, formatRouteName, isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
+import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261022-route-data-2';
 
 let authListenerBound = false;
 
@@ -171,11 +171,11 @@ function renderPersonalProjects(result) {
     const titleRow = document.createElement('div');
     titleRow.className = 'profile-project-title-row';
     const title = document.createElement('strong');
-    title.textContent = route?.name || 'Unknown route';
+    title.textContent = formatRouteName(route);
     titleRow.appendChild(title);
     const meta = document.createElement('span');
     const sector = block?.sektor ? sectorLabel(block.sektor) : '';
-    meta.textContent = `${sector || 'Unknown sector'} · ${block?.name || `Block ${block?.nummer || '—'}`} · Fb ${route?.grad || '—'}`;
+    meta.textContent = `${sector || 'Unknown sector'} · ${block?.name || `Block ${block?.nummer || '—'}`} · Fb ${formatRouteGrade(route?.grad, { fallback: '—' })}`;
     copy.append(titleRow, meta);
 
     if (route?.archived_at) {
@@ -218,8 +218,8 @@ function renderPersonalProjects(result) {
           mode: 'add',
           entry: {
             route_id: project.route_id,
-            route_name: route?.name || 'Unknown route',
-            grad: route?.grad || '?'
+            route_name: formatRouteName(route),
+            grad: formatRouteGrade(route?.grad)
           },
           onSuccess: () => document.dispatchEvent(new CustomEvent('reloadCurrentPage')),
           onCancel: () => { climbedInput.checked = false; }
@@ -235,7 +235,7 @@ function renderPersonalProjects(result) {
     remove.className = 'text-link small danger as-link';
     remove.textContent = 'Remove project';
     remove.addEventListener('click', async () => {
-      if (!window.confirm(`Remove “${route?.name || 'this route'}” from your projects?`)) return;
+      if (!window.confirm(`Remove “${formatRouteName(route)}” from your projects?`)) return;
       remove.disabled = true;
       const update = await setPersonalProject(project.route_id, false);
       if (!update.ok) {

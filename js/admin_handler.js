@@ -1,9 +1,10 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20261022-mobile-profile-7';
-import { initUserAdministration } from './admin_users.js?v=20261022-mobile-profile-7';
-import { initGuestbookAdministration } from './admin_guestbook.js?v=20261022-mobile-profile-7';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261022-mobile-profile-7';
-import { initMapAdministration } from './admin_map.js?v=20261022-mobile-profile-7';
+import { initBlockAdministration } from './admin_blocks.js?v=20261022-route-data-2';
+import { initUserAdministration } from './admin_users.js?v=20261022-route-data-2';
+import { initGuestbookAdministration } from './admin_guestbook.js?v=20261022-route-data-2';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261022-route-data-2';
+import { initMapAdministration } from './admin_map.js?v=20261022-route-data-2';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261022-route-data-2';
 
 let authListenerBound = false;
 let blocks = [];
@@ -386,7 +387,7 @@ function renderRouteOptions() {
   filtered.forEach(route => {
     const block = blockForRoute(route);
     const option = new Option(
-      `${sectorLabel(block.sektor)} · ${block.nummer} · ${route.buchstabe || '–'} ${route.name || '(unnamed)'} (${route.grad || '-'})`,
+      `${sectorLabel(block.sektor)} · ${block.nummer} · ${route.buchstabe || '–'} ${formatRouteName(route)} (${formatRouteGrade(route.grad)})`,
       route.uuid
     );
     option.selected = route.uuid === selectedRouteId;
@@ -394,7 +395,12 @@ function renderRouteOptions() {
   });
 
   const matchingTotal = routes.filter(route => routeStatus === 'archived' ? route.archived_at : !route.archived_at).length;
-  if (count) count.textContent = `${filtered.length} of ${matchingTotal} ${routeStatus} routes`;
+  if (count) {
+    const scope = routeStatus === 'active'
+      ? 'database entries; public totals exclude unpublished sectors'
+      : 'database entries';
+    count.textContent = `${filtered.length} of ${matchingTotal} ${routeStatus} ${scope}`;
+  }
 }
 
 function showRouteInForm(routeId) {
@@ -418,7 +424,7 @@ function showRouteInForm(routeId) {
   updateBlockPreview();
 
   setText('[data-admin-form-title]', route.archived_at ? 'Archived route' : 'Route details');
-  setText('[data-admin-selection-note]', `Editing ${route.name || 'unnamed route'}`);
+  setText('[data-admin-selection-note]', `Editing ${formatRouteName(route)}`);
   setText('[data-admin-save-status]', '');
   setText('[data-admin-tick-usage]', route.archived_at ? 'Checking existing ticklists…' : '');
 
@@ -772,7 +778,7 @@ function compareBlocks(left, right) {
 
 function routeDisplayLabel(route) {
   const block = blockForRoute(route);
-  return `${sectorLabel(block?.sektor)} · ${block?.nummer || '-'} · ${route.buchstabe || '–'} ${route.name || '(unnamed)'}`;
+  return `${sectorLabel(block?.sektor)} · ${block?.nummer || '—'} · ${route.buchstabe || '–'} ${formatRouteName(route)}`;
 }
 
 function blockLabel(block) {

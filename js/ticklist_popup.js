@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261022-mobile-profile-7';
+import { isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
 
 const GRADES = [
   '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c',
