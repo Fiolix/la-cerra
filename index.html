@@ -4,24 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="A digital guide to bouldering at La Cerra in northern Sardinia, with sectors, routes, maps and practical visitor information." />
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#102d27" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bouldering La Cerra" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="Bouldering La Cerra" />
+  <meta property="og:description" content="A digital guide to bouldering at La Cerra in northern Sardinia, with sectors, routes, maps and practical visitor information." />
+  <meta property="og:image" content="img/header_index-1600.jpg" />
+  <meta property="og:url" content="./" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bouldering La Cerra" />
+  <meta name="twitter:description" content="A digital guide to bouldering at La Cerra in northern Sardinia, with sectors, routes, maps and practical visitor information." />
+  <meta name="twitter:image" content="img/header_index-1600.jpg" />
   <title>Bouldering La Cerra</title>
+  <link rel="canonical" href="./" />
+  <link rel="icon" href="img/home_icon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="img/home_icon.png" />
   <link rel="preconnect" href="https://esm.sh" crossorigin />
   <link rel="preconnect" href="https://ymeumqnmcumgqlffwwjb.supabase.co" crossorigin />
   <link rel="preload" href="fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css?v=6.13.0" />
-  <link rel="stylesheet" href="css/style.css?v=20261023-design-system-5" />
-  <link rel="stylesheet" href="css/burger_menu_style.css?v=20261023-design-system-5" />
-  <link rel="stylesheet" href="css/typography.css?v=20261023-design-system-5" />
-  <script defer src="js/content_loader.js?v=20261022-route-data-2"></script>
+  <link rel="stylesheet" href="css/style.css?v=20261025-news-inline-18" />
+  <link rel="stylesheet" href="css/burger_menu_style.css?v=20261025-news-inline-18" />
+  <link rel="stylesheet" href="css/typography.css?v=20261025-news-inline-18" />
+  <script defer src="js/content_loader.js?v=20261025-news-inline-18"></script>
+  <script id="page-structured-data" type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","name":"Bouldering La Cerra","description":"A digital guide to bouldering at La Cerra in northern Sardinia, with sectors, routes, maps and practical visitor information."}
+  </script>
 </head>
 <body>
+  <a class="skip-link" href="#content">Skip to main content</a>
   <div class="site-bar">
     <button class="menu-icon" type="button" aria-label="Open menu" aria-controls="slide-menu" aria-expanded="false"><span aria-hidden="true">☰</span></button>
     <a href="#" class="site-brand" data-page="start.html" aria-label="La Cerra home">
       <span>BOULDERING</span>
       <strong>LA CERRA</strong>
     </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#" data-page="la_cerra.html" data-nav-section="bouldering">Bouldering</a>
+      <a href="#" data-page="routes.html" data-nav-section="routes">Routes</a>
+      <a href="#" data-page="sardinia.html" data-nav-section="sardinia">Sardinia</a>
+      <a href="#" data-page="before_you_go.html" data-nav-section="visit">Plan your visit</a>
+      <a href="#" data-page="agriturismo.html" data-nav-section="stay">Stay</a>
+    </nav>
     <button class="site-search-button" type="button" data-site-search-open aria-label="Search routes, boulders and sectors" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
     </button>
@@ -34,7 +60,7 @@
       sizes="100vw"
       width="1600"
       height="1200"
-      alt="La Cerra"
+      alt="Granite boulders and landscape at La Cerra in northern Sardinia"
       class="header-image"
       decoding="async"
       fetchpriority="high"
@@ -46,7 +72,7 @@
     </div>
   </header>
 
-  <main id="content">
+  <main id="content" tabindex="-1">
     <!-- Dynamisch geladene Inhalte erscheinen hier -->
   </main>
 
@@ -61,7 +87,7 @@
   </footer>
 
 <!-- Burger-Menu nur einmalig laden -->
-<script type="module" src="/la-cerra/js/burger_menu.js?v=20261022-route-data-2"></script>
-<script type="module" src="/la-cerra/js/site_search.js?v=20261022-route-data-2"></script>
+<script type="module" src="/la-cerra/js/burger_menu.js?v=20261025-news-inline-18"></script>
+<script type="module" src="/la-cerra/js/site_search.js?v=20261025-news-inline-18"></script>
 </body>
 </html>

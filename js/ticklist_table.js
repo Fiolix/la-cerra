@@ -3,9 +3,9 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261022-route-data-2';
-import { sectorLabel } from './sector_visibility.js?v=20261022-route-data-2';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261022-route-data-2';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261025-news-inline-18';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261025-news-inline-18';
+import { formatRouteGrade, formatRouteName, routeNameTableClass } from './route_rules.js?v=20261025-news-inline-18';
 
 
 let tickData = [];
@@ -32,6 +32,15 @@ let routeMean = {}; // { [route_id]: '6b+' | '7a' | ... }
 let currentPage = 1;
 let currentSort = { column: null, direction: 'asc' };
 const itemsPerPage = 20;
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
 
 // Sichtbare Spalten (Standard: Route, Fb, Flash, Rating = true; Optional aus)
 const visibleColumnsKey = 'ticklist_visible_columns';
@@ -143,7 +152,7 @@ const routeIds = Array.from(new Set((tickData || []).map(t => t.route_id).filter
 await loadUserMeansForRoutes(routeIds);
 
 // Controls (Sector + Display options) initialisieren
-initTicklistControls();
+await initTicklistControls();
 
 // Tabelle zeichnen
 renderTable();
@@ -151,7 +160,7 @@ await onTickDataChanged?.(tickData);
 
 }
 
-function initTicklistControls() {
+async function initTicklistControls() {
   // ---- Sichtbare Spalten aus localStorage laden
   try {
     const savedCols = JSON.parse(localStorage.getItem(visibleColumnsKey));
@@ -178,24 +187,33 @@ function initTicklistControls() {
     optAll.textContent = 'All sectors';
     sel.appendChild(optAll);
 
-    // Einzigartige Sektoren aus den Tickdaten sammeln
-    const sectors = new Set();
+    // Alle veröffentlichten Sektoren anbieten. Persönliche Einträge aus einem
+    // inzwischen ausgeblendeten Sektor bleiben zusätzlich filterbar.
+    const visibility = await loadSectorVisibility();
+    const sectors = new Map();
+    visibility.sectors
+      .filter(sector => sector.is_visible)
+      .forEach(sector => sectors.set(sector.slug, sector.label));
+
     for (const t of tickData) {
       const s = t.route?.block?.sektor;
-      if (s) sectors.add(s);
+      if (s && !sectors.has(s)) sectors.set(s, sectorLabel(s));
     }
+
     // Sortiert einfügen (nach Anzeigename)
-    Array.from(sectors)
-      .sort((a, b) => sectorLabel(a).localeCompare(sectorLabel(b)))
-      .forEach(sektor => {
+    Array.from(sectors, ([slug, label]) => ({ slug, label }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+      .forEach(sector => {
         const opt = document.createElement('option');
-        opt.value = sektor;
-        opt.textContent = sectorLabel(sektor);
+        opt.value = sector.slug;
+        opt.textContent = sector.label;
         sel.appendChild(opt);
       });
 
     // Auswahl setzen
-    sel.value = currentSector || 'all';
+    const savedSectorExists = Array.from(sel.options).some(option => option.value === currentSector);
+    currentSector = savedSectorExists ? currentSector : 'all';
+    sel.value = currentSector;
 
     // Event: Änderung anwenden + merken
     sel.addEventListener('change', () => {
@@ -293,17 +311,23 @@ if (currentSort.column) {
 // 3) Pagination
 const start = (currentPage - 1) * itemsPerPage;
 const pageItems = rows.slice(start, start + itemsPerPage);
+const colCount = 2
+  + (visibleColumns.flash ? 1 : 0)
+  + (visibleColumns.rating ? 1 : 0)
+  + (visibleColumns.suggested ? 1 : 0)
+  + (visibleColumns.userMean ? 1 : 0)
+  + (visibleColumns.date ? 1 : 0);
 
 // 4) Header dynamisch
 let html = `
   <table class="ticklist">
     <thead>
       <tr>
-        <th class="ticklist-route" data-sort="route">Route</th>
-        <th style="text-align: center;" data-sort="grad">Fb</th>
-        ${visibleColumns.flash    ? `<th style="text-align: center;" data-sort="flash">Flash</th>` : ''}
-        ${visibleColumns.rating   ? `<th style="text-align: center;" data-sort="rating">Rating</th>` : ''}
-        ${visibleColumns.suggested? `<th style="text-align: center;" data-sort="suggestion">Sugg.</th>` : ''}
+        <th class="ticklist-route" aria-sort="${currentSort.column === 'route' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="ticklist-sort-button" data-sort="route">Route <span aria-hidden="true">${currentSort.column === 'route' ? (currentSort.direction === 'asc' ? '↑' : '↓') : ''}</span></button></th>
+        <th aria-sort="${currentSort.column === 'grad' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="ticklist-sort-button" data-sort="grad">Fb <span aria-hidden="true">${currentSort.column === 'grad' ? (currentSort.direction === 'asc' ? '↑' : '↓') : ''}</span></button></th>
+        ${visibleColumns.flash    ? `<th aria-sort="${currentSort.column === 'flash' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="ticklist-sort-button" data-sort="flash">Flash <span aria-hidden="true">${currentSort.column === 'flash' ? (currentSort.direction === 'asc' ? '↑' : '↓') : ''}</span></button></th>` : ''}
+        ${visibleColumns.rating   ? `<th aria-sort="${currentSort.column === 'rating' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="ticklist-sort-button" data-sort="rating">Rating <span aria-hidden="true">${currentSort.column === 'rating' ? (currentSort.direction === 'asc' ? '↑' : '↓') : ''}</span></button></th>` : ''}
+        ${visibleColumns.suggested? `<th aria-sort="${currentSort.column === 'suggestion' ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="ticklist-sort-button" data-sort="suggestion">Sugg. <span aria-hidden="true">${currentSort.column === 'suggestion' ? (currentSort.direction === 'asc' ? '↑' : '↓') : ''}</span></button></th>` : ''}
         ${visibleColumns.userMean ? `<th style="text-align: center;">User mean</th>` : ''}
         ${visibleColumns.date     ? `<th style="text-align: center;">Date</th>` : ''}
       </tr>
@@ -311,11 +335,23 @@ let html = `
     <tbody>
 `;
 
+if (!pageItems.length) {
+  html += `
+    <tr>
+      <td class="profile-ticklist-empty" colspan="${colCount}">No climbed routes in this sector yet.</td>
+    </tr>
+  `;
+}
+
 for (const entry of pageItems) {
   const stars = renderStars(entry.rating);
   const sektor = entry.route?.block?.sektor;
   const blockPage = sektor ? `${sektor}.html` : null;
   const routePage = blockPage && entry.route?.uuid ? `${blockPage}#route-${entry.route.uuid}` : null;
+  const routeName = formatRouteName(entry.route);
+  const routeNameClass = routeNameTableClass(entry.route);
+  const escapedRouteName = escapeHtml(routeName);
+  const routeNameMarkup = `<span class="${routeNameClass}">${escapedRouteName}</span>`;
 
   // optionale Zellen vorbereiten
   const tdFlash    = visibleColumns.flash    ? `<td style="text-align: center;">${entry.flash ? '✅' : ''}</td>` : '';
@@ -327,7 +363,7 @@ for (const entry of pageItems) {
 
   html += `
     <tr>
-      <td class="ticklist-route">${routePage && !entry.route?.archived_at ? `<a href="#" data-page="${routePage}">${formatRouteName(entry.route)}</a>` : formatRouteName(entry.route)}${entry.route?.archived_at ? ' <span class="ticklist-archived">Archived</span>' : ''}</td>
+      <td class="ticklist-route">${routePage && !entry.route?.archived_at ? `<a href="#" data-page="${escapeHtml(routePage)}" title="${escapedRouteName}">${routeNameMarkup}</a>` : routeNameMarkup}${entry.route?.archived_at ? ' <span class="ticklist-archived">Archived</span>' : ''}</td>
       <td style="text-align: center;">${formatRouteGrade(entry.route?.grad, { fallback: '—' })}</td>
       ${tdFlash}
       ${tdRating}
@@ -338,22 +374,11 @@ for (const entry of pageItems) {
   `;
 
 
-// Innerhalb der renderTable()-Schleife
-// Innerhalb der renderTable()-Schleife
-// aktuelle Spaltenanzahl berechnen:
-// 2 fixe Spalten (Route, Fb) + optionale sichtbare
-const colCount = 2
-  + (visibleColumns.flash ? 1 : 0)
-  + (visibleColumns.rating ? 1 : 0)
-  + (visibleColumns.suggested ? 1 : 0)
-  + (visibleColumns.userMean ? 1 : 0)
-  + (visibleColumns.date ? 1 : 0);
-
 html += `
   <tr class="ticklist-meta">
     <td colspan="${colCount}">
       ${sektor ? `<a href="#" data-page="${blockPage}" data-scrolltop="1">${sectorLabel(sektor)}</a>` : '–'} &nbsp;|
-      <span class="edit-tick" data-id="${entry.id}" style="cursor: pointer;">Edit</span>
+      <button type="button" class="edit-tick text-link small as-link" data-id="${entry.id}">Edit</button>
     </td>
   </tr>
 `;
@@ -371,11 +396,10 @@ document.querySelectorAll('.edit-tick').forEach(el => {
   });
 });
 
-// Spaltenüberschriften klickbar machen (Sortierung)
-container.querySelectorAll('th[data-sort]').forEach(th => {
-  th.style.cursor = 'pointer';
-  th.addEventListener('click', () => {
-    const column = th.dataset.sort;
+// Spaltenüberschriften per Maus und Tastatur sortierbar machen
+container.querySelectorAll('.ticklist-sort-button[data-sort]').forEach(button => {
+  button.addEventListener('click', () => {
+    const column = button.dataset.sort;
     if (currentSort.column === column) {
       currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
     } else {
@@ -390,19 +414,19 @@ container.querySelectorAll('th[data-sort]').forEach(th => {
 const totalPages = Math.ceil(rows.length / itemsPerPage);
 
 // Dezente Pagination: Pfeile + Seitenzahlen (ohne große Buttons)
-let pageControls = '<nav class="pagination">';
+let pageControls = '<nav class="pagination" aria-label="Tick list pages">';
 
 // Prev-Pfeil
 if (currentPage > 1) {
   pageControls += `<a href="#" class="page-prev" data-tick-page="${currentPage - 1}">‹</a>`;
 } else {
-  pageControls += `<span class="page-prev disabled">‹</span>`;
+  pageControls += `<span class="page-prev disabled" aria-hidden="true">‹</span>`;
 }
 
 // Seitenzahlen
 for (let i = 1; i <= totalPages; i++) {
   if (i === currentPage) {
-    pageControls += `<span class="page current">${i}</span>`;
+    pageControls += `<span class="page current" aria-current="page">${i}</span>`;
   } else {
     pageControls += `<a href="#" class="page" data-tick-page="${i}">${i}</a>`;
   }
@@ -412,7 +436,7 @@ for (let i = 1; i <= totalPages; i++) {
 if (currentPage < totalPages) {
   pageControls += `<a href="#" class="page-next" data-tick-page="${currentPage + 1}">›</a>`;
 } else {
-  pageControls += `<span class="page-next disabled">›</span>`;
+  pageControls += `<span class="page-next disabled" aria-hidden="true">›</span>`;
 }
 
 pageControls += '</nav>';

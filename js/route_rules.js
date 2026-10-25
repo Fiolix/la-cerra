@@ -23,6 +23,11 @@ export function formatRouteName(routeOrName, grade = null) {
   return name;
 }
 
+export function routeNameTableClass(routeOrName, grade = null) {
+  const name = formatRouteName(routeOrName, grade);
+  return /\s/.test(name) ? 'route-name-text' : 'route-name-text is-single-word';
+}
+
 export function formatRouteGrade(value, { projectLabel = 'Project', fallback = '?' } = {}) {
   const grade = String(value ?? '').trim();
   if (isProjectGrade(grade)) return projectLabel;

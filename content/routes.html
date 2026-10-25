@@ -5,11 +5,11 @@
   </header>
 
   <div class="routes-tabs" role="tablist" aria-label="Route directory">
-    <button type="button" role="tab" aria-selected="false" data-routes-tab="search">Search results</button>
-    <button type="button" role="tab" aria-selected="true" data-routes-tab="all">All routes</button>
+    <button id="routes-search-tab" type="button" role="tab" aria-selected="false" aria-controls="routes-search-panel" tabindex="-1" data-routes-tab="search">Search results</button>
+    <button id="routes-all-tab" type="button" role="tab" aria-selected="true" aria-controls="routes-all-panel" tabindex="0" data-routes-tab="all">All routes</button>
   </div>
 
-  <section class="routes-tab-panel" data-routes-panel="search" hidden>
+  <section id="routes-search-panel" class="routes-tab-panel" role="tabpanel" aria-labelledby="routes-search-tab" data-routes-panel="search" hidden>
     <form class="routes-search-form" data-routes-search-form role="search">
       <label for="routes-search-input">Search La Cerra</label>
       <div class="routes-search-row">
@@ -21,7 +21,7 @@
     <div class="routes-search-results" data-routes-search-results></div>
   </section>
 
-  <section class="routes-tab-panel" data-routes-panel="all">
+  <section id="routes-all-panel" class="routes-tab-panel" role="tabpanel" aria-labelledby="routes-all-tab" data-routes-panel="all">
     <div class="route-directory-controls">
       <div class="route-filter route-filter-keyword">
         <label for="route-list-keyword">Filter routes</label>

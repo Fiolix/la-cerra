@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-route-data-2';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261022-route-data-2';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261025-news-inline-18';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261025-news-inline-18';
 
 let catalog = null;
 let loadError = null;

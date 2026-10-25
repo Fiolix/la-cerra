@@ -1,4 +1,4 @@
-const FACTS_URL = '/la-cerra/data/facts.json?v=20261022-route-data-2';
+const FACTS_URL = '/la-cerra/data/facts.json?v=20261025-news-inline-18';
 const FACT_ORDER_KEY = 'did_you_know_order_v1';
 const LAST_FACT_KEY = 'did_you_know_last_v1';
 

@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261022-route-data-2';
+import { applySectorVisibility } from './sector_visibility.js?v=20261025-news-inline-18';
 
 function menuItemIcon(name) {
   const paths = {
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   navMenu.classList.add("slide-menu");
   navMenu.id = "slide-menu";
+  navMenu.setAttribute('aria-label', 'Site menu');
   navMenu.innerHTML = `
     <div class="menu-heading">
       <a href="#" class="menu-brand" data-page="start" title="Home">
@@ -173,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261022-route-data-2';
+import { initAuth } from './auth_handler.js?v=20261025-news-inline-18';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

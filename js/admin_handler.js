@@ -1,10 +1,10 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20261022-route-data-2';
-import { initUserAdministration } from './admin_users.js?v=20261022-route-data-2';
-import { initGuestbookAdministration } from './admin_guestbook.js?v=20261022-route-data-2';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261022-route-data-2';
-import { initMapAdministration } from './admin_map.js?v=20261022-route-data-2';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261022-route-data-2';
+import { initBlockAdministration } from './admin_blocks.js?v=20261025-news-inline-18';
+import { initUserAdministration } from './admin_users.js?v=20261025-news-inline-18';
+import { initGuestbookAdministration } from './admin_guestbook.js?v=20261025-news-inline-18';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261025-news-inline-18';
+import { initMapAdministration } from './admin_map.js?v=20261025-news-inline-18';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261025-news-inline-18';
 
 let authListenerBound = false;
 let blocks = [];

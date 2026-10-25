@@ -4,7 +4,7 @@ import {
   applySectorVisibility,
   invalidateSectorVisibilityCache,
   sectorLabel
-} from './sector_visibility.js?v=20261022-route-data-2';
+} from './sector_visibility.js?v=20261025-news-inline-18';
 
 const IMAGE_PATTERN = /^[a-z0-9._-]+\.(?:jpe?g|png|webp)$/i;
 

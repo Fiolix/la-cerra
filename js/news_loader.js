@@ -1,4 +1,4 @@
-const NEWS_URL = '/la-cerra/data/news.json?v=20261022-route-data-2';
+const NEWS_URL = '/la-cerra/data/news.json?v=20261025-news-inline-18';
 
 let newsPromise = null;
 
@@ -81,7 +81,22 @@ function createArticle(item) {
   body.className = 'news-full-text';
   (Array.isArray(item.text) ? item.text : [item.text]).filter(Boolean).forEach(paragraph => {
     const element = document.createElement('p');
-    element.textContent = paragraph;
+    if (typeof paragraph === 'string') {
+      element.textContent = paragraph;
+    } else if (Array.isArray(paragraph?.parts)) {
+      paragraph.parts.forEach(part => {
+        if (!part?.text) return;
+        if (!part.page) {
+          element.appendChild(document.createTextNode(part.text));
+          return;
+        }
+        const anchor = document.createElement('a');
+        anchor.href = '#';
+        anchor.dataset.page = part.page;
+        anchor.textContent = part.text;
+        element.appendChild(anchor);
+      });
+    }
     body.appendChild(element);
   });
 

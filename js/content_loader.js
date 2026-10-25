@@ -1,14 +1,14 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261022-route-data-2";
+const ASSET_VERSION = "20261025-news-inline-18";
 
 const PAGE_ALIASES = {
   start: "start.html",
   news: "news.html",
   routes: "routes.html",
-  bouldering: "sardinia.html",
-  "bouldering.html": "sardinia.html",
+  bouldering: "la_cerra.html",
+  "bouldering.html": "la_cerra.html",
   la_cerra: "la_cerra.html",
   "la-cerra": "la_cerra.html",
   "la-cerra.html": "la_cerra.html",
@@ -33,8 +33,8 @@ const PAGE_ALIASES = {
   "piru-ruju": "piru_ruju.html",
   boulderplanet: "boulderplanet.html",
   sardinia: "sardinia.html",
-  gallura: "sardinia.html",
-  "gallura.html": "sardinia.html",
+  gallura: "sardinia.html#gallura",
+  "gallura.html": "sardinia.html#gallura",
   register: "register.html",
   profile: "profile.html",
   guestbook: "guestbook.html",
@@ -79,9 +79,13 @@ function normalizePage(page) {
   const rawPage = String(page || "start.html");
   const hashIndex = rawPage.indexOf("#");
   const rawBase = hashIndex >= 0 ? rawPage.slice(0, hashIndex) : rawPage;
-  const anchor = hashIndex >= 0 ? rawPage.slice(hashIndex + 1) : "";
-  const alias = PAGE_ALIASES[rawBase];
-  const basePage = alias || (rawBase.endsWith(".html") ? rawBase : `${rawBase}.html`);
+  const requestedAnchor = hashIndex >= 0 ? rawPage.slice(hashIndex + 1) : "";
+  const aliasTarget = PAGE_ALIASES[rawBase] || "";
+  const aliasHashIndex = aliasTarget.indexOf("#");
+  const aliasBase = aliasHashIndex >= 0 ? aliasTarget.slice(0, aliasHashIndex) : aliasTarget;
+  const aliasAnchor = aliasHashIndex >= 0 ? aliasTarget.slice(aliasHashIndex + 1) : "";
+  const basePage = aliasBase || (rawBase.endsWith(".html") ? rawBase : `${rawBase}.html`);
+  const anchor = requestedAnchor || aliasAnchor;
 
   if (!/^[a-z0-9_-]+\.html$/i.test(basePage)) {
     throw new Error("Ungültiger Seitenname");
@@ -150,8 +154,10 @@ async function loadPage(page, options = {}) {
     contentElement.replaceChildren(template.content.cloneNode(true));
     normalizeBreadcrumbs(contentElement, basePage);
     document.body.dataset.currentPage = basePage.replace('.html', '');
+    updatePrimaryNavigation(basePage);
     updateDocumentTitle(contentElement, basePage);
     updateMetaDescription(contentElement, basePage);
+    updatePageDiscoveryMetadata(basePage);
 
     let handledScroll = false;
     let sectorUnavailable = false;
@@ -352,6 +358,97 @@ function updateMetaDescription(container, basePage) {
   description.content = value.length > 160 ? `${value.slice(0, 157).trimEnd()}…` : value;
 }
 
+function updatePageDiscoveryMetadata(basePage) {
+  const description = document.querySelector('meta[name="description"]')?.content || '';
+  const title = document.title;
+  const pageName = title.replace(/ \| Bouldering La Cerra$/, '');
+  const sitePath = window.location.pathname.replace(/index\.html$/i, '');
+  const siteUrl = new URL(sitePath, window.location.origin);
+  const canonicalUrl = new URL(siteUrl);
+  const privatePages = new Set([
+    'admin.html',
+    'profile.html',
+    'register.html',
+    'reset_password.html'
+  ]);
+
+  if (basePage !== 'start.html') canonicalUrl.searchParams.set('p', basePage);
+
+  setMetaContent('meta[name="robots"]', privatePages.has(basePage) ? 'noindex, nofollow' : 'index, follow');
+  setMetaContent('meta[property="og:title"]', title);
+  setMetaContent('meta[property="og:description"]', description);
+  setMetaContent('meta[property="og:url"]', canonicalUrl.href);
+  setMetaContent('meta[property="og:image"]', new URL('img/header_index-1600.jpg', siteUrl).href);
+  setMetaContent('meta[name="twitter:title"]', title);
+  setMetaContent('meta[name="twitter:description"]', description);
+  setMetaContent('meta[name="twitter:image"]', new URL('img/header_index-1600.jpg', siteUrl).href);
+
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.href = canonicalUrl.href;
+
+  const structuredData = document.getElementById('page-structured-data');
+  if (structuredData) {
+    const website = {
+      '@type': 'WebSite',
+      name: 'Bouldering La Cerra',
+      url: siteUrl.href
+    };
+    const data = basePage === 'start.html'
+      ? {
+          '@context': 'https://schema.org',
+          ...website,
+          description
+        }
+      : {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: pageName,
+          description,
+          url: canonicalUrl.href,
+          isPartOf: website
+        };
+    structuredData.textContent = JSON.stringify(data);
+  }
+}
+
+function setMetaContent(selector, value) {
+  const element = document.querySelector(selector);
+  if (element) element.content = value;
+}
+
+function updatePrimaryNavigation(basePage) {
+  const boulderingPages = new Set([
+    'la_cerra.html',
+    'somewhere.html',
+    'la_sportiva.html',
+    'sushi_free.html',
+    'bermuda_triangle.html',
+    'second_life.html',
+    'stuntblocs.html',
+    'jumble.html',
+    'bloc_meadow.html',
+    'monte_lu_bagnu.html',
+    'monte_pulchiana.html',
+    'where_the_wild_things_are.html',
+    'la_tartaruga.html',
+    'piru_ruju.html',
+    'boulderplanet.html'
+  ]);
+  const section = boulderingPages.has(basePage)
+    ? 'bouldering'
+    : ({
+        'routes.html': 'routes',
+        'sardinia.html': 'sardinia',
+        'before_you_go.html': 'visit',
+        'agriturismo.html': 'stay'
+      }[basePage] || '');
+
+  document.querySelectorAll('.desktop-nav [data-nav-section]').forEach(link => {
+    if (link.dataset.navSection === section) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+}
+
 function normalizeBreadcrumbs(container, basePage) {
   container.querySelectorAll('.breadcrumb').forEach(breadcrumb => {
     if (!breadcrumb.hasAttribute('aria-label')) breadcrumb.setAttribute('aria-label', 'Breadcrumb');
@@ -484,7 +581,7 @@ function applyRequestedScroll(options) {
 function showLoadError(container, page) {
   container.innerHTML = `
     <section class="load-error" role="alert">
-      <h2>Page could not be loaded</h2>
+      <h1>Page could not be loaded</h1>
       <p>This page is currently unavailable. Please try again later.</p>
       <button type="button" data-retry-page="${encodeURIComponent(page)}">Try again</button>
     </section>
@@ -497,7 +594,7 @@ function showSectorUnavailable(container, sectorName) {
       <a href="#" data-page="la_cerra.html">La Cerra</a> › ${sectorName}
     </nav>
     <section class="account-notice" role="status">
-      <h2>${sectorName}</h2>
+      <h1>${sectorName}</h1>
       <p>This sector is temporarily unavailable. No block or route data has been deleted.</p>
       <button type="button" data-page="la_cerra.html">Back to La Cerra</button>
     </section>

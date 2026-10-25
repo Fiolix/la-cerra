@@ -1,54 +1,75 @@
 [
   {
-    "id": "sushi-free-online",
-    "date": "2026-09-05",
-    "title": "Sushi-Free is now online",
-    "image": "/la-cerra/img/bouldering/la_cerra/sushi-free/sushi-free_1a.jpg",
-    "thumbnail": "/la-cerra/img/news/sushi-free-online.jpg",
-    "imageAlt": "Granite boulder in the Sushi-Free sector",
-    "teaser": "The Sushi-Free sector is now available with its map, boulders and routes.",
+    "id": "online-topo-published",
+    "date": "2026-10-25",
+    "title": "The La Cerra online topo is live",
+    "image": "/la-cerra/img/content/before-you-go/topo-notes.jpg",
+    "imageAlt": "Hand-drawn field notes for the Somewhere sector beside crash pads",
+    "teaser": "The printed guide has grown into a living online topo with sectors, maps, routes and personal tick lists.",
     "text": [
-      "Sushi-Free has been added to the La Cerra guide. The sector page currently includes nine boulders, the corresponding route information and a detailed sector map.",
-      "The overview will continue to grow as descriptions and further information are added."
+      "The La Cerra online topo is now available. It brings the information from the original guidebook into a format that can grow with the area: sectors can be updated, new routes can be added and corrections no longer have to wait for another printed edition.",
+      {
+        "parts": [
+          { "text": "Every published " },
+          { "text": "sector", "page": "la_cerra.html" },
+          { "text": " combines an overview, approach information, maps, boulder photographs and route details. The central " },
+          { "text": "route directory", "page": "routes.html" },
+          { "text": " makes it possible to search and filter the complete guide instead of moving through the sectors one by one." }
+        ]
+      },
+      {
+        "parts": [
+          { "text": "Registered climbers can mark routes as climbed, record flashes, add personal grade suggestions and keep their own project list. Community ratings and grade suggestions are shown alongside the route information while individual entries remain attached to the climber's " },
+          { "text": "personal profile", "page": "profile.html" },
+          { "text": "." }
+        ]
+      },
+      {
+        "parts": [
+          { "text": "This first public version is a starting point rather than a finished archive. La Cerra still has undeveloped rock, and the online topo will continue to change as reliable information and new material become available. The " },
+          { "text": "topo symbols and visitor information", "page": "before_you_go.html" },
+          { "text": " remain the best place to prepare for a visit." }
+        ]
+      }
     ]
   },
   {
-    "id": "interactive-sector-map",
-    "date": "2026-09-04",
-    "title": "Explore La Cerra from the map",
-    "image": "/la-cerra/img/bouldering/la_cerra/la_cerra_map.jpg",
-    "thumbnail": "/la-cerra/img/news/interactive-sector-map.jpg",
-    "imageAlt": "Overview map of the La Cerra bouldering sectors",
-    "teaser": "The La Cerra overview map now links directly to all eight sector pages.",
+    "id": "how-la-cerra-began",
+    "date": "2026-10-24",
+    "title": "How bouldering at La Cerra began",
+    "image": "/la-cerra/img/content/la-cerra-history.jpg",
+    "imageAlt": "Pine forest and camper van at La Cerra during the development of the guidebook",
+    "teaser": "From the first scouting days to a growing community project: the people and stages behind La Cerra.",
     "text": [
-      "The coloured sector markers and their names can be selected directly on the overview map. This provides a quick route from the general La Cerra page to each individual sector.",
-      "A compact sector menu remains available below the map as an alternative way to navigate."
-    ]
-  },
-  {
-    "id": "route-tracking-update",
-    "date": "2026-09-03",
-    "title": "Route tracking improvements",
-    "image": "/la-cerra/img/bouldering/la_cerra/somewhere/somewhere_1.jpg",
-    "thumbnail": "/la-cerra/img/news/route-tracking-update.jpg",
-    "imageAlt": "Boulder in the Somewhere sector",
-    "teaser": "Climbed routes are easier to recognise and manage throughout the guide.",
-    "text": [
-      "Routes already stored in a personal tick list are marked directly on the sector pages. Projects without a confirmed grade cannot be added accidentally.",
-      "The profile provides an overview of climbed routes, grades and personal statistics."
-    ]
-  },
-  {
-    "id": "sector-pages-growing",
-    "date": "2026-09-02",
-    "title": "The sector guide is growing",
-    "image": "/la-cerra/img/bouldering/la_cerra/la_sportiva/la_sportiva_3a.jpg",
-    "thumbnail": "/la-cerra/img/news/sector-pages-growing.jpg",
-    "imageAlt": "Granite boulder in the La Sportiva sector",
-    "teaser": "Additional La Cerra sector pages are ready to receive maps, descriptions and route data.",
-    "text": [
-      "The guide structure now includes Somewhere, La Sportiva, Sushi-Free, Bermuda Triangle, 2nd Life, Stuntblocs, Monte Lu Bagnu and Monte Pulchiana.",
-      "The individual pages will be completed step by step as maps, photographs and verified route information become available."
+      {
+        "parts": [
+          { "text": "The bouldering potential around La Cerra had been recognised for years. In 2013, the La Sportiva Sardinia Bloc Scouting Team cleaned the first blocks and established a collection of problems that became today's " },
+          { "text": "La Sportiva sector", "page": "la_sportiva.html" },
+          { "text": "." }
+        ]
+      },
+      {
+        "parts": [
+          { "text": "The development continued through several independent efforts. Eadan Cunningham explored and documented another extensive part of the area, while Florian Schiffer and friends opened " },
+          { "text": "2nd Life", "page": "second_life.html" },
+          { "text": " in 2019. Their work showed how much rock was still hidden in the landscape around the agriturismo." }
+        ]
+      },
+      {
+        "parts": [
+          { "text": "Felix Clotten and Ivanessa Mirastschijski arrived in November 2020, originally planning La Cerra as the final stop of a longer journey. Alberto had already uncovered many blocks on the property, and the visit soon became a project of cleaning loose rock, finding lines and recording the growing number of problems. Sarah and Valle joined the work in " },
+          { "text": "Sushi-Free", "page": "sushi_free.html" },
+          { "text": "." }
+        ]
+      },
+      {
+        "parts": [
+          { "text": "A meeting with Martin and Petra from tmms-Verlag turned the idea of a small personal guide into a published topo. Eadan shared his existing information, and Florian Schiffer and the Stuntwerk team contributed the work that became " },
+          { "text": "Stuntblocs", "page": "stuntblocs.html" },
+          { "text": " in March 2021. The printed guide published in 2021 brought these separate chapters together and created the foundation for the online topo available today." }
+        ]
+      },
+      "La Cerra remains an open story. New lines are still possible, but every development depends on careful cleaning, reliable information and respectful behaviour toward the land, its owners and the surrounding nature."
     ]
   }
 ]

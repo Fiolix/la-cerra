@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
-import { summarizeTicks } from './profile_stats.js?v=20261022-route-data-2';
-import { loadAreaStats } from './area_stats.js?v=20261022-route-data-2';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261022-route-data-2';
+import { summarizeTicks } from './profile_stats.js?v=20261025-news-inline-18';
+import { loadAreaStats } from './area_stats.js?v=20261025-news-inline-18';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261025-news-inline-18';
 
 let renderId = 0;
 let authListenerBound = false;
@@ -45,14 +45,23 @@ function bindAuthListener() {
   document.addEventListener('authStateChanged', () => initStartAccount());
 }
 
-function updateStartGreeting(username = '') {
+function updateStartGreeting(username = '', { pending = false } = {}) {
   const greeting = document.querySelector('[data-start-greeting]');
   if (!greeting) return;
+
+  if (pending) {
+    greeting.classList.add('is-pending');
+    greeting.setAttribute('aria-busy', 'true');
+    return;
+  }
+
   greeting.textContent = username ? `Ciao, ${username}!` : 'Ciao Ragazzi!';
+  greeting.classList.remove('is-pending');
+  greeting.setAttribute('aria-busy', 'false');
 }
 
 function showLoading(container) {
-  updateStartGreeting();
+  updateStartGreeting('', { pending: true });
   container.innerHTML = `
     <h2>Account</h2>
     <p class="account-loading">Loading account information…</p>

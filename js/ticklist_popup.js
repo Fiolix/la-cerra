@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
+import { isProjectGrade } from './route_rules.js?v=20261025-news-inline-18';
 
 const GRADES = [
   '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c',
@@ -131,6 +131,7 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
   if (entries.length === 0) return false;
 
   document.getElementById('ticklist-modal')?.remove();
+  const returnFocus = document.activeElement;
 
   const overlay = document.createElement('div');
   overlay.id = 'ticklist-modal';
@@ -178,15 +179,54 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
   dialog.append(closeButton, title, form);
   overlay.appendChild(dialog);
   document.body.appendChild(overlay);
+  document.body.classList.add('dialog-is-open');
+
+  const inertedElements = Array.from(document.body.children).filter(element => (
+    element !== overlay
+    && !element.inert
+    && !['SCRIPT', 'STYLE'].includes(element.tagName)
+  ));
+  inertedElements.forEach(element => { element.inert = true; });
+
+  const focusableSelector = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled]):not([type="hidden"])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])'
+  ].join(',');
 
   const handleKeydown = event => {
-    if (event.key === 'Escape') closeDialog();
+    if (event.key === 'Escape') {
+      closeDialog();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(dialog.querySelectorAll(focusableSelector))
+      .filter(element => element.getClientRects().length > 0);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   };
 
-  const closeDialog = (cancelled = true) => {
+  const handlePageReplace = () => closeDialog(false, false);
+
+  const closeDialog = (cancelled = true, restoreFocus = true) => {
     if (!overlay.isConnected) return;
     document.removeEventListener('keydown', handleKeydown);
+    document.removeEventListener('beforePageContentReplace', handlePageReplace);
+    inertedElements.forEach(element => { element.inert = false; });
     overlay.remove();
+    document.body.classList.remove('dialog-is-open');
+    if (restoreFocus && returnFocus?.isConnected) returnFocus.focus();
     if (cancelled && typeof onCancel === 'function') onCancel();
   };
 
@@ -195,6 +235,8 @@ export function showTicklistPopup({ mode = 'add', entry = null, onSuccess = null
     if (event.target === overlay) closeDialog();
   });
   document.addEventListener('keydown', handleKeydown);
+  document.addEventListener('beforePageContentReplace', handlePageReplace);
+  window.setTimeout(() => closeButton.focus(), 0);
 
   const finishSuccessfully = async message => {
     status.classList.remove('is-error');

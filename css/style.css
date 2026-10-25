@@ -36,7 +36,8 @@ html {
   --cerra-line-strong: #aeb9b4;
   --cerra-field-border: #bfc7c3;
   --cerra-focus-ring: rgba(89, 123, 104, 0.16);
-  --cerra-accent: #9a5a1f;
+  --cerra-route-yellow: #d6aa00;
+  --cerra-accent: var(--cerra-route-yellow);
   --cerra-star-empty: #6f7b76;
   --cerra-radius-sm: 8px;
   --cerra-radius-md: 10px;
@@ -58,8 +59,31 @@ body {
   line-height: 1.5;
 }
 
-body.menu-is-open {
+body.menu-is-open,
+body.dialog-is-open {
   overflow: hidden;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 2000;
+  padding: 10px 14px;
+  color: #fff;
+  background: var(--cerra-green-950);
+  border: 2px solid #fff;
+  border-radius: var(--cerra-radius-sm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  font-weight: 750;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 16px));
+  transition: transform 140ms ease;
+}
+
+.skip-link:focus {
+  outline: none;
+  transform: translateY(0);
 }
 
 .site-bar {
@@ -127,6 +151,14 @@ body.menu-is-open {
 .site-brand strong {
   font-size: 1rem;
   letter-spacing: 0.055em;
+}
+
+.desktop-nav {
+  display: none;
+}
+
+.content-story-card[id] {
+  scroll-margin-top: 84px;
 }
 
 .site-search-button {
@@ -272,6 +304,10 @@ main h2 {
   margin: 0 0 8px;
   font-size: clamp(2rem, 9vw, 3rem);
   line-height: 1;
+}
+
+.start-greeting.is-pending {
+  visibility: hidden;
 }
 
 .start-intro p {
@@ -786,6 +822,19 @@ body[data-current-page="start"] .news-teaser-card {
 .sector-route-table td.ticklist-route > a > span {
   display: block;
   flex: 1 1 auto;
+}
+
+.route-name-text {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  white-space: normal;
+}
+
+.route-name-text.is-single-word {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1475,7 +1524,7 @@ img {
 }
 
 .tick-rating-star.is-active {
-  color: #d4a900;
+  color: var(--cerra-route-yellow);
 }
 
 .tick-editor-options {
@@ -2369,7 +2418,7 @@ button#register-button:hover {
 }
 .rating-stars span:hover,
 .rating-stars span:hover ~ span {
-  color: var(--cerra-accent);
+  color: var(--cerra-route-yellow);
 }
 
 .meta-row {
@@ -2382,7 +2431,7 @@ button#register-button:hover {
 .stars {
   font-family: sans-serif;
   font-size: 1rem;
-  color: var(--cerra-accent);
+  color: var(--cerra-star-empty);
 }
 
 .stars .count {
@@ -2395,7 +2444,7 @@ button#register-button:hover {
   color: var(--cerra-star-empty);
 }
 .stars .filled {
-  color: var(--cerra-accent);
+  color: var(--cerra-route-yellow);
 }
 
 /* Verbesserte Darstellung der Ticklist-Tabelle (mobil und allgemein) */
@@ -2415,6 +2464,27 @@ button#register-button:hover {
 .ticklist th {
   font-size: 0.82rem;
   font-weight: 650;
+}
+
+.ticklist-sort-button {
+  width: 100%;
+  min-height: 34px;
+  margin: 0;
+  padding: 0.2rem 0.25rem;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: var(--cerra-radius-sm);
+  font: inherit;
+  text-align: inherit;
+}
+
+.ticklist-sort-button:hover,
+.ticklist-sort-button:focus-visible {
+  color: var(--cerra-green-700);
+  background: var(--cerra-control-soft);
+  outline: 2px solid var(--cerra-green-600);
+  outline-offset: 1px;
 }
 
 .ticklist tr.ticklist-meta td {
@@ -2461,6 +2531,9 @@ button#register-button:hover {
 }
 
 #ticklist-table td.ticklist-route > a {
+  display: block;
+  max-width: clamp(9rem, 34vw, 15rem);
+  min-width: 0;
   color: inherit;
   font-weight: 650;
   text-decoration: none;
@@ -2516,6 +2589,7 @@ button#register-button:hover {
 
 /* ===== Profilseite: Header & Stats ===== */
 .start-account h2,
+.account-notice h1,
 .account-notice h2 {
   margin-top: 0;
 }
@@ -2738,6 +2812,13 @@ button.secondary-button:focus-visible {
   color: #66716f;
 }
 
+.profile-ticklist-empty {
+  padding: 1.25rem 0.75rem;
+  color: var(--cerra-muted);
+  font-weight: 500;
+  text-align: center !important;
+}
+
 .profile-project-list {
   display: grid;
   gap: 0.65rem;
@@ -2770,9 +2851,9 @@ button.secondary-button:focus-visible {
 .profile-project-title-row > strong {
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: normal;
 }
 
 .profile-project-copy strong,
@@ -2940,6 +3021,38 @@ img[loading="lazy"] {
 
   .site-bar .menu-icon {
     margin-left: -8px;
+  }
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: clamp(24px, 3.5vw, 54px);
+  }
+
+  .desktop-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 11px;
+    color: rgba(255, 255, 255, 0.82);
+    border-radius: var(--cerra-radius-sm);
+    font-size: 0.86rem;
+    font-weight: 680;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .desktop-nav a:hover,
+  .desktop-nav a:focus-visible {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+  }
+
+  .desktop-nav a[aria-current="page"] {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.16);
   }
 
   header.hero {
@@ -3175,7 +3288,7 @@ img[loading="lazy"] {
   width: 32px;
   height: 32px;
   fill: none;
-  stroke: #d6aa00;
+  stroke: var(--cerra-route-yellow);
   stroke-width: 2.7;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -4012,6 +4125,18 @@ button.text-link.as-link:focus-visible {
 
 .news-page .news-full-text p:last-child {
   margin-bottom: 0;
+}
+
+.news-page .news-full-text a {
+  color: var(--cerra-green-800);
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.news-page .news-full-text a:hover,
+.news-page .news-full-text a:focus-visible {
+  color: var(--cerra-green-600);
 }
 
 .guestbook-page .guestbook-composer,
@@ -5067,12 +5192,13 @@ body.site-search-is-open {
 }
 
 .public-route-name {
-  display: inline-flex;
+  display: flex;
+  width: 100%;
+  min-width: 0;
   align-items: baseline;
   color: inherit;
   font-weight: 650;
   text-decoration: none;
-  white-space: normal;
 }
 
 .public-route-name:hover,
@@ -5142,7 +5268,7 @@ body.site-search-is-open {
 
 .community-rating-star {
   color: transparent;
-  background: linear-gradient(90deg, var(--cerra-accent) var(--star-fill), var(--cerra-star-empty) var(--star-fill));
+  background: linear-gradient(90deg, var(--cerra-route-yellow) var(--star-fill), var(--cerra-star-empty) var(--star-fill));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -5269,6 +5395,47 @@ body.site-search-is-open {
 
   .routes-search-row button {
     width: 100%;
+  }
+
+  .route-directory-controls {
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .route-directory-controls input[type="search"],
+  .route-directory-controls select {
+    padding-inline: 9px;
+  }
+
+  .route-project-filter {
+    grid-column: 1;
+    min-height: 32px;
+  }
+
+  .route-filter-reset {
+    grid-column: 2;
+    align-self: center;
+    justify-self: end;
+    min-height: 32px;
+  }
+
+  .public-route-table th:nth-child(1) { width: 43%; }
+  .public-route-table th:nth-child(2) { width: 13%; }
+  .public-route-table th:nth-child(3) { width: 28%; }
+  .public-route-table th:nth-child(4) { width: 16%; }
+
+  .public-route-table th button {
+    padding-inline: 0.3rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.025em;
+  }
+
+  .public-route-main-row td {
+    padding-inline: 0.32rem;
+  }
+
+  .community-rating-stars {
+    font-size: 0.9rem;
   }
 
 }

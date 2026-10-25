@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261022-route-data-2';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261022-route-data-2';
-import { formatRouteGrade, formatRouteName, isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261022-route-data-2';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261022-route-data-2';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261025-news-inline-18';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261025-news-inline-18';
+import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261025-news-inline-18';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261025-news-inline-18';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261025-news-inline-18';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;
@@ -214,11 +214,12 @@ function renderRouteList() {
   const tableRows = pageRoutes.map(route => {
     const project = isProjectGrade(route.grad);
     const routeName = formatRouteName(route);
+    const routeNameClass = routeNameTableClass(route);
     return `
       <tr class="public-route-main-row">
         <td class="ticklist-route">
-          <a href="#" class="public-route-name" data-page="${escapeHtml(route.target)}">
-            <span>${escapeHtml(routeName)}</span>
+          <a href="#" class="public-route-name" data-page="${escapeHtml(route.target)}" title="${escapeHtml(routeName)}">
+            <span class="${routeNameClass}">${escapeHtml(routeName)}</span>
           </a>
         </td>
         <td class="public-route-grade${project ? ' is-project' : ''}">
@@ -347,9 +348,13 @@ export async function initRoutesDirectory() {
   root.querySelectorAll('[data-routes-tab]').forEach(button => {
     button.addEventListener('click', () => setActiveTab(button.dataset.routesTab));
     button.addEventListener('keydown', event => {
-      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
-      const next = button.dataset.routesTab === 'search' ? 'all' : 'search';
+      const next = event.key === 'Home'
+        ? 'search'
+        : event.key === 'End'
+          ? 'all'
+          : button.dataset.routesTab === 'search' ? 'all' : 'search';
       setActiveTab(next, { focus: true });
     });
   });

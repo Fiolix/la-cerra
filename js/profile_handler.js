@@ -2,12 +2,12 @@
 
 import { supabase } from './supabase.js';
 
-import { initTicklistTable } from './ticklist_table.js?v=20261022-route-data-2';
-import { summarizeTicks } from './profile_stats.js?v=20261022-route-data-2';
-import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261022-route-data-2';
-import { showTicklistPopup } from './ticklist_popup.js?v=20261022-route-data-2';
-import { formatRouteGrade, formatRouteName, isProjectGrade } from './route_rules.js?v=20261022-route-data-2';
-import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261022-route-data-2';
+import { initTicklistTable } from './ticklist_table.js?v=20261025-news-inline-18';
+import { summarizeTicks } from './profile_stats.js?v=20261025-news-inline-18';
+import { loadPersonalProjects, setPersonalProject } from './route_projects.js?v=20261025-news-inline-18';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261025-news-inline-18';
+import { formatRouteGrade, formatRouteName, isProjectGrade } from './route_rules.js?v=20261025-news-inline-18';
+import { SECTORS, sectorLabel } from './sector_visibility.js?v=20261025-news-inline-18';
 
 let authListenerBound = false;
 
@@ -260,13 +260,31 @@ function initProfileListTabs() {
   const panels = Array.from(document.querySelectorAll('[data-profile-list-panel]'));
   if (!tabs.length || !panels.length) return;
 
+  const selectTab = (tab, { focus = false } = {}) => {
+    const selected = tab.dataset.profileListTab;
+    tabs.forEach(entry => {
+      const active = entry === tab;
+      entry.setAttribute('aria-selected', String(active));
+      entry.tabIndex = active ? 0 : -1;
+    });
+    panels.forEach(panel => {
+      panel.hidden = panel.dataset.profileListPanel !== selected;
+    });
+    if (focus) tab.focus();
+  };
+
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const selected = tab.dataset.profileListTab;
-      tabs.forEach(entry => entry.setAttribute('aria-selected', String(entry === tab)));
-      panels.forEach(panel => {
-        panel.hidden = panel.dataset.profileListPanel !== selected;
-      });
+    tab.addEventListener('click', () => selectTab(tab));
+    tab.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const currentIndex = tabs.indexOf(tab);
+      const nextIndex = event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? tabs.length - 1
+          : (currentIndex + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      selectTab(tabs[nextIndex], { focus: true });
     });
   });
 }
@@ -305,22 +323,87 @@ function showSignedOutProfile() {
 
 
 // ===== Profile modals: open/close helpers =====
+let activeProfileModal = null;
+let profileModalReturnFocus = null;
+let profileModalInertedElements = [];
+let profileModalKeydown = null;
+
+const MODAL_FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
+function setProfileModalBackgroundInert(modal) {
+  profileModalInertedElements = [];
+  let branch = modal;
+  while (branch?.parentElement && branch.parentElement !== document.documentElement) {
+    Array.from(branch.parentElement.children).forEach(sibling => {
+      if (sibling === branch || sibling.inert || ['SCRIPT', 'STYLE'].includes(sibling.tagName)) return;
+      sibling.inert = true;
+      profileModalInertedElements.push(sibling);
+    });
+    branch = branch.parentElement;
+    if (branch === document.body) break;
+  }
+}
+
 function openModal(id) {
   const m = document.getElementById(id);
   if (!m) return;
+  if (activeProfileModal && activeProfileModal !== m) closeModal(activeProfileModal.id, { restoreFocus: false });
+  profileModalReturnFocus = document.activeElement;
+  activeProfileModal = m;
   m.style.display = 'block';
   m.setAttribute('aria-hidden', 'false');
-  const onEsc = (e) => {
-    if (e.key === 'Escape') { closeModal(id); document.removeEventListener('keydown', onEsc); }
+  document.body.classList.add('dialog-is-open');
+  setProfileModalBackgroundInert(m);
+
+  const dialog = m.querySelector('[role="dialog"]');
+  profileModalKeydown = event => {
+    if (event.key === 'Escape') {
+      closeModal(id);
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(dialog?.querySelectorAll(MODAL_FOCUSABLE_SELECTOR) || [])
+      .filter(element => element.getClientRects().length > 0);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   };
-  document.addEventListener('keydown', onEsc);
+  document.addEventListener('keydown', profileModalKeydown);
+  window.setTimeout(() => (m.querySelector('[data-modal-initial-focus]') || dialog)?.focus(), 0);
 }
-function closeModal(id) {
+function closeModal(id, { restoreFocus = true } = {}) {
   const m = document.getElementById(id);
   if (!m) return;
   m.style.display = 'none';
   m.setAttribute('aria-hidden', 'true');
+  if (profileModalKeydown) document.removeEventListener('keydown', profileModalKeydown);
+  profileModalKeydown = null;
+  profileModalInertedElements.forEach(element => { element.inert = false; });
+  profileModalInertedElements = [];
+  document.body.classList.remove('dialog-is-open');
+  const returnFocus = profileModalReturnFocus;
+  activeProfileModal = null;
+  profileModalReturnFocus = null;
+  if (restoreFocus && returnFocus?.isConnected) returnFocus.focus();
 }
+
+document.addEventListener('beforePageContentReplace', () => {
+  if (activeProfileModal) closeModal(activeProfileModal.id, { restoreFocus: false });
+});
 
 function initProfileModals() {
   // Change password: open
