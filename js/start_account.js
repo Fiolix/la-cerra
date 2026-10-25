@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
-import { summarizeTicks } from './profile_stats.js?v=20261025-news-inline-18';
-import { loadAreaStats } from './area_stats.js?v=20261025-news-inline-18';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261025-news-inline-18';
+import { summarizeTicks } from './profile_stats.js?v=20261025-sector-swipe-25';
+import { loadAreaStats } from './area_stats.js?v=20261025-sector-swipe-25';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261025-sector-swipe-25';
 
 let renderId = 0;
 let authListenerBound = false;

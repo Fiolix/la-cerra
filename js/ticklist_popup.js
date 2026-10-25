@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261025-news-inline-18';
+import { isProjectGrade } from './route_rules.js?v=20261025-sector-swipe-25';
 
 const GRADES = [
   '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c',

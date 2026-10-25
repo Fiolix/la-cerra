@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261025-news-inline-18';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261025-news-inline-18';
-import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261025-news-inline-18';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261025-news-inline-18';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261025-news-inline-18';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261025-sector-swipe-25';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261025-sector-swipe-25';
+import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261025-sector-swipe-25';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261025-sector-swipe-25';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261025-sector-swipe-25';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;

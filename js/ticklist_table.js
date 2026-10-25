@@ -3,9 +3,9 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261025-news-inline-18';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261025-news-inline-18';
-import { formatRouteGrade, formatRouteName, routeNameTableClass } from './route_rules.js?v=20261025-news-inline-18';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261025-sector-swipe-25';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261025-sector-swipe-25';
+import { formatRouteGrade, formatRouteName, routeNameTableClass } from './route_rules.js?v=20261025-sector-swipe-25';
 
 
 let tickData = [];

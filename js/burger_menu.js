@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261025-news-inline-18';
+import { applySectorVisibility } from './sector_visibility.js?v=20261025-sector-swipe-25';
 
 function menuItemIcon(name) {
   const paths = {
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261025-news-inline-18';
+import { initAuth } from './auth_handler.js?v=20261025-sector-swipe-25';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261025-news-inline-18';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261025-sector-swipe-25';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261025-news-inline-18';
-import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261025-news-inline-18';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261025-news-inline-18';
-import { compareGrades } from './grade_utils.js?v=20261025-news-inline-18';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261025-news-inline-18';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261025-sector-swipe-25';
+import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261025-sector-swipe-25';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261025-sector-swipe-25';
+import { compareGrades } from './grade_utils.js?v=20261025-sector-swipe-25';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261025-sector-swipe-25';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;

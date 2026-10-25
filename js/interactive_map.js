@@ -1,13 +1,15 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261025-news-inline-18';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261025-sector-swipe-25';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261025-news-inline-18';
-const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261025-news-inline-18';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261025-sector-swipe-25';
+const BOULDER_DATA = '/la-cerra/data/boulder_locations.geojson?v=20261025-sector-swipe-25';
+const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261025-sector-swipe-25';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
+const boulderLocationsPromises = new Map();
 
 maplibregl.setWorkerUrl('/la-cerra/vendor/maplibre-gl/maplibre-gl-worker.js?v=6.13.0');
 
@@ -71,6 +73,51 @@ async function loadDatabaseLocations() {
           label: location.label,
           page: location.page || null,
           categoryLabel: location.category_label || null,
+          positionStatus: 'database'
+        }
+      }))
+  };
+}
+
+async function loadBoulderLocations() {
+  const cacheKey = 'all';
+  if (!boulderLocationsPromises.has(cacheKey)) {
+    boulderLocationsPromises.set(cacheKey, Promise.all([
+      fetch(BOULDER_DATA).then(response => {
+        if (!response.ok) throw new Error(`Boulder map data could not be loaded (HTTP ${response.status}).`);
+        return response.json();
+      }),
+      loadDatabaseBoulderLocations()
+    ]).then(([fallbackCollection, databaseCollection]) => {
+      return databaseCollection || fallbackCollection;
+    }));
+  }
+  return boulderLocationsPromises.get(cacheKey);
+}
+
+async function loadDatabaseBoulderLocations() {
+  const { data, error } = await supabase
+    .from('boulder_locations')
+    .select('sector_slug, boulder_number, label, block_anchor, longitude, latitude, is_visible, display_order')
+    .order('display_order');
+
+  if (error || !data?.length) return null;
+  return {
+    type: 'FeatureCollection',
+    features: data
+      .filter(location => location.is_visible !== false)
+      .map(location => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [Number(location.longitude), Number(location.latitude)]
+        },
+        properties: {
+          kind: 'boulder',
+          sectorSlug: location.sector_slug,
+          boulderNumber: location.boulder_number,
+          label: location.label,
+          blockAnchor: location.block_anchor,
           positionStatus: 'database'
         }
       }))
@@ -162,7 +209,7 @@ function addPathLayers(map) {
       type: 'line',
       source: 'openmaptiles',
       'source-layer': 'transportation',
-      minzoom: 11.8,
+      minzoom: 10.8,
       filter: [
         'all',
         ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
@@ -174,9 +221,9 @@ function addPathLayers(map) {
       },
       paint: {
         'line-color': '#9b7b52',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11.8, 1, 14, 1.8, 16, 2.7],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10.8, 1, 13, 1.8, 15, 2.7],
         'line-dasharray': [2.4, 1.6],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 11.8, 0.45, 13, 0.78]
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.45, 12, 0.78]
       }
     });
 
@@ -185,7 +232,7 @@ function addPathLayers(map) {
       type: 'line',
       source: 'openmaptiles',
       'source-layer': 'transportation',
-      minzoom: 12.4,
+      minzoom: 11.4,
       filter: [
         'all',
         ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
@@ -197,9 +244,9 @@ function addPathLayers(map) {
       },
       paint: {
         'line-color': '#537762',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 12.4, 1.1, 14, 1.8, 16, 2.8],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11.4, 1.1, 13, 1.8, 15, 2.8],
         'line-dasharray': [1.25, 1.35],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 12.4, 0.4, 13.5, 0.9]
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 11.4, 0.4, 12.5, 0.9]
       }
     });
   }
@@ -216,14 +263,14 @@ function addPathLayers(map) {
     id: 'la-cerra-access-path-casing',
     type: 'line',
     source: 'la-cerra-access-paths',
-    minzoom: 11.5,
+    minzoom: 10.5,
     layout: {
       'line-cap': 'round',
       'line-join': 'round'
     },
     paint: {
       'line-color': '#fffaf2',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 11.5, 3.6, 15, 6.2],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 10.5, 3.6, 14, 6.2],
       'line-opacity': 0.92
     }
   });
@@ -232,14 +279,14 @@ function addPathLayers(map) {
     id: 'la-cerra-access-paths',
     type: 'line',
     source: 'la-cerra-access-paths',
-    minzoom: 11.5,
+    minzoom: 10.5,
     layout: {
       'line-cap': 'round',
       'line-join': 'round'
     },
     paint: {
       'line-color': '#1f6a4c',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 11.5, 2, 15, 3.8],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 10.5, 2, 14, 3.8],
       'line-dasharray': [2.2, 1.25]
     }
   });
@@ -248,7 +295,7 @@ function addPathLayers(map) {
     id: 'la-cerra-access-path-labels',
     type: 'symbol',
     source: 'la-cerra-access-paths',
-    minzoom: 14,
+    minzoom: 13,
     layout: {
       'symbol-placement': 'line',
       'text-field': ['get', 'name'],
@@ -274,22 +321,86 @@ function createPopupContent(feature) {
     : feature.properties.label;
   wrapper.append(title);
 
-  if (feature.properties.categoryLabel) {
+  if (feature.properties.kind === 'boulder') {
+    const category = document.createElement('span');
+    category.className = 'map-popup-category';
+    category.textContent = `Boulder · ${sectorLabel(feature.properties.sectorSlug)}`;
+    wrapper.append(category);
+  } else if (feature.properties.categoryLabel) {
     const category = document.createElement('span');
     category.className = 'map-popup-category';
     category.textContent = feature.properties.categoryLabel;
     wrapper.append(category);
   }
 
-  if (feature.properties.page) {
+  const page = feature.properties.kind === 'boulder'
+    ? `${feature.properties.sectorSlug}.html#${feature.properties.blockAnchor}`
+    : feature.properties.page;
+  if (page) {
     const link = document.createElement('a');
     link.href = '#';
-    link.dataset.page = feature.properties.page;
-    link.textContent = 'Open sector';
+    link.dataset.page = page;
+    link.textContent = feature.properties.kind === 'boulder' ? 'Open boulder' : 'Open sector';
     wrapper.append(link);
   }
 
   return wrapper;
+}
+
+function addBoulderLayers(map, collection) {
+  if (!collection.features.length) return;
+
+  map.addSource('la-cerra-boulders', {
+    type: 'geojson',
+    data: collection
+  });
+
+  map.addLayer({
+    id: 'boulder-points',
+    type: 'circle',
+    source: 'la-cerra-boulders',
+    minzoom: 16.5,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 16.5, 11, 19, 16],
+      'circle-color': '#d6aa00',
+      'circle-opacity': 0.98
+    }
+  });
+
+  map.addLayer({
+    id: 'boulder-labels',
+    type: 'symbol',
+    source: 'la-cerra-boulders',
+    minzoom: 17.25,
+    layout: {
+      'text-field': ['get', 'boulderNumber'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 17.25, 11, 19, 14],
+      'text-font': ['Noto Sans Regular'],
+      'text-allow-overlap': true
+    },
+    paint: {
+      'text-color': '#173c32'
+    }
+  });
+
+  ['boulder-points', 'boulder-labels'].forEach(layerId => {
+    map.on('mouseenter', layerId, () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', layerId, () => {
+      map.getCanvas().style.cursor = '';
+    });
+  });
+
+  map.on('click', 'boulder-points', event => {
+    const feature = event.features?.[0];
+    if (!feature) return;
+    new maplibregl.Popup({ offset: 14, maxWidth: '240px' })
+      .setLngLat(feature.geometry.coordinates)
+      .setDOMContent(createPopupContent(feature))
+      .addTo(map);
+  });
+
 }
 
 function addSectorLayers(map, collection, selectedSlug) {
@@ -308,7 +419,8 @@ function addSectorLayers(map, collection, selectedSlug) {
       'circle-color': '#2f6b59',
       'circle-stroke-color': '#fffaf2',
       'circle-stroke-width': 2.5,
-      'circle-opacity': 0.96
+      'circle-opacity': ['interpolate', ['linear'], ['zoom'], 15.25, 0.96, 16.5, 0.16, 17.25, 0.05],
+      'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 15.25, 1, 16.5, 0.12, 17.25, 0.03]
     }
   });
 
@@ -351,7 +463,8 @@ function addSectorLayers(map, collection, selectedSlug) {
     paint: {
       'text-color': '#173c32',
       'text-halo-color': '#fffaf2',
-      'text-halo-width': 1.5
+      'text-halo-width': 1.5,
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 15.25, 1, 16.5, 0.12, 17.25, 0]
     }
   });
 
@@ -389,7 +502,8 @@ function addSectorLayers(map, collection, selectedSlug) {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 10, 15, 16],
         'circle-color': 'rgba(255, 255, 255, 0)',
         'circle-stroke-color': '#173c32',
-        'circle-stroke-width': 3
+        'circle-stroke-width': 3,
+        'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 15.25, 1, 16.5, 0.12, 17.25, 0]
       }
     });
   }
@@ -412,13 +526,20 @@ function addSectorLayers(map, collection, selectedSlug) {
   });
 }
 
-function fitMap(map, collection, selectedSlug) {
+function fitMap(map, collection, selectedSlug, boulderCollection) {
   const selected = selectedSlug
     ? collection.features.find(feature => feature.properties?.slug === selectedSlug)
     : null;
 
   if (selected) {
-    map.easeTo({ center: selected.geometry.coordinates, zoom: 14.7, duration: 0 });
+    const hasBoulderLocations = boulderCollection?.features.some(feature => (
+      feature.properties?.sectorSlug === selectedSlug
+    ));
+    map.easeTo({
+      center: selected.geometry.coordinates,
+      zoom: hasBoulderLocations ? 16.5 : 14.7,
+      duration: 0
+    });
     return;
   }
 
@@ -439,10 +560,13 @@ async function createMap(container) {
   container.dataset.mapState = 'loading';
 
   try {
-    const collection = await loadLocations();
+    const selectedSlug = container.dataset.selectedSector || '';
+    const [collection, boulderCollection] = await Promise.all([
+      loadLocations(),
+      loadBoulderLocations()
+    ]);
     if (!container.isConnected) return;
 
-    const selectedSlug = container.dataset.selectedSector || '';
     const map = new maplibregl.Map({
       container,
       style: MAP_STYLE,
@@ -472,7 +596,15 @@ async function createMap(container) {
 
       addPathLayers(map);
       addSectorLayers(map, collection, selectedSlug);
-      fitMap(map, collection, selectedSlug);
+      addBoulderLayers(map, boulderCollection);
+      fitMap(map, collection, selectedSlug, boulderCollection);
+      container.dataset.boulderMarkerCount = String(boulderCollection.features.length);
+      if (boulderCollection.features.length) {
+        container.setAttribute(
+          'aria-label',
+          `Interactive location map for ${selectedSlug ? sectorLabel(selectedSlug) : 'La Cerra'} with ${boulderCollection.features.length} boulder markers`
+        );
+      }
       container.dataset.mapState = 'ready';
       map.resize();
     });
