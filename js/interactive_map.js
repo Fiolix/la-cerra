@@ -1,14 +1,15 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261027-sushi-free-gps-35';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261027-second-life-gps-39';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
 const SATELLITE_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const SATELLITE_SOURCE_ID = 'la-cerra-satellite';
 const SATELLITE_LAYER_ID = 'la-cerra-satellite-layer';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261027-sushi-free-gps-35';
-const BOULDER_DATA = '/la-cerra/data/boulder_locations.geojson?v=20261027-sushi-free-gps-35';
-const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261027-sushi-free-gps-35';
+const MAP_MAX_ZOOM = 17.9;
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261027-second-life-gps-39';
+const BOULDER_DATA = '/la-cerra/data/boulder_locations.geojson?v=20261027-second-life-gps-39';
+const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261027-second-life-gps-39';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
@@ -722,6 +723,7 @@ async function createMap(container) {
       style: MAP_STYLE,
       center: [9.12, 40.992],
       zoom: 12.5,
+      maxZoom: MAP_MAX_ZOOM,
       attributionControl: false,
       cooperativeGestures: true,
       maxPitch: 0

@@ -3,9 +3,9 @@
 
 import { supabase } from './supabase.js';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261027-sushi-free-gps-35';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261027-sushi-free-gps-35';
-import { formatRouteGrade, formatRouteName, routeNameTableClass } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261027-second-life-gps-39';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261027-second-life-gps-39';
+import { formatRouteGrade, formatRouteName, routeNameTableClass } from './route_rules.js?v=20261027-second-life-gps-39';
 
 
 let tickData = [];

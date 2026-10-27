@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261027-sushi-free-gps-35';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261027-second-life-gps-39';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-second-life-gps-39';
 
 let catalog = null;
 let loadError = null;

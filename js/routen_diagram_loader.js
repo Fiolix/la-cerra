@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261027-sushi-free-gps-35';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261027-sushi-free-gps-35';
+import { isProjectGrade } from './route_rules.js?v=20261027-second-life-gps-39';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261027-second-life-gps-39';
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 

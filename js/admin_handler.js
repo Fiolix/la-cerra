@@ -1,10 +1,10 @@
 import { supabase } from './supabase.js';
-import { initBlockAdministration } from './admin_blocks.js?v=20261027-sushi-free-gps-35';
-import { initUserAdministration } from './admin_users.js?v=20261027-sushi-free-gps-35';
-import { initGuestbookAdministration } from './admin_guestbook.js?v=20261027-sushi-free-gps-35';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261027-sushi-free-gps-35';
-import { initMapAdministration } from './admin_map.js?v=20261027-sushi-free-gps-35';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { initBlockAdministration } from './admin_blocks.js?v=20261027-second-life-gps-39';
+import { initUserAdministration } from './admin_users.js?v=20261027-second-life-gps-39';
+import { initGuestbookAdministration } from './admin_guestbook.js?v=20261027-second-life-gps-39';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261027-second-life-gps-39';
+import { initMapAdministration } from './admin_map.js?v=20261027-second-life-gps-39';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-second-life-gps-39';
 
 let authListenerBound = false;
 let blocks = [];

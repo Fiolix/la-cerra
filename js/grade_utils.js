@@ -1,4 +1,4 @@
-import { isProjectGrade } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { isProjectGrade } from './route_rules.js?v=20261027-second-life-gps-39';
 
 export function normalizeGrade(value) {
   return String(value ?? '').trim().toLowerCase().replaceAll(' ', '');

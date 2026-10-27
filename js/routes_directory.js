@@ -1,8 +1,8 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261027-sushi-free-gps-35';
-import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261027-sushi-free-gps-35';
-import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261027-sushi-free-gps-35';
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261027-sushi-free-gps-35';
-import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261027-sushi-free-gps-35';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261027-second-life-gps-39';
+import { getSortedGrades, gradeValue, compareGrades } from './grade_utils.js?v=20261027-second-life-gps-39';
+import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261027-second-life-gps-39';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261027-second-life-gps-39';
+import { compareRouteStats, formatRating, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261027-second-life-gps-39';
 
 const ITEMS_PER_PAGE = 25;
 let catalog = null;

@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
-import { summarizeTicks } from './profile_stats.js?v=20261027-sushi-free-gps-35';
-import { loadAreaStats } from './area_stats.js?v=20261027-sushi-free-gps-35';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261027-sushi-free-gps-35';
+import { summarizeTicks } from './profile_stats.js?v=20261027-second-life-gps-39';
+import { loadAreaStats } from './area_stats.js?v=20261027-second-life-gps-39';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261027-second-life-gps-39';
 
 let renderId = 0;
 let authListenerBound = false;

@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { isProjectGrade } from './route_rules.js?v=20261027-second-life-gps-39';
 
 const GRADES = [
   '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c',

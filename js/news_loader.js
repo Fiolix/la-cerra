@@ -1,4 +1,4 @@
-const NEWS_URL = '/la-cerra/data/news.json?v=20261027-sushi-free-gps-35';
+const NEWS_URL = '/la-cerra/data/news.json?v=20261027-second-life-gps-39';
 
 let newsPromise = null;
 

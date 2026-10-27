@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
 
-const FALLBACK_DATA = '/la-cerra/data/map_locations.geojson?v=20261027-sushi-free-gps-35';
+const FALLBACK_DATA = '/la-cerra/data/map_locations.geojson?v=20261027-second-life-gps-39';
 const TYPE_LABELS = {
   sector: 'Sector',
   parking: 'Parking',

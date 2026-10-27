@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261027-sushi-free-gps-35';
-import { compareGrades } from './grade_utils.js?v=20261027-sushi-free-gps-35';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261027-second-life-gps-39';
+import { compareGrades } from './grade_utils.js?v=20261027-second-life-gps-39';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-second-life-gps-39';
 
 let catalogPromise = null;
 

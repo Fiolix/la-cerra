@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261027-sushi-free-gps-35';
+import { applySectorVisibility } from './sector_visibility.js?v=20261027-second-life-gps-39';
 
 function menuItemIcon(name) {
   const paths = {
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261027-sushi-free-gps-35';
+import { initAuth } from './auth_handler.js?v=20261027-second-life-gps-39';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();
