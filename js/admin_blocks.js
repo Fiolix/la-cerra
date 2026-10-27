@@ -4,15 +4,32 @@ import {
   applySectorVisibility,
   invalidateSectorVisibilityCache,
   sectorLabel
-} from './sector_visibility.js?v=20261025-sector-swipe-25';
+} from './sector_visibility.js?v=20261027-map-controls-34';
 
 const IMAGE_PATTERN = /^[a-z0-9._-]+\.(?:jpe?g|png|webp)$/i;
+
+function physicalBoulderNumber(number) {
+  const raw = String(number || '').trim();
+  const match = raw.match(/^0*(\d+)(?:[a-z])?$/i);
+  return match ? String(Number(match[1])) : raw.toLowerCase();
+}
+
+function blockAnchor(number) {
+  return `block-${String(number || '').trim().toLowerCase().replaceAll('/', '-').replace(/[^a-z0-9-]/g, '-')}`;
+}
+
+function locationKey(sector, number) {
+  return `${sector}::${physicalBoulderNumber(number)}`;
+}
 
 export function initBlockAdministration({ root, blocks, routes, sectorSettings, settingsAvailable, onBlocksChanged }) {
   if (!root) return;
 
   let selectedBlockId = null;
   let isCreating = false;
+  let boulderLocations = [];
+  let locationsAvailable = false;
+  let locationsLoaded = false;
 
   root.innerHTML = `
     <section class="admin-workspace">
@@ -71,6 +88,26 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
           </div>
         </fieldset>
 
+        <fieldset id="admin-block-location-fields" class="admin-route-fields admin-block-location-fields" disabled>
+          <legend>GPS map marker</legend>
+          <div class="admin-form-grid">
+            <div class="form-field">
+              <label for="admin-block-latitude">Latitude</label>
+              <input id="admin-block-latitude" type="number" step="any" min="-90" max="90" inputmode="decimal" placeholder="e.g. 40.991681" />
+            </div>
+            <div class="form-field">
+              <label for="admin-block-longitude">Longitude</label>
+              <input id="admin-block-longitude" type="number" step="any" min="-180" max="180" inputmode="decimal" placeholder="e.g. 9.122800" />
+            </div>
+            <label class="admin-sector-visibility admin-field-wide" for="admin-block-marker-visible">
+              <input id="admin-block-marker-visible" type="checkbox" checked />
+              <span><strong>Visible on public maps</strong><small>The marker still only appears at the configured close zoom level.</small></span>
+            </label>
+          </div>
+          <p class="form-note" data-admin-block-location-note>Loading GPS marker data…</p>
+          <button type="button" class="secondary-button" data-admin-remove-block-location disabled>Remove GPS marker</button>
+        </fieldset>
+
         <div class="admin-route-actions">
           <button id="admin-save-block" type="submit" disabled>Save block</button>
         </div>
@@ -96,6 +133,55 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
     const element = root.querySelector(selector);
     if (element) element.textContent = text;
   };
+
+  function selectedBlock() {
+    return blocks.find(item => Number(item.id) === Number(selectedBlockId)) || null;
+  }
+
+  function canonicalBlockFor(block) {
+    if (!block) return null;
+    const physicalNumber = physicalBoulderNumber(block.nummer);
+    return blocks
+      .filter(item => item.sektor === block.sektor && physicalBoulderNumber(item.nummer) === physicalNumber)
+      .sort((left, right) => String(left.nummer || '').localeCompare(String(right.nummer || ''), undefined, { numeric: true }))[0]
+      || block;
+  }
+
+  function locationForBlock(block) {
+    if (!block) return null;
+    const key = locationKey(block.sektor, block.nummer);
+    return boulderLocations.find(location => locationKey(location.sector_slug, location.boulder_number) === key) || null;
+  }
+
+  function setLocationEditorEnabled(enabled) {
+    const fields = root.querySelector('#admin-block-location-fields');
+    if (fields) fields.disabled = !(enabled && locationsAvailable);
+  }
+
+  function populateLocationEditor(block) {
+    const location = locationForBlock(block);
+    setValue('admin-block-latitude', location?.latitude);
+    setValue('admin-block-longitude', location?.longitude);
+    const visible = root.querySelector('#admin-block-marker-visible');
+    if (visible) visible.checked = location?.is_visible !== false;
+    const remove = root.querySelector('[data-admin-remove-block-location]');
+    if (remove) remove.disabled = !locationsAvailable || !location;
+
+    if (!block) {
+      setText('[data-admin-block-location-note]', locationsLoaded
+        ? 'Select a block to edit its GPS marker.'
+        : 'Loading GPS marker data…');
+    } else if (!locationsLoaded) {
+      setText('[data-admin-block-location-note]', 'Loading GPS marker data…');
+    } else if (!locationsAvailable) {
+      setText('[data-admin-block-location-note]', 'The GPS marker database extension is not active yet. Block details can still be edited.');
+    } else if (location) {
+      const canonical = canonicalBlockFor(block);
+      setText('[data-admin-block-location-note]', `Shared marker for physical Boulder ${location.boulder_number}. Opens ${canonical?.nummer || block.nummer}.`);
+    } else {
+      setText('[data-admin-block-location-note]', 'No GPS marker is stored for this physical boulder yet. Enter both coordinates to create one.');
+    }
+  }
 
   function compareBlocks(left, right) {
     return sectorLabel(left.sektor).localeCompare(sectorLabel(right.sektor), undefined, { numeric: true })
@@ -158,6 +244,7 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
     const save = root.querySelector('#admin-save-block');
     if (fields) fields.disabled = !enabled;
     if (save) save.disabled = !enabled;
+    setLocationEditorEnabled(enabled);
   }
 
   function resetEditor(message = '') {
@@ -171,6 +258,7 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
     setText('[data-admin-block-save-status]', message);
     const preview = root.querySelector('[data-admin-block-editor-preview]');
     if (preview) preview.hidden = true;
+    populateLocationEditor(null);
   }
 
   function showBlock(blockId) {
@@ -184,6 +272,7 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
     setValue('admin-block-name', block.name);
     setValue('admin-block-height', block.hoehe);
     setValue('admin-block-image-name', block.bild);
+    populateLocationEditor(block);
     setText('[data-admin-block-form-title]', 'Block details');
     setText('[data-admin-block-selection-note]', `Editing ${block.name || 'unnamed block'}`);
     const routeCount = routes.filter(route => Number(route.block_id) === Number(block.id)).length;
@@ -203,6 +292,7 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
     setValue('admin-block-name', '');
     setValue('admin-block-height', '');
     setValue('admin-block-image-name', '');
+    populateLocationEditor({ sektor: value('admin-block-sector'), nummer: '' });
     setText('[data-admin-block-form-title]', 'Create new block');
     setText('[data-admin-block-selection-note]', 'Choose the sector and enter the block details. Add the image file to the repository separately.');
     setText('[data-admin-block-route-count]', 'A new block starts without routes.');
@@ -224,6 +314,8 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
     const name = value('admin-block-name');
     const height = value('admin-block-height');
     const imageName = value('admin-block-image-name');
+    const latitudeRaw = value('admin-block-latitude');
+    const longitudeRaw = value('admin-block-longitude');
 
     if (!SECTORS.some(item => item.slug === sector)) {
       status.textContent = 'Please select a known sector.';
@@ -242,6 +334,23 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
     if (imageName && !IMAGE_PATTERN.test(imageName)) {
       status.textContent = 'Please enter only an image filename ending in .jpg, .jpeg, .png or .webp.';
       root.querySelector('#admin-block-image-name')?.focus();
+      return;
+    }
+    if (locationsAvailable && Boolean(latitudeRaw) !== Boolean(longitudeRaw)) {
+      status.textContent = 'Enter both latitude and longitude, or leave both fields empty.';
+      root.querySelector(latitudeRaw ? '#admin-block-longitude' : '#admin-block-latitude')?.focus();
+      return;
+    }
+    const latitude = latitudeRaw ? Number(latitudeRaw) : null;
+    const longitude = longitudeRaw ? Number(longitudeRaw) : null;
+    if (locationsAvailable && latitudeRaw && (!Number.isFinite(latitude) || latitude < -90 || latitude > 90)) {
+      status.textContent = 'Enter a valid latitude between -90 and 90.';
+      root.querySelector('#admin-block-latitude')?.focus();
+      return;
+    }
+    if (locationsAvailable && longitudeRaw && (!Number.isFinite(longitude) || longitude < -180 || longitude > 180)) {
+      status.textContent = 'Enter a valid longitude between -180 and 180.';
+      root.querySelector('#admin-block-longitude')?.focus();
       return;
     }
 
@@ -272,6 +381,7 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
       bild: imageName || null
     };
     const creating = isCreating;
+    let blockSaved = false;
     save.disabled = true;
     status.textContent = creating ? 'Creating block…' : 'Saving…';
 
@@ -283,20 +393,92 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
 
       if (creating) blocks.push(result.data);
       else Object.assign(existing, result.data);
+      blockSaved = true;
       selectedBlockId = Number(result.data.id);
       isCreating = false;
       renderBlockOptions();
       showBlock(result.data.id);
-      status.textContent = creating ? 'Block created successfully.' : 'Block saved successfully.';
       onBlocksChanged?.();
+
+      if (locationsAvailable && latitude != null && longitude != null) {
+        const canonical = canonicalBlockFor(result.data);
+        const physicalNumber = physicalBoulderNumber(result.data.nummer);
+        const marker = {
+          sector_slug: result.data.sektor,
+          boulder_number: physicalNumber,
+          label: locationForBlock(result.data)?.label || canonical?.name || result.data.name || `Boulder ${physicalNumber}`,
+          block_anchor: blockAnchor(canonical?.nummer || result.data.nummer),
+          longitude,
+          latitude,
+          is_visible: root.querySelector('#admin-block-marker-visible')?.checked !== false,
+          display_order: Number.parseInt(physicalNumber, 10) || 0
+        };
+        const locationResult = await supabase
+          .from('boulder_locations')
+          .upsert(marker, { onConflict: 'sector_slug,boulder_number' })
+          .select('sector_slug, boulder_number, label, block_anchor, longitude, latitude, is_visible, display_order')
+          .single();
+        if (locationResult.error) throw locationResult.error;
+        const existingLocation = locationForBlock(result.data);
+        if (existingLocation) Object.assign(existingLocation, locationResult.data);
+        else boulderLocations.push(locationResult.data);
+        populateLocationEditor(result.data);
+      }
+      document.dispatchEvent(new CustomEvent('boulderLocationsChanged'));
+      status.textContent = latitude != null && longitude != null
+        ? `${creating ? 'Block created' : 'Block'} and GPS marker saved successfully.`
+        : (creating ? 'Block created successfully.' : 'Block saved successfully.');
     } catch (error) {
       console.error('Block could not be saved:', error);
-      status.textContent = String(error?.code || '') === '23505'
+      status.textContent = blockSaved
+        ? 'The block details were saved, but the GPS marker could not be saved.'
+        : String(error?.code || '') === '23505'
         ? 'This sector already has a block with the same number.'
         : 'The block could not be saved. No other data was changed.';
     } finally {
       save.disabled = false;
     }
+  }
+
+  async function removeLocation() {
+    const block = selectedBlock();
+    const location = locationForBlock(block);
+    const status = root.querySelector('[data-admin-block-save-status]');
+    const remove = root.querySelector('[data-admin-remove-block-location]');
+    if (!block || !location || !status || !remove || !locationsAvailable) return;
+    if (!window.confirm(`Remove the GPS marker for ${location.label}? The block and its routes remain unchanged.`)) return;
+
+    remove.disabled = true;
+    status.textContent = 'Removing GPS marker…';
+    const { error } = await supabase
+      .from('boulder_locations')
+      .delete()
+      .eq('sector_slug', location.sector_slug)
+      .eq('boulder_number', location.boulder_number);
+    if (error) {
+      console.error('Boulder GPS marker could not be removed:', error);
+      status.textContent = 'The GPS marker could not be removed.';
+      remove.disabled = false;
+      return;
+    }
+
+    boulderLocations = boulderLocations.filter(item => item !== location);
+    populateLocationEditor(block);
+    document.dispatchEvent(new CustomEvent('boulderLocationsChanged'));
+    status.textContent = 'GPS marker removed. The block and its routes were not changed.';
+  }
+
+  async function loadBoulderLocations() {
+    const { data, error } = await supabase
+      .from('boulder_locations')
+      .select('sector_slug, boulder_number, label, block_anchor, longitude, latitude, is_visible, display_order')
+      .order('sector_slug')
+      .order('display_order');
+    locationsLoaded = true;
+    locationsAvailable = !error;
+    boulderLocations = data || [];
+    setLocationEditorEnabled(Boolean(selectedBlockId) || isCreating);
+    populateLocationEditor(selectedBlock());
   }
 
   root.querySelector('#admin-block-sector-filter')?.addEventListener('change', () => {
@@ -311,9 +493,11 @@ export function initBlockAdministration({ root, blocks, routes, sectorSettings, 
   root.querySelector('#admin-block-number')?.addEventListener('input', updatePreview);
   root.querySelector('#admin-block-name')?.addEventListener('input', updatePreview);
   root.querySelector('#admin-block-image-name')?.addEventListener('input', updatePreview);
+  root.querySelector('[data-admin-remove-block-location]')?.addEventListener('click', removeLocation);
 
   renderBlockOptions();
   resetEditor();
+  loadBoulderLocations();
 
   renderSectorAdministration({ root: root.closest('.admin-root'), sectorSettings, settingsAvailable });
 }

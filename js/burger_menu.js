@@ -1,4 +1,4 @@
-import { applySectorVisibility } from './sector_visibility.js?v=20261025-sector-swipe-25';
+import { applySectorVisibility } from './sector_visibility.js?v=20261027-map-controls-34';
 
 function menuItemIcon(name) {
   const paths = {
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-import { initAuth } from './auth_handler.js?v=20261025-sector-swipe-25';
+import { initAuth } from './auth_handler.js?v=20261027-map-controls-34';
 
 document.addEventListener("loginBlockReady", () => {
   initAuth();

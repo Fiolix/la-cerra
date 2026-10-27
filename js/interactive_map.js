@@ -1,11 +1,14 @@
 import * as maplibregl from '/la-cerra/vendor/maplibre-gl/maplibre-gl.js';
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261025-sector-swipe-25';
+import { loadSectorVisibility, sectorLabel } from './sector_visibility.js?v=20261027-map-controls-34';
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261025-sector-swipe-25';
-const BOULDER_DATA = '/la-cerra/data/boulder_locations.geojson?v=20261025-sector-swipe-25';
-const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261025-sector-swipe-25';
+const SATELLITE_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const SATELLITE_SOURCE_ID = 'la-cerra-satellite';
+const SATELLITE_LAYER_ID = 'la-cerra-satellite-layer';
+const MAP_DATA = '/la-cerra/data/map_locations.geojson?v=20261027-map-controls-34';
+const BOULDER_DATA = '/la-cerra/data/boulder_locations.geojson?v=20261027-map-controls-34';
+const ACCESS_PATH_DATA = '/la-cerra/data/access_paths.geojson?v=20261027-map-controls-34';
 const activeMaps = new Map();
 let listenersBound = false;
 let locationsPromise = null;
@@ -199,31 +202,182 @@ function addOrientationControl(map, container) {
   }
 }
 
+function addScaleControl(map) {
+  map.addControl(new maplibregl.ScaleControl({
+    maxWidth: 110,
+    unit: 'metric'
+  }), 'bottom-left');
+}
+
+function collapseAttribution(container) {
+  const attribution = container.querySelector('.maplibregl-ctrl-attrib');
+  if (!attribution?.classList.contains('maplibregl-compact-show')) return;
+  attribution.querySelector('.maplibregl-ctrl-attrib-button')?.click();
+}
+
+function addCollapsedAttributionControl(map, container) {
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+  collapseAttribution(container);
+  map.once('idle', () => collapseAttribution(container));
+}
+
+function addSatelliteLayer(map) {
+  if (!map.getSource(SATELLITE_SOURCE_ID)) {
+    map.addSource(SATELLITE_SOURCE_ID, {
+      type: 'raster',
+      tiles: [SATELLITE_TILES],
+      tileSize: 256,
+      maxzoom: 23,
+      attribution: 'Powered by Esri | Esri, Vantor, Earthstar Geographics, and the GIS User Community'
+    });
+  }
+
+  if (!map.getLayer(SATELLITE_LAYER_ID)) {
+    map.addLayer({
+      id: SATELLITE_LAYER_ID,
+      type: 'raster',
+      source: SATELLITE_SOURCE_ID,
+      layout: { visibility: 'none' },
+      paint: { 'raster-fade-duration': 180 }
+    });
+  }
+}
+
+function addBasemapControl(map) {
+  const control = {
+    onAdd() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'maplibregl-ctrl maplibregl-ctrl-group map-basemap-control';
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'map-basemap-toggle';
+      button.textContent = 'Satellite';
+      button.setAttribute('aria-label', 'Show satellite view');
+      button.setAttribute('aria-pressed', 'false');
+      button.title = 'Show satellite view';
+      button.addEventListener('click', () => {
+        const satelliteVisible = map.getLayoutProperty(SATELLITE_LAYER_ID, 'visibility') !== 'visible';
+        map.setLayoutProperty(SATELLITE_LAYER_ID, 'visibility', satelliteVisible ? 'visible' : 'none');
+        setPathPresentation(map, satelliteVisible);
+        collapseAttribution(map.getContainer());
+        map.once('idle', () => collapseAttribution(map.getContainer()));
+        button.textContent = satelliteVisible ? 'Map' : 'Satellite';
+        button.setAttribute('aria-pressed', String(satelliteVisible));
+        button.setAttribute('aria-label', satelliteVisible ? 'Show standard map' : 'Show satellite view');
+        button.title = satelliteVisible ? 'Show standard map' : 'Show satellite view';
+      });
+
+      wrapper.append(button);
+      this._container = wrapper;
+      return wrapper;
+    },
+    onRemove() {
+      this._container?.remove();
+      this._container = null;
+    }
+  };
+
+  map.addControl(control, 'top-left');
+}
+
+function setPathPresentation(map, satelliteVisible) {
+  const setPaint = (layerId, property, value) => {
+    if (map.getLayer(layerId)) map.setPaintProperty(layerId, property, value);
+  };
+
+  setPaint('la-cerra-osm-tracks-casing', 'line-opacity', satelliteVisible ? 0.78 : 0);
+  setPaint('la-cerra-osm-footpaths-casing', 'line-opacity', satelliteVisible ? 0.78 : 0);
+  setPaint('la-cerra-osm-tracks', 'line-color', satelliteVisible ? '#ffd34d' : '#9b7b52');
+  setPaint('la-cerra-osm-tracks', 'line-width', satelliteVisible
+    ? ['interpolate', ['linear'], ['zoom'], 9.8, 1.8, 13, 2.9, 15, 4.1]
+    : ['interpolate', ['linear'], ['zoom'], 9.8, 1, 13, 1.8, 15, 2.7]);
+  setPaint('la-cerra-osm-tracks', 'line-opacity', satelliteVisible
+    ? ['interpolate', ['linear'], ['zoom'], 9.8, 0.78, 11, 0.96]
+    : ['interpolate', ['linear'], ['zoom'], 9.8, 0.34, 12, 0.78]);
+  setPaint('la-cerra-osm-footpaths', 'line-color', satelliteVisible ? '#fff0a3' : '#537762');
+  setPaint('la-cerra-osm-footpaths', 'line-width', satelliteVisible
+    ? ['interpolate', ['linear'], ['zoom'], 10.4, 2, 13, 3.1, 15, 4.4]
+    : ['interpolate', ['linear'], ['zoom'], 10.4, 1.1, 13, 1.8, 15, 2.8]);
+  setPaint('la-cerra-osm-footpaths', 'line-opacity', satelliteVisible
+    ? ['interpolate', ['linear'], ['zoom'], 10.4, 0.8, 11.5, 0.98]
+    : ['interpolate', ['linear'], ['zoom'], 10.4, 0.34, 12.5, 0.9]);
+
+  setPaint('la-cerra-access-path-casing', 'line-color', satelliteVisible ? '#173c32' : '#fffaf2');
+  setPaint('la-cerra-access-path-casing', 'line-width', satelliteVisible
+    ? ['interpolate', ['linear'], ['zoom'], 9.5, 5.2, 14, 8]
+    : ['interpolate', ['linear'], ['zoom'], 9.5, 3.6, 14, 6.2]);
+  setPaint('la-cerra-access-paths', 'line-color', satelliteVisible ? '#ffd34d' : '#1f6a4c');
+  setPaint('la-cerra-access-paths', 'line-width', satelliteVisible
+    ? ['interpolate', ['linear'], ['zoom'], 9.5, 2.8, 14, 4.8]
+    : ['interpolate', ['linear'], ['zoom'], 9.5, 2, 14, 3.8]);
+  setPaint('la-cerra-access-path-labels', 'text-color', satelliteVisible ? '#fff0a3' : '#173c32');
+  setPaint('la-cerra-access-path-labels', 'text-halo-color', satelliteVisible ? '#173c32' : '#fffaf2');
+  setPaint('la-cerra-access-path-labels', 'text-halo-width', satelliteVisible ? 2 : 1.4);
+}
+
 function addPathLayers(map) {
   // OpenFreeMap uses the OpenMapTiles transportation schema. These overlays
   // make mapped tracks and footpaths readable earlier without presenting them
   // as verified La Cerra approaches.
   if (map.getSource('openmaptiles')) {
+    const trackFilter = [
+      'all',
+      ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
+      ['==', ['get', 'class'], 'track']
+    ];
+    const footpathFilter = [
+      'all',
+      ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
+      ['match', ['get', 'class'], ['path', 'pedestrian'], true, false]
+    ];
+
+    map.addLayer({
+      id: 'la-cerra-osm-tracks-casing',
+      type: 'line',
+      source: 'openmaptiles',
+      'source-layer': 'transportation',
+      minzoom: 9.8,
+      filter: trackFilter,
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#173c32',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9.8, 4.2, 13, 5.4, 15, 6.6],
+        'line-opacity': 0
+      }
+    });
+
     map.addLayer({
       id: 'la-cerra-osm-tracks',
       type: 'line',
       source: 'openmaptiles',
       'source-layer': 'transportation',
-      minzoom: 10.8,
-      filter: [
-        'all',
-        ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
-        ['==', ['get', 'class'], 'track']
-      ],
+      minzoom: 9.8,
+      filter: trackFilter,
       layout: {
         'line-cap': 'round',
         'line-join': 'round'
       },
       paint: {
         'line-color': '#9b7b52',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10.8, 1, 13, 1.8, 15, 2.7],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9.8, 1, 13, 1.8, 15, 2.7],
         'line-dasharray': [2.4, 1.6],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.45, 12, 0.78]
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 9.8, 0.34, 12, 0.78]
+      }
+    });
+
+    map.addLayer({
+      id: 'la-cerra-osm-footpaths-casing',
+      type: 'line',
+      source: 'openmaptiles',
+      'source-layer': 'transportation',
+      minzoom: 10.4,
+      filter: footpathFilter,
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#173c32',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10.4, 4.4, 13, 5.6, 15, 6.9],
+        'line-opacity': 0
       }
     });
 
@@ -232,21 +386,17 @@ function addPathLayers(map) {
       type: 'line',
       source: 'openmaptiles',
       'source-layer': 'transportation',
-      minzoom: 11.4,
-      filter: [
-        'all',
-        ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
-        ['match', ['get', 'class'], ['path', 'pedestrian'], true, false]
-      ],
+      minzoom: 10.4,
+      filter: footpathFilter,
       layout: {
         'line-cap': 'round',
         'line-join': 'round'
       },
       paint: {
         'line-color': '#537762',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11.4, 1.1, 13, 1.8, 15, 2.8],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10.4, 1.1, 13, 1.8, 15, 2.8],
         'line-dasharray': [1.25, 1.35],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 11.4, 0.4, 12.5, 0.9]
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.4, 0.34, 12.5, 0.9]
       }
     });
   }
@@ -263,14 +413,14 @@ function addPathLayers(map) {
     id: 'la-cerra-access-path-casing',
     type: 'line',
     source: 'la-cerra-access-paths',
-    minzoom: 10.5,
+    minzoom: 9.5,
     layout: {
       'line-cap': 'round',
       'line-join': 'round'
     },
     paint: {
       'line-color': '#fffaf2',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 10.5, 3.6, 14, 6.2],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 9.5, 3.6, 14, 6.2],
       'line-opacity': 0.92
     }
   });
@@ -279,14 +429,14 @@ function addPathLayers(map) {
     id: 'la-cerra-access-paths',
     type: 'line',
     source: 'la-cerra-access-paths',
-    minzoom: 10.5,
+    minzoom: 9.5,
     layout: {
       'line-cap': 'round',
       'line-join': 'round'
     },
     paint: {
       'line-color': '#1f6a4c',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 10.5, 2, 14, 3.8],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 9.5, 2, 14, 3.8],
       'line-dasharray': [2.2, 1.25]
     }
   });
@@ -295,7 +445,7 @@ function addPathLayers(map) {
     id: 'la-cerra-access-path-labels',
     type: 'symbol',
     source: 'la-cerra-access-paths',
-    minzoom: 13,
+    minzoom: 12,
     layout: {
       'symbol-placement': 'line',
       'text-field': ['get', 'name'],
@@ -580,7 +730,8 @@ async function createMap(container) {
 
     addOrientationControl(map, container);
     addLocationControl(map, container);
-    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+    addScaleControl(map);
+    addCollapsedAttributionControl(map, container);
 
     const timeout = window.setTimeout(() => {
       if (!map.loaded()) showFallback(container);
@@ -594,6 +745,8 @@ async function createMap(container) {
         return;
       }
 
+      addSatelliteLayer(map);
+      addBasemapControl(map);
       addPathLayers(map);
       addSectorLayers(map, collection, selectedSlug);
       addBoulderLayers(map, boulderCollection);
@@ -641,6 +794,9 @@ export function initInteractiveMaps() {
     document.addEventListener('sectorTabChanged', initializeVisibleMaps);
     document.addEventListener('beforePageContentReplace', destroyInteractiveMaps);
     window.addEventListener('resize', initializeVisibleMaps);
+    document.addEventListener('boulderLocationsChanged', () => {
+      boulderLocationsPromises.clear();
+    });
     listenersBound = true;
   }
   initializeVisibleMaps();

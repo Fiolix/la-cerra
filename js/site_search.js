@@ -1,5 +1,5 @@
-import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261025-sector-swipe-25';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261025-sector-swipe-25';
+import { loadRouteCatalog, searchCatalog, catalogResultCount, escapeHtml, normalizeSearchText } from './route_catalog.js?v=20261027-map-controls-34';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-map-controls-34';
 
 let catalog = null;
 let loadError = null;

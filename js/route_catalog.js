@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
-import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261025-sector-swipe-25';
-import { compareGrades } from './grade_utils.js?v=20261025-sector-swipe-25';
-import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261025-sector-swipe-25';
+import { loadSectorVisibility, SECTORS } from './sector_visibility.js?v=20261027-map-controls-34';
+import { compareGrades } from './grade_utils.js?v=20261027-map-controls-34';
+import { formatRouteGrade, formatRouteName } from './route_rules.js?v=20261027-map-controls-34';
 
 let catalogPromise = null;
 

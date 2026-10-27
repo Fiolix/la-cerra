@@ -6,17 +6,31 @@ const SWIPE_IGNORE_SELECTOR = [
   '[data-interactive-map]',
   '.maplibregl-map',
   '.sector-tabs',
-  'a',
-  'button',
   'input',
   'select',
   'textarea',
-  'label',
-  'summary',
   'video',
   'iframe',
   '[contenteditable="true"]'
 ].join(',');
+
+function closestElement(target) {
+  return target instanceof Element ? target : target?.parentElement || null;
+}
+
+function hasHorizontalScroller(target, boundary) {
+  let element = closestElement(target);
+  while (element && element !== boundary) {
+    const style = window.getComputedStyle(element);
+    const overflowX = style.overflowX;
+    if (
+      element.scrollWidth > element.clientWidth + 2
+      && (overflowX === 'auto' || overflowX === 'scroll')
+    ) return true;
+    element = element.parentElement;
+  }
+  return false;
+}
 
 function getTabsRoot() {
   return document.querySelector('[data-sector-tabs]');
@@ -70,13 +84,17 @@ function setupSectorSwipe(root, buttons) {
   let startY = 0;
   let startTime = 0;
   let tracking = false;
+  let horizontalIntent = false;
+  let suppressClickUntil = 0;
 
   root.addEventListener('touchstart', event => {
     const touch = event.touches[0];
+    const target = closestElement(event.target);
     if (
       window.innerWidth > SWIPE_MAX_WIDTH
       || event.touches.length !== 1
-      || event.target.closest(SWIPE_IGNORE_SELECTOR)
+      || target?.closest(SWIPE_IGNORE_SELECTOR)
+      || hasHorizontalScroller(target, root)
       || touch.clientX < SWIPE_EDGE_GUARD
       || touch.clientX > window.innerWidth - SWIPE_EDGE_GUARD
     ) {
@@ -88,6 +106,7 @@ function setupSectorSwipe(root, buttons) {
     startY = touch.clientY;
     startTime = performance.now();
     tracking = true;
+    horizontalIntent = false;
   }, { passive: true });
 
   root.addEventListener('touchmove', event => {
@@ -95,11 +114,14 @@ function setupSectorSwipe(root, buttons) {
     const touch = event.touches[0];
     const deltaX = touch.clientX - startX;
     const deltaY = touch.clientY - startY;
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+    if (!horizontalIntent && Math.abs(deltaY) > 10 && Math.abs(deltaY) > Math.abs(deltaX)) {
       tracking = false;
       return;
     }
-    if (Math.abs(deltaX) > 14) event.preventDefault();
+    if (!horizontalIntent && Math.abs(deltaX) > 14 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+      horizontalIntent = true;
+    }
+    if (horizontalIntent) event.preventDefault();
   }, { passive: false });
 
   root.addEventListener('touchend', event => {
@@ -118,6 +140,7 @@ function setupSectorSwipe(root, buttons) {
     const nextIndex = currentIndex + direction;
     if (currentIndex < 0 || nextIndex < 0 || nextIndex >= buttons.length) return;
 
+    suppressClickUntil = performance.now() + 450;
     activateSectorTab(buttons[nextIndex].dataset.sectorTab, {
       swipeDirection: direction > 0 ? 'next' : 'previous'
     });
@@ -125,7 +148,14 @@ function setupSectorSwipe(root, buttons) {
 
   root.addEventListener('touchcancel', () => {
     tracking = false;
+    horizontalIntent = false;
   }, { passive: true });
+
+  root.addEventListener('click', event => {
+    if (performance.now() >= suppressClickUntil) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
 }
 
 export function setupSectorTabs(anchor = '', preferredTab = '') {

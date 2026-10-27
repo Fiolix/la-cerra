@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261025-sector-swipe-25';
-import { getPersonalProjectRouteIds } from './route_projects.js?v=20261025-sector-swipe-25';
+import { isProjectGrade } from './route_rules.js?v=20261027-map-controls-34';
+import { getPersonalProjectRouteIds } from './route_projects.js?v=20261027-map-controls-34';
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js/auto/+esm";
 import ChartDataLabels from "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels/+esm";
 
