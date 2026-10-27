@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
-import { isProjectGrade } from './route_rules.js?v=20261027-map-controls-34';
-import { loadSectorVisibility } from './sector_visibility.js?v=20261027-map-controls-34';
+import { isProjectGrade } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { loadSectorVisibility } from './sector_visibility.js?v=20261027-sushi-free-gps-35';
 
 let areaStatsPromise = null;
 

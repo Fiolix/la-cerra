@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 
-import { getPublicTickStats } from './tick_stats_loader.js?v=20261027-map-controls-34';
+import { getPublicTickStats } from './tick_stats_loader.js?v=20261027-sushi-free-gps-35';
 
-import { showTicklistPopup } from './ticklist_popup.js?v=20261027-map-controls-34';
-import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261027-map-controls-34';
-import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261027-map-controls-34';
-import { compareGrades } from './grade_utils.js?v=20261027-map-controls-34';
-import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261027-map-controls-34';
+import { showTicklistPopup } from './ticklist_popup.js?v=20261027-sushi-free-gps-35';
+import { formatRouteGrade, formatRouteName, isProjectGrade, routeNameTableClass } from './route_rules.js?v=20261027-sushi-free-gps-35';
+import { getPersonalProjectRouteIds, setPersonalProject } from './route_projects.js?v=20261027-sushi-free-gps-35';
+import { compareGrades } from './grade_utils.js?v=20261027-sushi-free-gps-35';
+import { compareRouteStats, getRouteStats, renderRatingStars, summarizePublicRouteStats } from './route_stats.js?v=20261027-sushi-free-gps-35';
 
 let authRefreshTimer = null;
 let blockImageObserver = null;

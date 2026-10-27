@@ -1,7 +1,7 @@
 // Zentrale Seitennavigation und Initialisierung dynamischer Inhalte.
 
 // Keep this value aligned with every local ?v= query via scripts/bump_asset_version.ps1.
-const ASSET_VERSION = "20261027-map-controls-34";
+const ASSET_VERSION = "20261027-sushi-free-gps-35";
 
 const PAGE_ALIASES = {
   start: "start.html",
